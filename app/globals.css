@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import 'lenis/dist/lenis.css';
+
+:root {
+  /* Base Colors */
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Inter font family applied globally */
+* {
+  font-family: var(--font-inter), sans-serif;
+}
