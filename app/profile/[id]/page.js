@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FiCopy } from "react-icons/fi";
-import Pagination from "@/app/components/Pagniation";
+import Pagination from "@/app/components/Pagination";
 
 export default function UserProfilePage({ userId }) {
   const [activeTab, setActiveTab] = useState("assets");

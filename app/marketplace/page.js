@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { FiChevronDown } from 'react-icons/fi';
 import Card from '../components/Card';
-import Pagination from '../components/Pagniation';
+import Pagination from '../components/Pagination';
 export default function MarketplacePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('newest');

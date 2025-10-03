@@ -222,9 +222,10 @@ export default function GachaHeroSection() {
             </div>
 
             {/* Open Pack Button */}
-            <button className="w-full p-[10px] md:p-[12px] bg-[#000000]/39 hover:bg-[#141414] signin-button text-white/20 rounded-[16px] font-semibold text-[14px] md:text-[16px] transition-all duration-300 flex items-center justify-center gap-2">
-              Sign in to open 🔒
-            </button>
+<button className="w-full p-[10px] md:p-[12px] bg-[#000000]/39 hover:bg-[#141414] signin-button text-white/20 rounded-[16px] font-semibold text-[14px] md:text-[16px] transition-all duration-300 flex items-center justify-center gap-2">
+  Sign in to open 
+  <Image src="/whitelock.svg" alt="lock" width={16} height={16} />
+</button>
           </div>
         </div>
       </div>

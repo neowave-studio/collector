@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Pagination from '../components/Pagniation';
+import Pagination from '../components/Pagination';
 
 export default function LeaderboardSection() {
   const [activeTab, setActiveTab] = useState('all');

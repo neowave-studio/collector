@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import SmoothScrollProvider from "./components/SmoothScrollProvider";
-import FooterSection from "./components/Footer";
+
 
 const inter = Inter({
   variable: "--font-inter",

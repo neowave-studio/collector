@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Card from "./Card";
-import Pagination from "./Pagniation";
+import Pagination from "./Pagination";
 import chari from "../../public/chari.svg"
 export default function CardSection() {
   const [currentPage, setCurrentPage] = useState(1);
