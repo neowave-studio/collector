@@ -15,7 +15,7 @@ export default function LearnTwoSection() {
     {
       image: learntwo, 
       title: "Organize. Automate. Achieve.",
-      description: "Pigeon helps you stay productive by automatically creating tasks using AI, while also letting you manually add and manage your own tasks."
+      description: "Collector helps you stay productive by automatically creating tasks using AI, while also letting you manually add and manage your own tasks."
     },
     {
       image: learnthree,
@@ -35,7 +35,7 @@ export default function LearnTwoSection() {
             </h2>
                         
             <p className="text-[#333333]/60 lg:w-1/2 md:w-3/4 w-full tracking-wide lg:text-[14px] md:text-[13px] text-[12px] font-regular md:text-start text-center">
-            By unifying chats, managing your tasks, and integrating multiple apps into a single platform, Pigeon eliminates the need to juggle multiple applications and tools, creating a streamlined and efficient workflow.
+            By unifying chats, managing your tasks, and integrating multiple apps into a single platform, Collector eliminates the need to juggle multiple applications and tools, creating a streamlined and efficient workflow.
             </p>
           </div>
                     

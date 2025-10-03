@@ -72,14 +72,14 @@ export default function FooterSection() {
 
         <div className='max-w-[1300px] mx-auto relative flex justify-center lg:mb-[150px] md:mb-[100px] mb-[80px]'>
           <img 
-            src='footerpigeonlogo.svg' 
+            src='footerCollectorlogo.svg' 
             alt="Footer Logo"
             className="lg:w-auto md:w-[80%] w-[70%] h-auto"
           />
           <img 
-            src='pigeonfooter.svg' 
+            src='Collectorfooter.svg' 
             className='absolute left-1/2 transform -translate-x-1/2 lg:-translate-y-[50px] md:-translate-y-[40px] -translate-y-[30px] lg:w-auto md:w-[60%] w-[50%]' 
-            alt="Pigeon Footer"
+            alt="Collector Footer"
           />
         </div>
 
@@ -110,7 +110,7 @@ export default function FooterSection() {
                 </p>
                 <div className="flex lg:space-x-4 md:space-x-3 space-x-3">
                   <a 
-                    href="https://x.com/pigeondotchat" 
+                    href="https://x.com/Collectordotchat" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="lg:w-10 lg:h-10 md:w-9 md:h-9 w-8 h-8 bg-white/10 hover:bg-white hover:text-[#5865f2] rounded-lg flex items-center justify-center text-black transition-all duration-300 group"

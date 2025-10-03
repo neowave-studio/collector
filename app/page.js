@@ -13,11 +13,11 @@ export default function HomePage() {
       <HeroSection />
           
                 <CardSection/>
-                <LearnTwoSection/>
-                 <LeaderboardSection/>
-                <FeatureSections/>
        
-        <FocusSection/>
+                 <LeaderboardSection/>
+        
+       
+ 
  
 
  

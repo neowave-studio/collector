@@ -12,21 +12,21 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Pigeon - Unified AI Messenger | All Your Chats in One Place",
+  title: "Collector - Unified AI Messenger | All Your Chats in One Place",
   description: "The next generation AI messenger that unifies Discord, Telegram, and all your messaging platforms into one seamless service suite. Smart summaries, unified tasks, and intelligent inbox management.",
   
   // Open Graph metadata for social sharing (WhatsApp, Facebook, etc.)
   openGraph: {
-    title: "Pigeon - Unified AI Messenger",
+    title: "Collector - Unified AI Messenger",
     description: "Unify Discord, Telegram, and all messaging platforms with AI-powered smart summaries and unified task management.",
-    url: "https://pigeon-messenger.com", // Update with your actual domain
-    siteName: "Pigeon",
+    url: "https://Collector-messenger.com", // Update with your actual domain
+    siteName: "Collector",
     images: [
       {
-        url: "/pigeon-og.png", // Create a proper OG image for social sharing
+        url: "/Collector-og.png", // Create a proper OG image for social sharing
         width: 1200,
         height: 630,
-        alt: "Pigeon - Unified AI Messenger",
+        alt: "Collector - Unified AI Messenger",
       },
     ],
     locale: "en_US",
@@ -36,10 +36,10 @@ export const metadata = {
   // Twitter Card metadata
   twitter: {
     card: "summary_large_image",
-    title: "Pigeon - Unified AI Messenger",
+    title: "Collector - Unified AI Messenger",
     description: "All your chats in one place. Discord, Telegram, and more - unified with AI intelligence.",
-    images: ["/pigeon-twitter.png"], // Create Twitter card image
-    creator: "@pigeon_app", // Update with your Twitter handle
+    images: ["/Collector-twitter.png"], // Create Twitter card image
+    creator: "@Collector_app", // Update with your Twitter handle
   },
   
   // Keywords for SEO
@@ -59,7 +59,7 @@ export const metadata = {
   
   // Favicon setup
   icons: {
-    icon: "/favicon.svg", // Your pigeon favicon
+    icon: "/favicon.svg", // Your Collector favicon
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
@@ -69,7 +69,7 @@ export const metadata = {
   
   // Additional meta tags for better SEO
   other: {
-    "application-name": "Pigeon",
+    "application-name": "Collector",
     "msapplication-TileColor": "#3474FF", // Your brand blue color
     "msapplication-config": "/browserconfig.xml",
   }
@@ -83,7 +83,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <meta name="apple-mobile-web-app-title" content="Pigeon" />
+        <meta name="apple-mobile-web-app-title" content="Collector" />
         <link rel="manifest" href="/site.webmanifest" />
         
         {/* Theme colors matching your brand */}
@@ -91,7 +91,7 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileColor" content="#3474FF" />
         
         {/* Preload critical assets */}
-        <link rel="preload" href="/pigeon.svg" as="image" />
+        <link rel="preload" href="/Collector.svg" as="image" />
         <link rel="preload" href="/heroicons.png" as="image" />
         
         {/* Security headers */}
@@ -106,14 +106,14 @@ export default function RootLayout({ children }) {
         <Suspense fallback={
           <div className="flex items-center justify-center min-h-screen bg-[#ddefff]">
             <div className="animate-pulse">
-              <img src="/pigeon.svg" alt="Loading..." className="w-16 h-16" />
+              <img src="/Collector.svg" alt="Loading..." className="w-16 h-16" />
             </div>
           </div>
         }>
           <SmoothScrollProvider>
             <Navbar />
             {children}
-            <FooterSection />
+            {/* <FooterSection /> */}
           </SmoothScrollProvider>
         </Suspense>
       </body>

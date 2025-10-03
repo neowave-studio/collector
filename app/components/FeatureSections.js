@@ -35,7 +35,7 @@ function FeatureSectionOne() {
         
         {/* Description */}
         <p className="text-[#F3EDE7]/60 leading-[21px] text-[14px] mb-8 font-regular">
-        Managing messages across multiple servers and apps can be overwhelming. Pigeon’s Unified Inbox brings all your direct messages into a single, organized feed, so you never miss important conversations. With smart labels, every message is automatically tagged to show which server or app it came from, making it easy to prioritize, track, and respond. Whether it’s a quick question from a friend, an update from a community, or an important alert, everything lands in one place, saving you time and boosting your productivity.
+        Managing messages across multiple servers and apps can be overwhelming. Collector’s Unified Inbox brings all your direct messages into a single, organized feed, so you never miss important conversations. With smart labels, every message is automatically tagged to show which server or app it came from, making it easy to prioritize, track, and respond. Whether it’s a quick question from a friend, an update from a community, or an important alert, everything lands in one place, saving you time and boosting your productivity.
         </p>
         
         {/* Button */}
@@ -85,7 +85,7 @@ function FeatureSectionTwo() {
         
         {/* Description */}
         <p className="text-[#F3EDE7]/60 leading-[21px] text-[14px] mb-8 font-regular">
-        Staying productive is easy with Pigeon. Our AI automatically creates to-do tasks for you while giving you full control to add, organize, and track tasks on your own. By combining automation with personal management, Pigeon helps you focus on what matters most and get more done in less time.
+        Staying productive is easy with Collector. Our AI automatically creates to-do tasks for you while giving you full control to add, organize, and track tasks on your own. By combining automation with personal management, Collector helps you focus on what matters most and get more done in less time.
         </p>
         
         {/* Button */}

@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           
           {/* Logo */}
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <a href="/" onClick={(e) => { e.preventDefault(); handleNavigation('/'); }} className="flex items-center">
               <img
                 src="/logo.svg"
@@ -59,7 +59,7 @@ export default function Navbar() {
                 Logo
               </div>
             </a>
-          </div>
+          </div> */}
 
           {/* Desktop Navigation - Centered */}
           <div className="hidden lg:flex items-center justify-center flex-1 space-x-12">

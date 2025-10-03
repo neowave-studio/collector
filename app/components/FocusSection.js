@@ -11,7 +11,7 @@ export default function FocusSection() {
       <div className="firstSection lg:py-[30px] p-2 md:py-[80px] py-[60px]"
 >
         <div className="max-w-[1300px] relative mx-auto py-8 lg:py-14 px-4">
-          <img src="meditatingpigeon.svg" className="absolute z-0 right-0 bottom-0 lg:top-[-30px] w-[250px] lg:w-[500px] " />
+          <img src="meditatingCollector.svg" className="absolute z-0 right-0 bottom-0 lg:top-[-30px] w-[250px] lg:w-[500px] " />
           <div className="flex items-start justify-between">
             {/* Left Side - Text Content */}
             <div className="space-y-6 z-20 lg:max-w-[500px] md:max-w-[400px] max-w-full">
@@ -22,7 +22,7 @@ export default function FocusSection() {
               </h2>
                         
               <p className="text-[#111111]/80 lg:text-[15px] lg:w-full w-1/2 max-w-[90%] md:text-[14px] text-[13px] font-regular tracking-[0px] lg:leading-[21px] md:leading-[20px] leading-[19px]">
-              Staying focused is tough when constant notifications pull you in every direction. Pigeon’s Focus Mode reduces the noise by silencing non-essential alerts and prioritizing only the updates that matter. Whether you’re working, studying, or catching alpha, Focus Mode helps you stay distraction-free and fully productive.
+              Staying focused is tough when constant notifications pull you in every direction. Collector’s Focus Mode reduces the noise by silencing non-essential alerts and prioritizing only the updates that matter. Whether you’re working, studying, or catching alpha, Focus Mode helps you stay distraction-free and fully productive.
               </p>
             </div>
           </div>
