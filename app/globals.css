@@ -13,3 +13,82 @@ button {
 * {
   font-family: var(--font-inter), sans-serif;
 }
+
+.buttonbg {
+  background: linear-gradient(180deg, #05130C -12.5%, #20794C 135%);
+}
+.nav-active {
+  background: linear-gradient(180deg, #05130C -12.5%, #20794C 135%);
+  box-shadow: 0px -2.59px 13.07px 0px #48CF8BB2 inset,
+              0px -0.69px 0px 0px #FFFFFF24 inset,
+              0px 0.69px 0px 0px #97EDC4 inset;
+  border: 1px solid #FFFFFF47;
+}
+
+.buy-now-button {
+  background: linear-gradient(180deg, #2BD383 0%, #A3FFD3 100%);
+}
+.buy-now-button-text {
+  background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.61) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.signin-button {
+  box-shadow: 0px -1px 0px 0px #FFFFFF54 inset,
+              0px 1px 0px 0px #FFFFFF24 inset;
+ 
+}
+
+/* Rarity Badge Styles */
+
+.rarity-a {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.79), rgba(0, 0, 0, 0.79)),
+              linear-gradient(180deg, rgba(219, 178, 94, 0.2) 0%, rgba(219, 178, 94, 0) 100%);
+  color: #FFCA61;
+  border: 1px solid #FFFFFF1A;
+  box-shadow: 0px -3.33px 34.14px 0px #DBB25E54 inset,
+              0px 67.7px 62.36px 0px #DBB25E21 inset,
+              0px -0.83px 0px 0px #FFFFFF3D inset,
+              0px 0.84px 0px 0px #DBB25E33 inset;
+  backdrop-filter: blur(21.049089431762695px);
+}
+
+.rarity-s {
+  background: linear-gradient(258.2deg, #FFFFFF -10%, #FFFFFF 10.29%, #C9EDFF 25.65%, #FFFFFF 48.23%, #DDA7FF 77.67%, #FFFFFF 97.96%, #5E8ADB 110%);
+  color: #000000;
+  border: 1px solid #FFFFFF1A;
+
+}
+
+
+
+.rarity-b {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.79), rgba(0, 0, 0, 0.79)),
+              linear-gradient(180deg, rgba(111, 185, 255, 0.2) 0%, rgba(94, 138, 219, 0) 100%);
+  color: #61C2FF;
+  border: 1px solid #FFFFFF1A;
+  box-shadow: 0px -3.33px 34.14px 0px #5E8CDB54 inset,
+              0px 67.7px 62.36px 0px #5E96DB21 inset,
+              0px -0.83px 0px 0px #FFFFFF3D inset,
+              0px 0.84px 0px 0px #6DC2FF33 inset;
+  backdrop-filter: blur(21.049089431762695px);
+}
+
+.rarity-ungraded {
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.79), rgba(0, 0, 0, 0.79)),
+              linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF1A;
+  box-shadow: 0px -3.23px 33.08px 0px #23232354 inset,
+              0px 65.61px 60.44px 0px #E8E8E821 inset,
+              0px -0.81px 0px 0px #FFFFFF3D inset,
+              0px 0.81px 0px 0px #FFFFFF33 inset;
+  backdrop-filter: blur(20.399999618530273px);
+}
+
+.pokemon-image {
+  box-shadow: 0px 1px 0px 0px #FFFFFFBF inset,
+              0px -1px 0px 0px #FFFFFFBF inset,
+              0px 7px 12px 0px #00000073;
+}

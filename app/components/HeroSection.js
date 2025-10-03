@@ -1,192 +1,228 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function GachaHeroSection() {
   const [turboMode, setTurboMode] = useState(false);
+  const packs = [
+    { id: "PKMN 50", label: "PKMN 50", value: 50 },
+    { id: "PKMN 250", label: "PKMN 250", value: 250 }
+  ];
+  const [selectedPack, setSelectedPack] = useState("PKMN 50");
 
   return (
     <section 
-      className="relative  w-full bg-black lg:pt-28 md:pt-24 pt-20 lg:pb-12 md:pb-10 pb-8 lg:px-8 md:px-6 px-4" 
+      className="relative pt-[80px] md:pt-[140px] lg:pt-[200px] w-full bg-black lg:pb-12 md:pb-10 pb-8 lg:px-8 md:px-6 px-4" 
       id="gacha"
     >
       <div className="max-w-[1400px] mx-auto">
-        <div className="grid lg:grid-cols-2 grid-cols-1 gap-8 items-start">
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 md:gap-8 items-start">
           
           {/* Left Side - Pack Image */}
-          <div className="relative">
-            {/* Tab Selector */}
-            <div className="flex gap-2 mb-6">
-              <button className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors">
-                PKMN 50
-              </button>
-              <button className="px-4 py-2 bg-transparent text-gray-500 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors border border-gray-700">
-                PKMN 250
-              </button>
-            </div>
-
+          <div className="relative w-full">
             {/* Pack Image Container */}
-            <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl p-8 border border-gray-800">
-              {/* Placeholder for the pack image */}
-              <div className="aspect-square bg-gradient-to-br from-purple-900/30 via-yellow-900/30 to-blue-900/30 rounded-xl flex items-center justify-center relative overflow-hidden">
-                {/* Animated background effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 via-purple-500/20 to-blue-500/20 animate-pulse"></div>
-                
-                {/* Center Pokemon silhouette placeholder */}
-                <div className="relative z-10 text-center">
-                  <div className="w-64 h-64 mx-auto bg-yellow-400/20 rounded-full flex items-center justify-center">
-                    <span className="text-yellow-300 text-6xl font-bold">⚡</span>
-                  </div>
-                  <p className="text-white mt-4 text-lg font-semibold">Elite Pokémon Pack</p>
-                </div>
-
-                {/* Decorative elements */}
-                <div className="absolute top-4 left-4 text-white/60 text-sm">
-                  <div className="writing-mode-vertical-rl">ピカチュウ</div>
-                </div>
-              </div>
-
-              {/* Sparkle effects at bottom */}
-              <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex gap-2">
-                {[...Array(8)].map((_, i) => (
-                  <div 
-                    key={i}
-                    className="w-8 h-8 bg-white/20 rounded-full animate-bounce"
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                  ></div>
-                ))}
+            <div 
+              className="relative rounded-2xl p-6 md:p-8 border border-gray-800 bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: "url('/productcontainer.png')" }}
+            >
+              {/* Product Image in Center */}
+              <div className="aspect-square flex items-center justify-center relative overflow-hidden">
+                <img 
+                  src="/productimage.png" 
+                  alt="Pokemon Pack" 
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
+            
+            {/* Pack Selection Buttons */}
+  <div className="flex gap-4 mt-6">
+      {packs.map((pack) => (
+        <button
+          key={pack.id}
+          onClick={() => setSelectedPack(pack.id)}
+          className={`pack-button flex items-center rounded-[16px] justify-center gap-3 md:gap-5 px-3 py-2 pl-2 text-[12px] md:text-[16px] font-medium transition-all ${
+            selectedPack === pack.id
+              ? "nav-active text-[#FFFFFF]"
+              : "border border-[#FFFFFF]/20 bg-transparent text-[#FFFFFF]/40"
+          }`}
+        >
+          <div
+            className={`rounded-[12px] p-3 ${
+              selectedPack === pack.id
+                ? "border border-[#FFFFFF]/23 bg-[#FFFFFF]/12"
+                : "border border-transparent bg-[#FFFFFF]/12"
+            }`}
+          >
+            <img
+              src="/productimage.png"
+              className="md:w-10 w-5 h-5 md:h-10"
+              alt="Pokemon Pack"
+            />
           </div>
+          {pack.label}
+        </button>
+      ))}
+    </div>
+</div>
 
           {/* Right Side - Pack Details */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6 w-full">
             {/* Header with Badge */}
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="inline-block px-3 py-1 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-400 text-xs font-bold mb-3">
-                  A+ Guaranteed Authenticity
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-3 md:gap-0">
+              <div className="flex-1">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className='inline-block px-3 py-1 md:py-0 bg-[#DBB25E]/20 border border-[#DBB25E] rounded-lg text-[#FFCA61] text-[12px] md:text-[14px] font-bold rarity-a'>
+                    A+
+                  </span>
+                  <span className='text-[#FFFFFF]/60 font-medium text-[12px] md:text-[14px]'>
+                    Guaranteed Authenticity
+                  </span>
                 </div>
-                <h1 className="text-white lg:text-4xl md:text-3xl text-2xl font-bold">
-                  Elite Pokémon Gacha Pack
+
+                <h1 className="text-white text-[20px] md:text-[24px] font-bold">
+                  Elite Pokemon Gacha Pack
                 </h1>
               </div>
               
               {/* Expected Value */}
-              <div className="text-right">
-                <p className="text-gray-400 text-xs mb-1">Expected value</p>
-                <div className="flex items-center gap-2 justify-end">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                  <span className="text-white text-2xl font-bold">2,600.00</span>
+              <div className="text-left sm:text-right w-full sm:w-auto">
+                <p className="text-[#FFFFFF]/60 font-medium text-[12px] md:text-[14px] mb-1 md:mb-2">
+                  Expected value
+                </p>
+                <div className="flex items-center gap-2 sm:justify-end">
+                  <Image className='mt-1' src="/coin.svg" alt="coin" width={20} height={20} />
+                  <span className="text-white text-[16px] md:text-[18px] font-medium">2,600.00</span>
                 </div>
               </div>
             </div>
-<div className='flex w-full gap-2'>
-            {/* Turbo Mode Toggle */}
-            <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-white font-semibold mb-1">Turbo Mode</h3>
-                  <p className="text-gray-400 text-sm">
-                    This automatically sells back any common card and hunts grails at maximum speed.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setTurboMode(!turboMode)}
-                  className={`relative w-14 h-8 rounded-full transition-colors ${
-                    turboMode ? 'bg-emerald-600' : 'bg-gray-700'
-                  }`}
-                >
-                  <div
-                    className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                      turboMode ? 'translate-x-6' : 'translate-x-0'
+
+            {/* Turbo Mode and Free Packs */}
+            <div className="flex flex-col md:flex-row w-full gap-3 md:gap-4">
+              {/* Turbo Mode Toggle */}
+              <div className="bg-[#FFFFFF]/4 rounded-[16px] p-4 md:p-5 border border-[#FFFFFF]/11 flex-1">
+                <div className="flex items-center justify-between gap-3 md:gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-white font-bold text-[14px] md:text-[16px] mb-1 md:mb-2">
+                      Turbo Mode
+                    </h3>
+                    <p className="text-[#FFFFFF]/60 font-medium text-[12px] md:text-[14px] leading-[140%]">
+                      This automatically sells back any common card and hunts grails at maximum speed.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setTurboMode(!turboMode)}
+                    className={`relative w-[52px] h-[28px] transition-colors rounded-[120px] flex-shrink-0 ${
+                      turboMode ? 'bg-[#41785C]' : 'bg-[#333333]'
                     }`}
-                  ></div>
-                </button>
+                  >
+                    <div
+                      className={`absolute top-[2px] w-[24px] h-[24px] bg-white border border-white/28 rounded-full transition-transform ${
+                        turboMode ? 'translate-x-[26px]' : 'translate-x-[2px]'
+                      }`}
+                    ></div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Free Packs Left */}
+              <div className="bg-[#FFFFFF]/4 rounded-[16px] p-4 md:p-5 border border-[#FFFFFF]/11 md:w-[220px]">
+                <div>
+                  <h3 className="text-white/60 font-medium text-[12px] md:text-[14px] mb-1 md:mb-2">
+                    Free Packs Left
+                  </h3>
+                  <p className="text-white text-[12px] md:text-[14px]">_</p>
+                </div>
               </div>
             </div>
-
-            {/* Free Packs Left */}
-              <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-white font-semibold mb-1">Free Packs</h3>
-                  <p className="text-gray-400 text-sm">
-                   ---
-                  </p>
-                </div>
-
-              </div>
-            </div></div>
 
             {/* Pack Information Grid */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-3 md:gap-4">
               <div>
-                <p className="text-gray-400 text-sm mb-1">Pack Content</p>
-                <p className="text-white font-semibold">1 Card</p>
+                <p className="text-[#FFFFFF]/60 text-[12px] md:text-[14px] font-medium mb-1">
+                  Pack Content
+                </p>
+                <p className="text-white font-medium text-[16px] md:text-[18px]">1 Card</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-1">Instant Buyback Offer</p>
-                <p className="text-white font-semibold">85%</p>
+                <p className="text-[#FFFFFF]/60 text-[12px] md:text-[14px] font-medium mb-1">
+                  Instant Buyback Offer
+                </p>
+                <p className="text-white font-medium text-[16px] md:text-[18px]">85%</p>
               </div>
               <div>
-                <p className="text-gray-400 text-sm mb-1">Big Win Chance</p>
-                <p className="text-white font-semibold">20%</p>
+                <p className="text-[#FFFFFF]/60 text-[12px] md:text-[14px] font-medium mb-1">
+                  Big Win Chance
+                </p>
+                <p className="text-white font-medium text-[16px] md:text-[18px]">20%</p>
               </div>
             </div>
 
             {/* Stats Section */}
-            <div className="bg-gray-900/50 rounded-xl p-4 border border-gray-800">
-              <h3 className="text-white font-semibold mb-4">Stats</h3>
+            <div className="bg-[#0A0A0A] rounded-[16px] p-4 md:p-5 border border-[#FFFFFF]/10">
+              <h3 className="text-white/60 font-regular text-[12px] md:text-[14px] mb-3 md:mb-4">
+                Stats
+              </h3>
               
               {/* Progress Bar */}
-              <div className="relative h-8 bg-gray-800 rounded-lg overflow-hidden mb-4">
+              <div className="relative h-3 md:h-4 bg-[#1A1A1A] rounded-lg overflow-hidden mb-3 md:mb-4">
                 <div className="absolute inset-0 flex">
-                  <div className="bg-gray-600 h-full" style={{ width: '80%' }}></div>
-                  <div className="bg-blue-600 h-full" style={{ width: '15%' }}></div>
-                  <div className="bg-yellow-600 h-full" style={{ width: '4%' }}></div>
-                  <div className="bg-purple-600 h-full" style={{ width: '1%' }}></div>
+                  <div className="bg-[#666666] h-full" style={{ width: '80%' }}></div>
+                  <div className="bg-[#6B8AFF] h-full" style={{ width: '0%' }}></div>
+                  <div className="bg-[#FFD700] h-full" style={{ width: '0%' }}></div>
+                  <div className="bg-[#B57BFF] h-full" style={{ width: '20%' }}></div>
                 </div>
               </div>
 
               {/* Rarity List */}
-              <div className="space-y-2">
+              <div className="space-y-2 md:space-y-3">
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-gray-600"></div>
-                    <span className="text-gray-300">Common</span>
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#666666]"></div>
+                    <span className="text-white/90 font-medium text-[12px] md:text-[14px]">
+                      Common
+                    </span>
                   </div>
-                  <span className="text-gray-400">($30 - $60, 80% chance)</span>
+                  <span className="text-white/60 font-medium text-[11px] md:text-[14px]">
+                    ($30 - $60, 80% chance)
+                  </span>
                 </div>
                 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-blue-600"></div>
-                    <span className="text-gray-300">Uncommon</span>
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#6B8AFF]"></div>
+                    <span className="text-white text-[12px] md:text-[14px]">Uncommon</span>
                   </div>
-                  <span className="text-gray-400">($60 - $110, 15% chance)</span>
+                  <span className="text-[#C8C8C8] text-[11px] md:text-[14px]">
+                    ($60 - $110, 15% chance)
+                  </span>
                 </div>
                 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-yellow-600"></div>
-                    <span className="text-gray-300">Rare</span>
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#FFD700]"></div>
+                    <span className="text-white text-[12px] md:text-[14px]">Rare</span>
                   </div>
-                  <span className="text-gray-400">($110 - $250, 4% chance)</span>
+                  <span className="text-[#C8C8C8] text-[11px] md:text-[14px]">
+                    ($110 - $250, 4% chance)
+                  </span>
                 </div>
                 
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-purple-600"></div>
-                    <span className="text-gray-300">Epic</span>
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#2BD383]"></div>
+                    <span className="text-white text-[12px] md:text-[14px]">Epic</span>
                   </div>
-                  <span className="text-gray-400">($250 - $2,000+, 1% chance)</span>
+                  <span className="text-[#C8C8C8] text-[11px] md:text-[14px]">
+                    ($250 - $2,000+, 1% chance)
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Open Pack Button */}
-            <button className="w-full py-4 bg-gray-800 hover:bg-gray-700 text-gray-500 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2 border border-gray-700">
+            <button className="w-full p-[10px] md:p-[12px] bg-[#000000]/39 hover:bg-[#141414] signin-button text-white/20 rounded-[16px] font-semibold text-[14px] md:text-[16px] transition-all duration-300 flex items-center justify-center gap-2">
               Sign in to open 🔒
             </button>
           </div>

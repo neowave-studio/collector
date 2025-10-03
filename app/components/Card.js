@@ -2,26 +2,29 @@
 "use client";
 import { FiLock } from "react-icons/fi";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 export default function Card({ card, onBuyClick }) {
   const router = useRouter();
-
-  const getRarityColor = (rarity) => {
-    switch (rarity) {
-      case "S+":
-        return "bg-purple-100 text-purple-700 border-purple-300";
-      case "A+":
-        return "bg-yellow-100 text-yellow-700 border-yellow-300";
-      case "B":
-        return "bg-blue-100 text-blue-700 border-blue-300";
-      case "C+":
-        return "bg-teal-100 text-teal-700 border-teal-300";
-      case "Ungraded":
-        return "bg-gray-100 text-gray-700 border-gray-300";
-      default:
-        return "bg-gray-100 text-gray-700 border-gray-300";
-    }
-  };
+const getRarityColor = (rarity) => {
+  const rarityUpper = rarity.toUpperCase();
+  
+  // Check if it starts with S (S, S+, S++, etc.)
+  if (rarityUpper.startsWith('S')) {
+    return "rarity-s";
+  }
+  // Check if it starts with A (A, A+, A++, etc.)
+  else if (rarityUpper.startsWith('A')) {
+    return "rarity-a";
+  }
+  // Check if it starts with B (B, B+, B++, etc.)
+  else if (rarityUpper.startsWith('B')) {
+    return "rarity-b";
+  }
+  // Ungraded or default
+  else {
+    return "rarity-ungraded";
+  }
+};
 
   const handleCardClick = () => {
     router.push(`/card/${card.id}`);
@@ -30,15 +33,15 @@ export default function Card({ card, onBuyClick }) {
   return (
     <div 
       onClick={handleCardClick}
-      className="bg-[#1a1a1a] rounded-xl overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border border-gray-800 hover:border-emerald-500/50 cursor-pointer"
+      className="bg-[#101010] rounded-[12px] overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border border-[#FFFFFF1A] cursor-pointer"
     >
       {/* Card Header */}
       <div className="relative">
-        <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded text-xs text-white z-10">
+        <div className="absolute top-3 left-3 text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] tracking-[-3%] backdrop-blur-sm px-2 py-1 rounded z-10">
           {card.year}
         </div>
         <div
-          className={`absolute top-3 right-3 px-2 py-1 rounded text-xs font-semibold border z-10 ${getRarityColor(
+          className={`absolute top-3 right-3 rounded-lg px-3 py-0 min-w-fit mx-auto flex justify-center  text-[#FFFFFF99] font-[700] text-[14px] leading-[150%] tracking-[-3%]  border z-10 ${getRarityColor(
             card.rarity
           )}`}
         >
@@ -46,53 +49,53 @@ export default function Card({ card, onBuyClick }) {
         </div>
 
         {/* Card Image */}
-        <div className="aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center p-4">
-          {card.image ? (
-            <img
-              src={card.image}
-              alt={card.name}
-              className="w-full h-full object-contain rounded-lg"
-              onError={(e) => {
-                e.target.style.display = "none";
-                e.target.nextSibling.style.display = "flex";
-              }}
-            />
-          ) : null}
-          <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
-            <div className="text-gray-600 text-sm">Card Image</div>
-          </div>
-        </div>
+{/* Card Image */}
+<div className="flex items-center w-full justify-center px-14 pt-14">
+  {card.image ? (
+    <div className="w-full aspect-[5/7]">
+      <img
+        src={card.image}
+        alt={card.name}
+        className="w-full h-full object-contain  rounded-lg"
+      />
+    </div>
+  ) : null}
+</div>
       </div>
 
       {/* Card Details */}
-      <div className="p-4">
-        <h3 className="text-white font-bold text-lg mb-1 truncate">
+      <div className="px-4 py-2 pb-4">
+        <h3 className="text-white font-bold text-[24px] leading-[150%] tracking-[-3%]  truncate">
           {card.name}
         </h3>
-        <p className="text-gray-400 text-xs mb-4 line-clamp-2">
+        <p className="text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] tracking-[-3%] mb-4 line-clamp-2">
           {card.collection}
         </p>
 
         {/* Price and Button */}
-        <div className="space-y-3">
-          <div>
-            <p className="text-gray-500 text-xs mb-1">Insured Value</p>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-emerald-500"></div>
-              <p className="text-white font-bold text-lg">{card.price}</p>
-            </div>
+        <div className="space-y-3 ">
+          <div className="mb-5">
+                   <p className="text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] tracking-[-3%] mb-2 ">Insured Value</p>
+<div className="flex items-center justify-start gap-2 ">
+  <div className="flex items-center justify-center w-[24px] h-[24px] ">
+    <Image src="/coin.svg" alt="coin" width={24} height={24} className="mt-1" />
+  </div>
+  <p className="text-[#FFFFFF] font-[700] text-[18px] leading-[150%] tracking-[-3%]">
+    {card.price}
+  </p>
+</div>
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent card click when clicking button
-              onBuyClick && onBuyClick(card);
-            }}
-            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-sm transition-colors duration-300 flex items-center justify-center gap-2"
-          >
-            Buy Now
-            <FiLock size={14} />
-          </button>
+<button
+  onClick={(e) => {
+    e.stopPropagation(); // Prevent card click when clicking button
+    onBuyClick && onBuyClick(card);
+  }}
+  className="buy-now-button w-full rounded-[16px] border px-3 py-4 border-[#FFFFFF1A] font-[600] text-[16px] leading-[100%] tracking-[-3%] duration-300 flex items-center justify-center gap-2"
+>
+  <span className="buy-now-button-text">Buy Now</span>
+  <Image src="/lock.svg" alt="lock" width={18} height={18} />
+</button>
         </div>
       </div>
     </div>

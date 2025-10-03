@@ -21,11 +21,12 @@ export default function Pagination({
       }
     } else {
       if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, "...", totalPages);
+        pages.push(1, 2, 3, 4, 5, "...", totalPages);
       } else if (currentPage >= totalPages - 2) {
         pages.push(
           1,
           "...",
+          totalPages - 4,
           totalPages - 3,
           totalPages - 2,
           totalPages - 1,
@@ -55,21 +56,59 @@ export default function Pagination({
   };
 
   return (
-    <div className="space-y-4">
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-center gap-2">
-        {/* Previous Button */}
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            currentPage === 1
-              ? "bg-gray-800 text-gray-600 cursor-not-allowed"
-              : "bg-gray-800 text-white hover:bg-gray-700"
-          }`}
-        >
-          Previous
-        </button>
+    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full px-4 md:px-8 py-4">
+      {/* Left side - Page info */}
+      <div className="order-1 lg:order-1">
+        <span className="text-[#C8C8C8] text-[16px] md:text-[20px] font-medium">
+          Page {currentPage} of {totalPages}
+        </span>
+      </div>
+
+      {/* Center - Pagination Controls */}
+      <div className="flex items-center flex-wrap justify-center gap-2 md:gap-5 order-3 lg:order-2">
+        <div className="flex items-center gap-1">
+          {/* First Page Button */}
+          <button
+            onClick={() => handlePageChange(1)}
+            disabled={currentPage === 1}
+            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+              currentPage === 1
+                ? "text-[#666666] cursor-not-allowed"
+                : "text-[#FFFFFF] cursor-pointer hover:bg-[#2A2A2A]"
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M11 12L7 8L11 4M5 12L1 8L5 4"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          {/* Previous Button */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+              currentPage === 1
+                ? "text-[#666666] cursor-not-allowed"
+                : "text-[#FFFFFF] cursor-pointer hover:bg-[#2A2A2A]"
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M10 12L6 8L10 4"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
 
         {/* Page Numbers */}
         <div className="flex items-center gap-2">
@@ -78,12 +117,12 @@ export default function Pagination({
               key={index}
               onClick={() => typeof page === "number" && handlePageChange(page)}
               disabled={page === "..."}
-              className={`min-w-[40px] h-10 rounded-lg font-medium transition-colors ${
+              className={`min-w-[40px] h-10 rounded-[8px] border font-medium text-sm transition-colors ${
                 page === currentPage
-                  ? "bg-emerald-600 text-white"
+                  ? "nav-active border-[#FFFFFF47] text-[#FFFFFF]"
                   : page === "..."
-                  ? "bg-transparent text-gray-500 cursor-default"
-                  : "bg-gray-800 text-white hover:bg-gray-700"
+                  ? "bg-transparent text-[#666666] border-[#FFFFFF1A] cursor-default"
+                  : "bg-[#FFFFFF17] text-[#FFFFFF] border-[#FFFFFF1A] hover:bg-[#2A2A2A]"
               }`}
             >
               {page}
@@ -91,42 +130,79 @@ export default function Pagination({
           ))}
         </div>
 
-        {/* Next Button */}
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            currentPage === totalPages
-              ? "bg-gray-800 text-gray-600 cursor-not-allowed"
-              : "bg-gray-800 text-white hover:bg-gray-700"
-          }`}
-        >
-          Next
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Next Button */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+              currentPage === totalPages
+                ? "text-[#666666] cursor-not-allowed"
+                : "text-white cursor-pointer hover:bg-[#2A2A2A]"
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M6 12L10 8L6 4"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
 
-        {/* Go to Page Input */}
-        <div className="ml-4 flex items-center gap-2">
-          <span className="text-gray-400 text-sm">Go to page:</span>
-          <input
-            type="number"
-            min="1"
-            max={totalPages}
-            value={currentPage}
-            onChange={(e) => {
-              const page = parseInt(e.target.value);
-              if (page >= 1 && page <= totalPages) {
-                handlePageChange(page);
-              }
-            }}
-            className="w-16 px-2 py-1 bg-gray-800 text-white rounded border border-gray-700 focus:outline-none focus:border-emerald-500"
-          />
+          {/* Last Page Button */}
+          <button
+            onClick={() => handlePageChange(totalPages)}
+            disabled={currentPage === totalPages}
+            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+              currentPage === totalPages
+                ? "text-[#666666] cursor-not-allowed"
+                : "text-white cursor-pointer hover:bg-[#2A2A2A]"
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M5 12L9 8L5 4M11 12L15 8L11 4"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </div>
       </div>
 
-      {/* Page Info */}
-      <div className="text-center text-gray-500 text-sm">
-        Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)}{" "}
-        of {totalItems} items
+      {/* Right side - Go to page */}
+      <div className="flex items-center gap-2 order-2 lg:order-3">
+        <span className="text-[#C8C8C8] text-[12px] font-medium whitespace-nowrap">
+          Go to page
+        </span>
+        <input
+          type="number"
+          min="1"
+          max={totalPages}
+          placeholder={currentPage}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              const page = parseInt(e.target.value);
+              if (page >= 1 && page <= totalPages) {
+                handlePageChange(page);
+                e.target.value = "";
+              }
+            }
+          }}
+          onBlur={(e) => {
+            const page = parseInt(e.target.value);
+            if (page >= 1 && page <= totalPages) {
+              handlePageChange(page);
+              e.target.value = "";
+            }
+          }}
+          className="w-16 px-3 py-2 bg-[#1A1A1A] text-[#FFFFFF] rounded-lg border border-[#333333] focus:outline-none focus:border-[#2BD383] text-sm"
+        />
       </div>
     </div>
   );

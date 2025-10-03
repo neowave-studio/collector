@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Card from "./Card";
 import Pagination from "./Pagniation";
-
+import chari from "../../public/chari.svg"
 export default function CardSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 8;
@@ -16,7 +16,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "S+",
       price: "2,600.00",
-      image: "/card1.png",
+      image: "/chari.png",
     },
     {
       id: 2,
@@ -25,7 +25,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "B",
       price: "2,600.00",
-      image: "/card2.png",
+    image: "/chari.png",
     },
     {
       id: 3,
@@ -34,7 +34,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "B",
       price: "2,600.00",
-      image: "/card3.png",
+    image: "/chari.png",
     },
     {
       id: 4,
@@ -43,7 +43,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "A+",
       price: "2,600.00",
-      image: "/card4.png",
+    image: "/chari.png",
     },
     {
       id: 5,
@@ -52,7 +52,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "A+",
       price: "2,600.00",
-      image: "/card5.png",
+    image: "/chari.png",
     },
     {
       id: 6,
@@ -61,7 +61,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "S+",
       price: "2,600.00",
-      image: "/card6.png",
+     image: "/chari.png",
     },
     {
       id: 7,
@@ -70,7 +70,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "Ungraded",
       price: "2,600.00",
-      image: "/card7.png",
+      image: "/chari.svg",
     },
     {
       id: 8,
@@ -79,7 +79,7 @@ export default function CardSection() {
       year: "2019",
       rarity: "B",
       price: "2,600.00",
-      image: "/card8.png",
+      image: "/chari.svg",
     },
     {
       id: 9,
@@ -88,7 +88,7 @@ export default function CardSection() {
       year: "2020",
       rarity: "S+",
       price: "3,200.00",
-      image: "/card1.png",
+       image: "/chari.svg",
     },
     {
       id: 10,
@@ -97,7 +97,7 @@ export default function CardSection() {
       year: "2020",
       rarity: "A+",
       price: "2,800.00",
-      image: "/card2.png",
+       image: "/chari.svg",
     },
     {
       id: 11,
@@ -106,7 +106,7 @@ export default function CardSection() {
       year: "2020",
       rarity: "B",
       price: "2,400.00",
-      image: "/card3.png",
+       image: "/chari.svg",
     },
     {
       id: 12,
@@ -115,7 +115,7 @@ export default function CardSection() {
       year: "2020",
       rarity: "A+",
       price: "2,700.00",
-      image: "/card4.png",
+      image: "/chari.svg",
     },
   ];
 
@@ -142,14 +142,7 @@ export default function CardSection() {
     >
       <div className="max-w-[1400px] mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-white lg:text-4xl md:text-3xl text-2xl font-bold mb-4">
-            Marketplace
-          </h2>
-          <p className="text-gray-400 lg:text-lg md:text-base text-sm">
-            Discover rare and valuable cards from collectors worldwide
-          </p>
-        </div>
+
 
         {/* Cards Grid */}
         <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6 mb-12">

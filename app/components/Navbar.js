@@ -32,7 +32,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <nav className={`fixed top-0 border-b border-white/20 py-3 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
         ? 'bg-black/95 backdrop-blur-lg shadow-lg' 
         : 'bg-black'
@@ -41,7 +41,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           
           {/* Logo */}
-          {/* <div className="flex items-center">
+          <div className="flex items-center">
             <a href="/" onClick={(e) => { e.preventDefault(); handleNavigation('/'); }} className="flex items-center">
               <img
                 src="/logo.svg"
@@ -59,7 +59,7 @@ export default function Navbar() {
                 Logo
               </div>
             </a>
-          </div> */}
+          </div>
 
           {/* Desktop Navigation - Centered */}
           <div className="hidden lg:flex items-center justify-center flex-1 space-x-12">
@@ -71,7 +71,7 @@ export default function Navbar() {
                   e.preventDefault(); 
                   handleNavigation(item.href); 
                 }}
-                className="text-[15px] text-white font-normal tracking-wide transition-all duration-300 hover:text-gray-300 relative"
+                className="font-[500] text-[14px] text-white  transition-all duration-300 hover:text-gray-300 relative"
               >
                 {item.name}
               </a>
@@ -82,7 +82,7 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center">
             <button 
               onClick={() => handleNavigation('/connect')}
-              className="px-6 py-2.5 font-semibold text-white bg-emerald-600 hover:bg-emerald-700 text-[15px] rounded-lg transition-all duration-300 shadow-lg hover:shadow-emerald-600/50"
+              className="px-6 py-2.5 font-[700] text-[16px] text-white nav-active  rounded-[12px]  border border-[#FFFFFF47]  "
             >
               Connect Wallet
             </button>
@@ -123,7 +123,7 @@ export default function Navbar() {
             ))}
             <button 
               onClick={() => handleNavigation('/connect')}
-              className="px-6 py-2.5 font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-all duration-300 text-center"
+              className="px-6 py-2.5 font-[700] text-[16px] text-white nav-active  rounded-[12px]  border border-[#FFFFFF47]  "
             >
               Connect Wallet
             </button>
