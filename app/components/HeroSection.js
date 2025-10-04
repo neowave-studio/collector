@@ -81,7 +81,7 @@ export default function GachaHeroSection() {
                   </span>
                 </div>
 
-                <h1 className="text-white text-[20px] md:text-[24px] font-bold">
+                <h1 className="text-white text-[20px] md:text-[24px] font-bold font-sf-pro-rounded">
                   Elite Pokemon Gacha Pack
                 </h1>
               </div>

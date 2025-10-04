@@ -141,7 +141,7 @@ export default function LeaderboardSection() {
       <div className="max-w-[1400px] mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-white lg:text-[24px] md:text-[22px] text-[20px] font-semibold">
+          <h1 className="text-white lg:text-[24px] md:text-[22px] text-[20px] font-sf-pro-rounded font-semibold">
             Leaderboard
           </h1>
 

@@ -155,8 +155,8 @@ export default function MarketplacePage() {
       <div className="max-w-[1600px] mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8 mt-10">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-white text-[24px] font-semibold">Marketplace</h1>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2">
+            <h1 className="text-white text-[24px] font-semibold font-sf-pro-rounded" >Marketplace</h1>
   <div className="flex items-center gap-2 text-sm">
   <span className="text-[#FFFFFF66] text-[16px] font-medium">Hide Owned Cards</span>
   <button
@@ -177,7 +177,7 @@ export default function MarketplacePage() {
         </div>
 
                     {/* Sort and Filters Bar */}
-<div className="flex  items-center justify-between gap-4 mb-6">
+<div className="flex flex-col md:flex-row  items-center justify-between gap-4 mb-6">
   {/* Search Input - Left Side */}
   <div className="flex-1  relative">
     <Image 
@@ -197,7 +197,7 @@ export default function MarketplacePage() {
   {/* Sort and Filter Buttons - Right Side */}
   <div className="flex items-center gap-3">
     <button className="px-4 py-2 bg-[#1A1A1A] rounded-[16px] hover:bg-gray-700 text-white text-sm border border-[#FFFFFF0D] flex items-center gap-2 transition-colors">
-      <span className='text-[#FFFFFF66] text-[16px] font-medium'>Sort by:</span>
+      <span className='text-[#FFFFFF66] text-[16px] hidden md:flex font-medium'>Sort by:</span>
       <span className="text-[#FFFFFFE5] text-[16px] font-medium">Newest</span>
       <FiChevronDown />
     </button>
@@ -210,9 +210,9 @@ export default function MarketplacePage() {
   </div>
 </div>
 
-        <div className="flex gap-6">
+        <div className="flex md:flex-row flex-col gap-6 ">
           {/* Sidebar Filters */}
-<div className="w-64 flex-shrink-0">
+<div className="md:max-w-[330px] w-full md:w-[250px] lg:w-[310px] xl:w-[330px] flex-shrink-0">
   <div className="bg-[#101010] rounded-[16px] p-6 space-y-6">
     
     {/* Status Filter */}

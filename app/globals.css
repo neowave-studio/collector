@@ -29,6 +29,16 @@ button {
   border: 1px solid #FFFFFF47;
 }
 
+.make-offer-button {
+  background: linear-gradient(0deg, rgba(30, 30, 30, 0.79), rgba(30, 30, 30, 0.79)),
+              linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 100%);
+  border: 1px solid #FFFFFF1A;
+  box-shadow: -1px 0px 0px 0px #000000A1 inset,
+              1px 0px 0px 0px #000000A1 inset,
+              0px -1px 0px 0px #FFFFFF54 inset,
+              0px 1px 0px 0px #FFFFFF24 inset;
+}
+
 .buy-now-button {
   background: linear-gradient(180deg, #2BD383 0%, #A3FFD3 100%);
 }
@@ -145,4 +155,36 @@ input[type="checkbox"]:checked::after {
   border: solid #000000;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+}
+
+.tab-button {
+  padding-bottom: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s;
+  position: relative;
+  color: #FFFFFF66;
+}
+
+.tab-button:hover {
+  color: #FFFFFF;
+}
+
+.tab-button.active {
+  color: #FFFFFF;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 100%);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 50%, #FFFFFF 99.99%);
+}
+
+.font-sf-pro-rounded {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
