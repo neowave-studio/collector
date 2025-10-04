@@ -17,6 +17,12 @@ button {
 .sidebar-bg {
   background: linear-gradient(180deg, #2BD383 0%, #A3FFD3 100%);
 }
+ .leaderboardbg{
+  background-image: url("../public//leaderboardbg.png");
+  background-repeat: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+ }
 
 .buttonbg {
   background: linear-gradient(180deg, #05130C -12.5%, #20794C 135%);

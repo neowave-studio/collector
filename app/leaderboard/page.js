@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Pagination from '../components/Pagination';
-
+import Image from 'next/image';
 export default function LeaderboardSection() {
   const [activeTab, setActiveTab] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -163,7 +163,12 @@ export default function LeaderboardSection() {
         </div>
 
         {/* Podium - Top 3 */}
-        <div className="flex items-center justify-center lg:gap-16 md:gap-8 gap-4 mb-16 lg:mt-32 md:mt-24 mt-16">
+        <div className="flex py-[100px] bg-red-200 leaderboardbg items-center relative justify-center lg:gap-[200px] md:gap-8 sm:gap-14 gap-10 mb-16 lg:mt-32 md:mt-24 mt-16">
+             <div className="absolute inset-0 w-full h-full pointer-events-none" 
+               style={{
+                 background: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,1) 100%)'
+               }}>
+          </div>
           {/* 2nd Place */}
           <div className="flex flex-col items-center">
             <div className="relative mb-4">
@@ -269,7 +274,7 @@ export default function LeaderboardSection() {
                   </div>
 
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                <img src='/coin.svg' className='mt-1' />
                     <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.primaryPoints}</span>
                   </div>
 

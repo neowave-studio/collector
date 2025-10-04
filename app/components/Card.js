@@ -56,7 +56,7 @@ const getRarityColor = (rarity) => {
       <img
         src={card.image}
         alt={card.name}
-        className="w-full h-full object-contain  rounded-lg"
+        className="w-full  h-full object-contain  rounded-lg"
       />
     </div>
   ) : null}
