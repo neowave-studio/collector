@@ -6,109 +6,119 @@ import Pagination from '../components/Pagination';
 export default function LeaderboardSection() {
   const [activeTab, setActiveTab] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7; // Showing 7 items (ranks 4-10 in view)
+  const itemsPerPage = 7;
 
-  // Dummy leaderboard data
+  // Dummy leaderboard data with avatars
   const leaderboardData = [
     {
       rank: 1,
-      username: "Coud",
-      year: "2019",
-      walletAddress: "9rYH23P8RLuQmQ7q4RewCn9h2KD6BF3nGxHqBZ87C",
+      username: "Cloud",
+      walletAddress: "0x7e...2C",
+      fullWallet: "9rYH23P8RLuQmQ7q4RewCn9h2KD6BF3nGxHqBZ87C",
       primaryPoints: "5,982,450",
       totalPoints: "5,982,450",
       bonusPoints: "5,982,450",
-      referrals: 15
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud1"
     },
     {
       rank: 2,
-      username: "Coud",
-      year: "2019",
-      walletAddress: "2sVY719FHVKeKN8InrbJQxvI7cFhHF9st2R2GxVJK8TB",
+      username: "Cloud",
+      walletAddress: "0x7e...2C",
+      fullWallet: "2sVY719FHVKeKN8InrbJQxvI7cFhHF9st2R2GxVJK8TB",
       primaryPoints: "5,982,450",
-      totalPoints: "9,111,230",
-      bonusPoints: "9,111,230",
-      referrals: 20
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud2"
     },
     {
       rank: 3,
-      username: "Coud",
-      year: "2019",
-      walletAddress: "5eHr469HbPzLmX2S5dQvTn5sl7Qb3K4ZHnG7Y82Q",
+      username: "Cloud",
+      walletAddress: "0x7e...2C",
+      fullWallet: "5eHr469HbPzLmX2S5dQvTn5sl7Qb3K4ZHnG7Y82Q",
       primaryPoints: "5,982,450",
-      totalPoints: "11,457,892",
-      bonusPoints: "11,457,892",
-      referrals: 34
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud3"
     },
     {
       rank: 4,
-      username: "Player4",
-      year: "2020",
-      walletAddress: "8KGF934MjlyPJQbNBl1Cx1vBz5sc3Hl4RK3Fqt1YW8V9QK",
+      username: "Cloud",
+      walletAddress: "0x...JQwTc7s1K8T8",
+      fullWallet: "8KGF934MjlyPJQbNBl1Cx1vBz5sc3Hl4RK3Fqt1YW8V9QK",
       primaryPoints: "5,982,450",
-      totalPoints: "6,246,678",
-      bonusPoints: "6,246,678",
-      referrals: 14
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud4"
     },
     {
       rank: 5,
-      username: "Player5",
-      year: "2020",
-      walletAddress: "3wQ2B8RhQyRqTgV5RROoCcpBJ6JJb7k9HkWqTHK5J",
+      username: "Cloud",
+      walletAddress: "0x...JQwTc7s1K8T8",
+      fullWallet: "3wQ2B8RhQyRqTgV5RROoCcpBJ6JJb7k9HkWqTHK5J",
       primaryPoints: "5,982,450",
-      totalPoints: "10,423,456",
-      bonusPoints: "10,423,456",
-      referrals: 6
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud5"
     },
     {
       rank: 6,
-      username: "Player6",
-      year: "2020",
-      walletAddress: "6tAWF9OUqQxYHNpC3mJHWb9s2GLJzB2F7lNYgX4T4W",
+      username: "Cloud",
+      walletAddress: "0x...JQwTc7s1K8T8",
+      fullWallet: "6tAWF9OUqQxYHNpC3mJHWb9s2GLJzB2F7lNYgX4T4W",
       primaryPoints: "5,982,450",
-      totalPoints: "7,890,123",
-      bonusPoints: "7,890,123",
-      referrals: 12
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud6"
     },
     {
       rank: 7,
-      username: "Player7",
-      year: "2020",
-      walletAddress: "1u2H647JcLxJtQmQ6kP8BnK9h3FQmT4M8BQwZ4P2P8V",
+      username: "Cloud",
+      walletAddress: "0x...JQwTc7s1K8T8",
+      fullWallet: "1u2H647JcLxJtQmQ6kP8BnK9h3FQmT4M8BQwZ4P2P8V",
       primaryPoints: "5,982,450",
-      totalPoints: "18,234,567",
-      bonusPoints: "18,234,567",
-      referrals: 18
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud7"
     },
     {
       rank: 8,
-      username: "Player8",
-      year: "2021",
-      walletAddress: "4mK9P23L8TyVn5QaRt7BwEh2PxK6NfG3HsY9ZcW1D",
+      username: "Cloud",
+      walletAddress: "0x...JQwTc7s1K8T8",
+      fullWallet: "4mK9P23L8TyVn5QaRt7BwEh2PxK6NfG3HsY9ZcW1D",
       primaryPoints: "5,982,450",
-      totalPoints: "5,123,456",
-      bonusPoints: "5,123,456",
-      referrals: 8
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud8"
     },
     {
       rank: 9,
-      username: "Player9",
-      year: "2021",
-      walletAddress: "7eQw3R8YtKpL2MnB5VgH9JxC6FnT4DsA1ZkW8PqO",
+      username: "Cloud",
+      walletAddress: "0x...JQwTc7s1K8T8",
+      fullWallet: "7eQw3R8YtKpL2MnB5VgH9JxC6FnT4DsA1ZkW8PqO",
       primaryPoints: "5,982,450",
-      totalPoints: "4,567,890",
-      bonusPoints: "4,567,890",
-      referrals: 5
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud9"
     },
     {
       rank: 10,
-      username: "Player10",
-      year: "2021",
-      walletAddress: "9aB7C5D2E8F1G3H6I4J9K2L7M5N8O1P6Q3R9S4T2",
+      username: "Cloud",
+      walletAddress: "0x...JQwTc7s1K8T8",
+      fullWallet: "9aB7C5D2E8F1G3H6I4J9K2L7M5N8O1P6Q3R9S4T2",
       primaryPoints: "5,982,450",
-      totalPoints: "3,890,234",
-      bonusPoints: "3,890,234",
-      referrals: 3
+      totalPoints: "5,982,450",
+      bonusPoints: "5,982,450",
+      referrals: 18,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Cloud10"
     },
   ];
 
@@ -117,7 +127,6 @@ export default function LeaderboardSection() {
   const endIndex = startIndex + itemsPerPage;
   const currentData = leaderboardData.slice(startIndex, endIndex);
 
-  // Get top 3 for podium
   const topThree = leaderboardData.slice(0, 3);
 
   const handlePageChange = (pageNumber) => {
@@ -126,165 +135,158 @@ export default function LeaderboardSection() {
 
   return (
     <section
-      className="relative w-full min-h-screen lg:py-16 md:py-12 py-8 lg:px-8 md:px-6 px-4 bg-black"
+      className="relative w-full min-h-screen lg:py-16 md:pb-12 lg:pt-[200px] py-8 lg:px-8 md:px-6 px-4 bg-black"
       id="leaderboard"
     >
       <div className="max-w-[1400px] mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-white lg:text-4xl md:text-3xl text-2xl font-bold">
+          <h1 className="text-white lg:text-[24px] md:text-[22px] text-[20px] font-semibold">
             Leaderboard
           </h1>
 
           {/* Tab Selector */}
-          <div className="flex gap-2 bg-gray-900 p-1 rounded-lg">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'all'
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
+          <div className="relative">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value)}
+              className="appearance-none bg-[#1A1A1A] text-[#FFFFFF] rounded-[16px] px-4 py-2 border border-[#333333] cursor-pointer transition-colors"
             >
-              All Packs
-            </button>
-            <button
-              onClick={() => setActiveTab('elite')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'elite'
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Elite Packs
-            </button>
-            <button
-              onClick={() => setActiveTab('legendary')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'legendary'
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              Legendary Packs
-            </button>
+              <option value="all">All packs</option>
+              <option value="elite">Elite Packs</option>
+              <option value="legendary">Legendary Packs</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+              ▼
+            </div>
           </div>
         </div>
 
         {/* Podium - Top 3 */}
-        <div className="flex items-end justify-center gap-8 mb-16 relative">
+<div className="flex items-center justify-center  gap-16 mb-16 mt-32">
           {/* 2nd Place */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center ">
             <div className="relative mb-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 p-1">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center">
-                  <span className="text-white text-2xl">🏆</span>
-                </div>
+              {/* Points at top */}
+              <div className="absolute w-full -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
+                <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
+                <span className="text-[#A7FFD5] text-[16px] font-medium">{topThree[1]?.totalPoints}</span>
               </div>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-2 py-1 rounded-full font-bold">
+              
+              <img
+                src={topThree[1]?.avatar}
+                alt={topThree[1]?.username}
+                className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#55646F]"
+              />
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white text-xs px-3 py-0 podium-second rounded-full font-bold">
                 2
               </div>
             </div>
-            <div className="text-white font-bold mb-1">{topThree[1]?.username}</div>
-            <div className="text-gray-500 text-xs mb-2">{topThree[1]?.year}</div>
-            <div className="flex items-center gap-1 text-emerald-400 text-sm">
-              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-              {topThree[1]?.totalPoints}
-            </div>
-            {/* Silver Pedestal */}
-            <div className="w-32 h-32 bg-gradient-to-b from-gray-300 to-gray-500 rounded-t-xl mt-4 flex items-center justify-center relative">
-              <span className="text-gray-600 text-6xl font-bold">2</span>
-            </div>
+            <div className="text-white font-semibold text-[24px] mb-1">{topThree[1]?.username}</div>
+            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium text-[16px] mb-3">{topThree[1]?.walletAddress}</div>
           </div>
 
           {/* 1st Place */}
-          <div className="flex flex-col items-center -mt-8">
+          <div className="flex flex-col items-center -mt-16 ">
             <div className="relative mb-4">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 p-1">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center">
-                  <span className="text-white text-4xl">👑</span>
-                </div>
+              {/* Points at top */}
+              <div className="absolute  w-full -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
+                <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
+                <span className="text-[#A7FFD5] text-[16px] font-medium">{topThree[0]?.totalPoints}</span>
               </div>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
+              
+              <img
+                src={topThree[0]?.avatar}
+                alt={topThree[0]?.username}
+                className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#FFCA61]"
+              />
+              <div className="absolute podium-first -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white text-xs px-3 py-0 rounded-full font-bold">
                 1
               </div>
             </div>
-            <div className="text-white font-bold mb-1 text-lg">{topThree[0]?.username}</div>
-            <div className="text-gray-500 text-xs mb-2">{topThree[0]?.year}</div>
-            <div className="flex items-center gap-1 text-emerald-400 text-base">
-              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-              {topThree[0]?.totalPoints}
-            </div>
-            {/* Gold Pedestal */}
-            <div className="w-40 h-40 bg-gradient-to-b from-yellow-300 to-yellow-600 rounded-t-xl mt-4 flex items-center justify-center relative">
-              <span className="text-yellow-800 text-7xl font-bold">1</span>
-            </div>
+            <div className="text-white font-semibold text-[24px] mb-1">{topThree[0]?.username}</div>
+            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium text-[16px] mb-3">{topThree[0]?.walletAddress}</div>
           </div>
 
           {/* 3rd Place */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center ">
             <div className="relative mb-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 p-1">
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center">
-                  <span className="text-white text-2xl">🥉</span>
-                </div>
+              {/* Points at top */}
+              <div className="absolute w-full -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
+                <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
+                <span className="text-[#A7FFD5] text-[16px] font-medium">{topThree[2]?.totalPoints}</span>
               </div>
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+              
+              <img
+                src={topThree[2]?.avatar}
+                alt={topThree[2]?.username}
+                className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#703C2B]"
+              />
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white text-xs px-3 py-0 podium-third rounded-full font-bold">
                 3
               </div>
             </div>
-            <div className="text-white font-bold mb-1">{topThree[2]?.username}</div>
-            <div className="text-gray-500 text-xs mb-2">{topThree[2]?.year}</div>
-            <div className="flex items-center gap-1 text-emerald-400 text-sm">
-              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-              {topThree[2]?.totalPoints}
-            </div>
-            {/* Bronze Pedestal */}
-            <div className="w-32 h-28 bg-gradient-to-b from-orange-400 to-orange-700 rounded-t-xl mt-4 flex items-center justify-center relative">
-              <span className="text-orange-900 text-6xl font-bold">3</span>
-            </div>
+            <div className="text-white font-semibold text-[24px] mb-1">{topThree[2]?.username}</div>
+            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium text-[16px] mb-3">{topThree[2]?.walletAddress}</div>
           </div>
         </div>
 
         {/* Leaderboard Table */}
-        <div className="bg-gray-900/30 rounded-xl border border-gray-800 overflow-hidden mb-8">
-          {/* Table Header */}
-          <div className="grid grid-cols-7 gap-4 px-6 py-4 bg-gray-900/50 border-b border-gray-800 text-gray-400 text-sm font-medium">
-            <div>Rank</div>
-            <div>Wallet Address</div>
-            <div className="text-center">Primary Points</div>
-            <div className="text-center">Total Points</div>
-            <div className="text-center">Bonus Points</div>
-            <div className="text-center">Referrals</div>
+<div className="mb-8">
+  {/* Table Header */}
+  <div className=" mb-3 px-6 py-4">
+    <div className="grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 text-gray-400 text-sm font-medium">
+      <div>#</div>
+      <div className='text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] '>User</div>
+      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Primary Points</div>
+      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Total Points</div>
+      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Bonus Points</div>
+      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Referrals</div>
+    </div>
+  </div>
+
+  {/* Table Body */}
+  <div className="space-y-3">
+    {currentData.map((player) => (
+      <div
+        key={player.rank}
+        className=" border border-[#FFFFFF17] rounded-[16px] px-6 py-4 transition-colors"
+      >
+        <div className="grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 items-center">
+          <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] ">{player.rank}</div>
+          
+          <div className="flex items-center gap-3">
+            <img
+              src={player.avatar}
+              alt={player.username}
+              className="w-10 h-10 rounded-full"
+            />
+            <div className="flex flex-col">
+              <span className="text-[#FFFFFF] font-bold text-[20px] tracking-[-2%] ">{player.username}</span>
+              <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] ">{player.walletAddress}</span>
+            </div>
           </div>
 
-          {/* Table Body */}
-          <div className="divide-y divide-gray-800">
-            {currentData.map((player) => (
-              <div
-                key={player.rank}
-                className="grid grid-cols-7 gap-4 px-6 py-4 hover:bg-gray-800/30 transition-colors items-center"
-              >
-                <div className="text-white font-medium">{player.rank}</div>
-                <div className="text-gray-400 text-sm truncate font-mono">
-                  {player.walletAddress}
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-                  <span className="text-white text-sm">{player.primaryPoints}</span>
-                </div>
-                <div className="text-white text-sm text-center">{player.totalPoints}</div>
-                <div className="text-white text-sm text-center">{player.bonusPoints}</div>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 rounded bg-emerald-600/20 flex items-center justify-center">
-                    <span className="text-emerald-400 text-xs">👥</span>
-                  </div>
-                  <span className="text-emerald-400 text-sm">{player.referrals}</span>
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+            <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.primaryPoints}</span>
+          </div>
+
+          <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] text-center">{player.totalPoints}</div>
+
+          <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] text-center">{player.bonusPoints}</div>
+
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-5 h-5 rounded bg-emerald-900/40 flex items-center justify-center">
+             <img src='/referral.svg' />
+            </div>
+            <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.referrals}</span>
           </div>
         </div>
+      </div>
+    ))}
+  </div>
+</div>
 
         {/* Pagination */}
         <Pagination

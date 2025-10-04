@@ -40,6 +40,27 @@ button {
  
 }
 
+.podium-first {
+  border: 3px solid #FFCA61;
+  background: #4D3D1E;
+  backdrop-filter: blur(4px);
+  box-shadow: 0px 7px 12px 0px #FFFFFFE5 inset;
+}
+
+.podium-second {
+  border: 3px solid #55646F;
+  background: #20282E;
+  backdrop-filter: blur(4px);
+  box-shadow: 0px 7px 12px 0px #FFFFFFE5 inset;
+}
+
+.podium-third {
+  border: 3px solid #703C2B;
+  background: #33201B;
+  backdrop-filter: blur(4px);
+  box-shadow: 0px 7px 12px 0px #FFFFFFE5 inset;
+}
+
 /* Rarity Badge Styles */
 
 .rarity-a {
