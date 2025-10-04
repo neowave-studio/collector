@@ -135,7 +135,7 @@ export default function LeaderboardSection() {
 
   return (
     <section
-      className="relative w-full min-h-screen lg:py-16 md:pb-12 lg:pt-[200px] py-8 lg:px-8 md:px-6 px-4 bg-black"
+      className="relative w-full min-h-screen lg:py-16 md:pb-12 pt-[200px] lg:pt-[200px] py-8 lg:px-8 md:px-6 px-4 bg-black"
       id="leaderboard"
     >
       <div className="max-w-[1400px] mx-auto">
@@ -150,7 +150,7 @@ export default function LeaderboardSection() {
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
-              className="appearance-none bg-[#1A1A1A] text-[#FFFFFF] rounded-[16px] px-4 py-2 border border-[#333333] cursor-pointer transition-colors"
+              className="appearance-none bg-[#1A1A1A] text-[#FFFFFF] rounded-[16px] md:px-4 px-3 md:py-2 py-1.5 md:text-base text-sm border border-[#333333] cursor-pointer transition-colors"
             >
               <option value="all">All packs</option>
               <option value="elite">Elite Packs</option>
@@ -163,130 +163,223 @@ export default function LeaderboardSection() {
         </div>
 
         {/* Podium - Top 3 */}
-<div className="flex items-center justify-center  gap-16 mb-16 mt-32">
+        <div className="flex items-center justify-center lg:gap-16 md:gap-8 gap-4 mb-16 lg:mt-32 md:mt-24 mt-16">
           {/* 2nd Place */}
-          <div className="flex flex-col items-center ">
+          <div className="flex flex-col items-center">
             <div className="relative mb-4">
               {/* Points at top */}
-              <div className="absolute w-full -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
-                <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
-                <span className="text-[#A7FFD5] text-[16px] font-medium">{topThree[1]?.totalPoints}</span>
+              <div className="absolute w-full lg:-top-10 md:-top-8 -top-6 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
+                <img src="/coin.svg" alt="coin" className="lg:w-[24px] md:w-[20px] w-[16px] mt-1 lg:h-[24px] md:h-[20px] h-[16px]" />
+                <span className="text-[#A7FFD5] lg:text-[16px] md:text-[14px] text-[12px] font-medium">{topThree[1]?.totalPoints}</span>
               </div>
               
               <img
                 src={topThree[1]?.avatar}
                 alt={topThree[1]?.username}
-                className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#55646F]"
+                className="lg:w-[130px] md:w-[100px] w-[80px] lg:h-[130px] md:h-[100px] h-[80px] rounded-full object-cover border-2 border-[#55646F]"
               />
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white text-xs px-3 py-0 podium-second rounded-full font-bold">
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white lg:text-xs text-[10px] lg:px-3 px-2 py-0 podium-second rounded-full font-bold">
                 2
               </div>
             </div>
-            <div className="text-white font-semibold text-[24px] mb-1">{topThree[1]?.username}</div>
-            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium text-[16px] mb-3">{topThree[1]?.walletAddress}</div>
+            <div className="text-white font-semibold lg:text-[24px] md:text-[20px] text-[16px] mb-1">{topThree[1]?.username}</div>
+            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium lg:text-[16px] md:text-[14px] text-[12px] mb-3">{topThree[1]?.walletAddress}</div>
           </div>
 
           {/* 1st Place */}
-          <div className="flex flex-col items-center -mt-16 ">
+          <div className="flex flex-col items-center lg:-mt-16 md:-mt-12 -mt-8">
             <div className="relative mb-4">
               {/* Points at top */}
-              <div className="absolute  w-full -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
-                <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
-                <span className="text-[#A7FFD5] text-[16px] font-medium">{topThree[0]?.totalPoints}</span>
+              <div className="absolute w-full lg:-top-10 md:-top-8 -top-6 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
+                <img src="/coin.svg" alt="coin" className="lg:w-[24px] md:w-[20px] w-[16px] mt-1 lg:h-[24px] md:h-[20px] h-[16px]" />
+                <span className="text-[#A7FFD5] lg:text-[16px] md:text-[14px] text-[12px] font-medium">{topThree[0]?.totalPoints}</span>
               </div>
               
               <img
                 src={topThree[0]?.avatar}
                 alt={topThree[0]?.username}
-                className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#FFCA61]"
+                className="lg:w-[130px] md:w-[100px] w-[80px] lg:h-[130px] md:h-[100px] h-[80px] rounded-full object-cover border-2 border-[#FFCA61]"
               />
-              <div className="absolute podium-first -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white text-xs px-3 py-0 rounded-full font-bold">
+              <div className="absolute podium-first -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white lg:text-xs text-[10px] lg:px-3 px-2 py-0 rounded-full font-bold">
                 1
               </div>
             </div>
-            <div className="text-white font-semibold text-[24px] mb-1">{topThree[0]?.username}</div>
-            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium text-[16px] mb-3">{topThree[0]?.walletAddress}</div>
+            <div className="text-white font-semibold lg:text-[24px] md:text-[20px] text-[16px] mb-1">{topThree[0]?.username}</div>
+            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium lg:text-[16px] md:text-[14px] text-[12px] mb-3">{topThree[0]?.walletAddress}</div>
           </div>
 
           {/* 3rd Place */}
-          <div className="flex flex-col items-center ">
+          <div className="flex flex-col items-center">
             <div className="relative mb-4">
               {/* Points at top */}
-              <div className="absolute w-full -top-10 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
-                <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
-                <span className="text-[#A7FFD5] text-[16px] font-medium">{topThree[2]?.totalPoints}</span>
+              <div className="absolute w-full lg:-top-10 md:-top-8 -top-6 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
+                <img src="/coin.svg" alt="coin" className="lg:w-[24px] md:w-[20px] w-[16px] mt-1 lg:h-[24px] md:h-[20px] h-[16px]" />
+                <span className="text-[#A7FFD5] lg:text-[16px] md:text-[14px] text-[12px] font-medium">{topThree[2]?.totalPoints}</span>
               </div>
               
               <img
                 src={topThree[2]?.avatar}
                 alt={topThree[2]?.username}
-                className="w-[130px] h-[130px] rounded-full object-cover border-2 border-[#703C2B]"
+                className="lg:w-[130px] md:w-[100px] w-[80px] lg:h-[130px] md:h-[100px] h-[80px] rounded-full object-cover border-2 border-[#703C2B]"
               />
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white text-xs px-3 py-0 podium-third rounded-full font-bold">
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-orange-600 text-white lg:text-xs text-[10px] lg:px-3 px-2 py-0 podium-third rounded-full font-bold">
                 3
               </div>
             </div>
-            <div className="text-white font-semibold text-[24px] mb-1">{topThree[2]?.username}</div>
-            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium text-[16px] mb-3">{topThree[2]?.walletAddress}</div>
+            <div className="text-white font-semibold lg:text-[24px] md:text-[20px] text-[16px] mb-1">{topThree[2]?.username}</div>
+            <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium lg:text-[16px] md:text-[14px] text-[12px] mb-3">{topThree[2]?.walletAddress}</div>
           </div>
         </div>
 
         {/* Leaderboard Table */}
-<div className="mb-8">
-  {/* Table Header */}
-  <div className=" mb-3 px-6 py-4">
-    <div className="grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 text-gray-400 text-sm font-medium">
-      <div>#</div>
-      <div className='text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] '>User</div>
-      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Primary Points</div>
-      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Total Points</div>
-      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Bonus Points</div>
-      <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%] ">Referrals</div>
-    </div>
-  </div>
-
-  {/* Table Body */}
-  <div className="space-y-3">
-    {currentData.map((player) => (
-      <div
-        key={player.rank}
-        className=" border border-[#FFFFFF17] rounded-[16px] px-6 py-4 transition-colors"
-      >
-        <div className="grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 items-center">
-          <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] ">{player.rank}</div>
-          
-          <div className="flex items-center gap-3">
-            <img
-              src={player.avatar}
-              alt={player.username}
-              className="w-10 h-10 rounded-full"
-            />
-            <div className="flex flex-col">
-              <span className="text-[#FFFFFF] font-bold text-[20px] tracking-[-2%] ">{player.username}</span>
-              <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] ">{player.walletAddress}</span>
+        <div className="mb-8">
+          {/* Table Header - Hidden on mobile */}
+          <div className="hidden lg:block mb-3 px-6 py-4">
+            <div className="grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 text-gray-400 text-sm font-medium">
+              <div>#</div>
+              <div className='text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]'>User</div>
+              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Primary Points</div>
+              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Total Points</div>
+              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Bonus Points</div>
+              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Referrals</div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-            <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.primaryPoints}</span>
-          </div>
+          {/* Table Body */}
+          <div className="space-y-3">
+            {currentData.map((player) => (
+              <div
+                key={player.rank}
+                className="border border-[#FFFFFF17] rounded-[16px] lg:px-6 md:px-4 px-3 lg:py-4 md:py-3 py-2 transition-colors"
+              >
+                {/* Desktop Layout */}
+                <div className="hidden lg:grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 items-center">
+                  <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.rank}</div>
+                  
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={player.avatar}
+                      alt={player.username}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF] font-bold text-[20px] tracking-[-2%]">{player.username}</span>
+                      <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.walletAddress}</span>
+                    </div>
+                  </div>
 
-          <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] text-center">{player.totalPoints}</div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                    <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.primaryPoints}</span>
+                  </div>
 
-          <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] text-center">{player.bonusPoints}</div>
+                  <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] text-center">{player.totalPoints}</div>
 
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-5 h-5 rounded bg-emerald-900/40 flex items-center justify-center">
-             <img src='/referral.svg' />
-            </div>
-            <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.referrals}</span>
+                  <div className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%] text-center">{player.bonusPoints}</div>
+
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 rounded bg-emerald-900/40 flex items-center justify-center">
+                      <img src='/referral.svg' />
+                    </div>
+                    <span className="text-[#FFFFFF99] font-[500] text-[16px] tracking-[-2%]">{player.referrals}</span>
+                  </div>
+                </div>
+
+                {/* Tablet Layout */}
+                <div className="hidden md:block lg:hidden">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="text-[#FFFFFF99] font-[500] text-[14px] tracking-[-2%] pt-1">{player.rank}</div>
+                    <img
+                      src={player.avatar}
+                      alt={player.username}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className="flex flex-col flex-1">
+                      <span className="text-[#FFFFFF] font-bold text-[18px] tracking-[-2%]">{player.username}</span>
+                      <span className="text-[#FFFFFF99] font-[500] text-[14px] tracking-[-2%]">{player.walletAddress}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 ml-12">
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[12px] mb-1">Primary Points</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        <span className="text-[#FFFFFF99] font-[500] text-[14px]">{player.primaryPoints}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[12px] mb-1">Total Points</span>
+                      <span className="text-[#FFFFFF99] font-[500] text-[14px]">{player.totalPoints}</span>
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[12px] mb-1">Bonus Points</span>
+                      <span className="text-[#FFFFFF99] font-[500] text-[14px]">{player.bonusPoints}</span>
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[12px] mb-1">Referrals</span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded bg-emerald-900/40 flex items-center justify-center">
+                          <img src='/referral.svg' />
+                        </div>
+                        <span className="text-[#FFFFFF99] font-[500] text-[14px]">{player.referrals}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Layout */}
+                <div className="block md:hidden">
+                  <div className="flex items-start gap-2 mb-2">
+                    <div className="text-[#FFFFFF99] font-[500] text-[12px] tracking-[-2%] pt-1">{player.rank}</div>
+                    <img
+                      src={player.avatar}
+                      alt={player.username}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <div className="flex flex-col flex-1">
+                      <span className="text-[#FFFFFF] font-bold text-[14px] tracking-[-2%]">{player.username}</span>
+                      <span className="text-[#FFFFFF99] font-[500] text-[12px] tracking-[-2%]">{player.walletAddress}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 ml-10 text-xs">
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[10px] mb-0.5">Primary</span>
+                      <div className="flex items-center gap-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
+                        <span className="text-[#FFFFFF99] font-[500] text-[11px]">{player.primaryPoints}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[10px] mb-0.5">Total</span>
+                      <span className="text-[#FFFFFF99] font-[500] text-[11px]">{player.totalPoints}</span>
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[10px] mb-0.5">Bonus</span>
+                      <span className="text-[#FFFFFF99] font-[500] text-[11px]">{player.bonusPoints}</span>
+                    </div>
+                    
+                    <div className="flex flex-col">
+                      <span className="text-[#FFFFFF66] text-[10px] mb-0.5">Referrals</span>
+                      <div className="flex items-center gap-1">
+                        <div className="w-4 h-4 rounded bg-emerald-900/40 flex items-center justify-center">
+                          <img src='/referral.svg' className="w-2.5 h-2.5" />
+                        </div>
+                        <span className="text-[#FFFFFF99] font-[500] text-[11px]">{player.referrals}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
 
         {/* Pagination */}
         <Pagination
