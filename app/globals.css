@@ -194,3 +194,741 @@ input[type="checkbox"]:checked::after {
 .font-sf-pro-rounded {
   font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
+
+/* ============================================================
+   PAGE LOADER — brand-green pack-reveal loader (shows on refresh)
+   ============================================================ */
+@keyframes loaderSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes loaderGlowPulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.18); }
+}
+@keyframes loaderFloatA {
+  0%, 100% { transform: translate(-55%, -66%) scale(1); }
+  50% { transform: translate(-44%, -76%) scale(1.14); }
+}
+@keyframes loaderFloatB {
+  0%, 100% { transform: translate(-45%, -34%) scale(1); }
+  50% { transform: translate(-56%, -24%) scale(1.16); }
+}
+@keyframes loaderEmblemIn {
+  0% { opacity: 0; transform: translateY(14px) scale(0.82); filter: blur(6px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes loaderRiseIn {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes loaderShimmer {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+@keyframes loaderBarShine {
+  0% { transform: translateX(-140%); }
+  100% { transform: translateX(360%); }
+}
+
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+}
+.loader-overlay.done { display: none; }
+
+/* --- Split curtains --- */
+.loader-curtain {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.2%;
+  background: #000;
+  will-change: transform;
+  transition: transform 0.95s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.loader-curtain-top { top: 0; }
+.loader-curtain-bottom { bottom: 0; }
+.loader-curtain-top::after,
+.loader-curtain-bottom::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2BD383 22%, #A3FFD3 50%, #2BD383 78%, transparent);
+  box-shadow: 0 0 20px 2px rgba(43, 211, 131, 0.75);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.loader-curtain-top::after { bottom: 0; }
+.loader-curtain-bottom::after { top: 0; }
+.loader-overlay.revealing .loader-curtain-top { transform: translateY(-100%); }
+.loader-overlay.revealing .loader-curtain-bottom { transform: translateY(100%); }
+.loader-overlay.revealing .loader-curtain-top::after,
+.loader-overlay.revealing .loader-curtain-bottom::after { opacity: 1; }
+
+/* --- Stage --- */
+.loader-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.5s ease;
+}
+.loader-overlay.revealing .loader-stage {
+  opacity: 0;
+  transform: scale(0.9);
+  filter: blur(8px);
+}
+
+/* --- Ambient glows --- */
+.loader-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.loader-glow-a {
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, rgba(43, 211, 131, 0.30), transparent 70%);
+  animation: loaderFloatA 9s ease-in-out infinite;
+}
+.loader-glow-b {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(163, 255, 211, 0.20), transparent 70%);
+  animation: loaderFloatB 11s ease-in-out infinite;
+}
+
+/* --- Emblem + spinning ring --- */
+.loader-emblem-wrap {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  animation: loaderEmblemIn 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.loader-ring-glow {
+  position: absolute;
+  inset: -8px;
+  border-radius: 24px;
+  background: radial-gradient(circle, rgba(43, 211, 131, 0.38), transparent 70%);
+  filter: blur(14px);
+  animation: loaderGlowPulse 2.4s ease-in-out infinite;
+}
+.loader-ring {
+  position: absolute;
+  inset: -14px;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(43, 211, 131, 0.04) 40deg, #2BD383 210deg, #A3FFD3 300deg, transparent 342deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  filter: drop-shadow(0 0 10px rgba(43, 211, 131, 0.55));
+  animation: loaderSpin 1.1s linear infinite;
+}
+.loader-emblem {
+  position: relative;
+  z-index: 1;
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* --- Wordmark --- */
+.loader-wordmark {
+  font-family: 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.6em;
+  text-indent: 0.6em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.32) 0%, #ffffff 20%, #A3FFD3 40%, #2BD383 50%, #A3FFD3 60%, #ffffff 80%, rgba(255, 255, 255, 0.32) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: loaderShimmer 2.6s linear infinite, loaderRiseIn 0.8s ease 0.15s both;
+}
+
+/* --- Progress --- */
+.loader-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: loaderRiseIn 0.8s ease 0.25s both;
+}
+.loader-bar {
+  position: relative;
+  width: 220px;
+  height: 3px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.09);
+  overflow: hidden;
+}
+.loader-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #2BD383, #A3FFD3);
+  box-shadow: 0 0 12px rgba(43, 211, 131, 0.85);
+  transition: width 0.15s ease-out;
+}
+.loader-bar-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 38%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  animation: loaderBarShine 1.4s ease-in-out infinite;
+}
+.loader-percent {
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.42);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-ring,
+  .loader-ring-glow,
+  .loader-bar-shine,
+  .loader-glow-a,
+  .loader-glow-b,
+  .loader-wordmark,
+  .loader-emblem-wrap,
+  .loader-progress {
+    animation: none;
+  }
+  .loader-glow-a { transform: translate(-50%, -70%); }
+  .loader-glow-b { transform: translate(-50%, -30%); }
+}
+
+/* ============================================================
+   REVEAL — entrance animation for page content (fade + slide)
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translate3d(var(--reveal-x, 0px), var(--reveal-y, 26px), 0);
+  transition:
+    opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ============================================================
+   HOVER ANIMATIONS — buttons & clickables across the app
+   CTA hovers are scoped to button/a so decorative divs that
+   reuse the same gradient class (e.g. toggle knobs) are untouched.
+   ============================================================ */
+
+/* Primary green CTA — lift + green glow + press */
+button.buy-now-button,
+a.buy-now-button {
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.26s ease, filter 0.26s ease;
+}
+button.buy-now-button:hover,
+a.buy-now-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06) saturate(1.05);
+  box-shadow: 0 10px 28px -8px rgba(43, 211, 131, 0.6),
+    0 0 0 1px rgba(163, 255, 211, 0.45);
+}
+button.buy-now-button:active,
+a.buy-now-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Dark-green gradient CTA (Connect Wallet, selected pack, active page) */
+button.nav-active,
+a.nav-active {
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.26s ease, filter 0.26s ease;
+}
+button.nav-active:hover,
+a.nav-active:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+  box-shadow: 0px -2.59px 13.07px 0px #48cf8bb2 inset,
+    0px -0.69px 0px 0px #ffffff24 inset, 0px 0.69px 0px 0px #97edc4 inset,
+    0 10px 26px -8px rgba(43, 211, 131, 0.55);
+}
+button.nav-active:active,
+a.nav-active:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Dark glass CTA (Make an offer) */
+button.make-offer-button,
+a.make-offer-button {
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.26s ease, filter 0.26s ease;
+}
+button.make-offer-button:hover,
+a.make-offer-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.18);
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+button.make-offer-button:active,
+a.make-offer-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Sign-in / disabled-look CTA */
+button.signin-button:hover,
+a.signin-button:hover {
+  transform: translateY(-1px);
+}
+button.signin-button:active,
+a.signin-button:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* Pack selector buttons */
+.pack-button {
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.22s ease, background 0.22s ease;
+}
+.pack-button:hover {
+  transform: translateY(-2px);
+}
+.pack-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ---- Reusable hover utilities (apply to inline buttons/links) ---- */
+
+/* General button animation: lift + brighten + press */
+.btn-anim {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.24s ease, background-color 0.24s ease,
+    border-color 0.24s ease, filter 0.24s ease, color 0.24s ease;
+}
+.btn-anim:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+.btn-anim:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Green outline glow on hover (cards, panels, chips) */
+.hover-glow {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease,
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hover-glow:hover {
+  border-color: rgba(43, 211, 131, 0.5);
+  box-shadow: 0 0 0 1px rgba(43, 211, 131, 0.4),
+    0 12px 34px -12px rgba(43, 211, 131, 0.45);
+}
+
+/* Subtle scale (icons, small toggles, avatars) */
+.hover-scale {
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.24s ease;
+}
+.hover-scale:hover {
+  transform: scale(1.06);
+}
+.hover-scale:active {
+  transform: scale(0.97);
+}
+
+/* Icon button (copy, chevrons) — pop + brighten */
+.icon-hover {
+  transition: transform 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+.icon-hover:hover {
+  transform: scale(1.15);
+}
+.icon-hover:active {
+  transform: scale(0.92);
+}
+
+/* Press-only helper */
+.press:active {
+  transform: scale(0.96);
+}
+
+/* Disabled elements never animate */
+.btn-anim:disabled,
+.btn-anim:disabled:hover,
+button:disabled.buy-now-button:hover,
+button:disabled.nav-active:hover,
+button:disabled.make-offer-button:hover {
+  transform: none !important;
+  filter: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Animated gradient underline for nav / text links */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 1.5px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #2bd383, #a3ffd3);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-anim,
+  .hover-glow,
+  .hover-scale,
+  .icon-hover,
+  .pack-button,
+  button.buy-now-button,
+  button.nav-active,
+  button.make-offer-button {
+    transition: none;
+  }
+  .btn-anim:hover,
+  .hover-scale:hover,
+  .icon-hover:hover,
+  .pack-button:hover,
+  button.buy-now-button:hover,
+  button.nav-active:hover,
+  button.make-offer-button:hover,
+  button.signin-button:hover {
+    transform: none;
+  }
+  .link-underline::after {
+    transition: none;
+  }
+}
+
+/* ============================================================
+   HOME REVAMP — glassmorphism + iridescence ("holo foil UI")
+   ============================================================ */
+:root {
+  --iri: linear-gradient(
+    115deg,
+    #8be9ff 0%,
+    #a3ffd3 22%,
+    #f7e59b 44%,
+    #f3a7ff 66%,
+    #8be9ff 100%
+  );
+}
+
+@keyframes iriShift {
+  to { background-position: 200% center; }
+}
+@keyframes sheenShift {
+  to { background-position: 0 0, 220% 50%; }
+}
+
+/* Mono utility for grading-slab data labels */
+.font-mono-data {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+}
+
+/* --- Glass surfaces --- */
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: blur(22px) saturate(1.3);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 50px -30px rgba(0, 0, 0, 0.85);
+}
+.glass-soft {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* --- Iridescent text (small accents only) --- */
+.iri-text {
+  background: var(--iri);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: iriShift 8s linear infinite;
+}
+
+/* --- Iridescent hairline divider --- */
+.iri-divider {
+  height: 1px;
+  border-radius: 2px;
+  background: var(--iri);
+  background-size: 200% auto;
+  opacity: 0.55;
+  animation: iriShift 8s linear infinite;
+}
+
+/* --- Iridescent top accent line (stat tiles) --- */
+.iri-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--iri);
+  background-size: 200% auto;
+  opacity: 0.6;
+  animation: iriShift 8s linear infinite;
+}
+
+/* --- Holo display case (the pack) --- */
+.holo-case {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.075),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: blur(24px) saturate(1.35);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 44px 90px -44px rgba(0, 0, 0, 0.92),
+    0 0 70px -24px rgba(43, 211, 131, 0.28);
+  transform-style: preserve-3d;
+  transition: box-shadow 0.35s ease, transform 0.2s ease-out;
+  will-change: transform;
+}
+.holo-case::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--iri);
+  background-size: 200% auto;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.5;
+  animation: iriShift 11s linear infinite;
+  pointer-events: none;
+}
+.holo-case:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 54px 100px -44px rgba(0, 0, 0, 0.95),
+    0 0 90px -22px rgba(43, 211, 131, 0.38);
+}
+
+/* --- Holographic sheen over the pack (mouse-reactive) --- */
+.holo-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(
+      130% 130% at var(--mx, 50%) var(--my, 38%),
+      rgba(255, 255, 255, 0.28),
+      rgba(255, 255, 255, 0) 46%
+    ),
+    linear-gradient(
+      115deg,
+      rgba(139, 233, 255, 0.26) 0%,
+      rgba(163, 255, 211, 0.2) 26%,
+      rgba(247, 229, 155, 0.18) 46%,
+      rgba(243, 167, 255, 0.24) 66%,
+      rgba(139, 233, 255, 0.26) 100%
+    );
+  background-size: auto, 220% 220%;
+  background-position: 0 0, 0% 50%;
+  mix-blend-mode: color-dodge;
+  opacity: 0.42;
+  animation: sheenShift 7s linear infinite;
+  transition: opacity 0.3s ease;
+}
+.holo-case:hover .holo-sheen {
+  opacity: 0.6;
+}
+
+/* --- Premium locked CTA with holo sweep --- */
+.holo-cta {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.015)
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.holo-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 34%,
+    rgba(163, 255, 211, 0.16) 46%,
+    rgba(243, 167, 255, 0.16) 54%,
+    transparent 66%
+  );
+  background-size: 250% 100%;
+  animation: iriShift 5s linear infinite;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.holo-cta:hover {
+  transform: translateY(-2px);
+  border-color: rgba(163, 255, 211, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 14px 32px -14px rgba(43, 211, 131, 0.45);
+}
+.holo-cta:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* --- Ambient iridescent background --- */
+.holo-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.holo-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+}
+.holo-blob-1 {
+  width: 640px;
+  height: 640px;
+  top: -140px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(43, 211, 131, 0.2), transparent 70%);
+  animation: blobDrift1 26s ease-in-out infinite;
+}
+.holo-blob-2 {
+  width: 540px;
+  height: 540px;
+  top: 8%;
+  right: -120px;
+  background: radial-gradient(circle, rgba(139, 233, 255, 0.14), transparent 70%);
+  animation: blobDrift2 32s ease-in-out infinite;
+}
+.holo-blob-3 {
+  width: 580px;
+  height: 580px;
+  bottom: -160px;
+  left: 32%;
+  background: radial-gradient(circle, rgba(243, 167, 255, 0.1), transparent 70%);
+  animation: blobDrift3 30s ease-in-out infinite;
+}
+@keyframes blobDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8%, 6%) scale(1.1); }
+}
+@keyframes blobDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-9%, 8%) scale(1.12); }
+}
+@keyframes blobDrift3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6%, -8%) scale(1.08); }
+}
+
+/* Opaque dark glass for the mobile menu (needs readable contrast) */
+.glass-menu {
+  background: rgba(9, 13, 11, 0.96);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Mobile menu entrance — animates the slide only, never opacity, so the
+   menu is always visible even if animations are disabled/paused. */
+@keyframes navMenuIn {
+  from { transform: translateY(-8px); }
+  to { transform: translateY(0); }
+}
+.nav-mobile-menu {
+  animation: navMenuIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-mobile-menu { animation: none; }
+}
+
+/* Iridescent nav hairline */
+.nav-hairline {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 18%,
+    rgba(43, 211, 131, 0.45) 50%,
+    rgba(139, 233, 255, 0.3) 62%,
+    rgba(255, 255, 255, 0.08) 82%,
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iri-text,
+  .iri-divider,
+  .iri-top::before,
+  .holo-case::before,
+  .holo-sheen,
+  .holo-cta::before,
+  .holo-blob-1,
+  .holo-blob-2,
+  .holo-blob-3 {
+    animation: none;
+  }
+}

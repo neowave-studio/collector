@@ -5,6 +5,7 @@ import { FiChevronDown } from 'react-icons/fi';
 import Card from '../components/Card';
 import Pagination from '../components/Pagination';
 import Image from 'next/image';
+import Reveal from '../components/Reveal';
 export default function MarketplacePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('newest');
@@ -151,10 +152,14 @@ export default function MarketplacePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-20">
+    <div className="min-h-screen pt-20">
       <div className="max-w-[1600px] mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8 mt-10">
+        <Reveal className="mb-8 mt-10" y={24} delay={60}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="iri-divider w-8" />
+            <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">The vault</span>
+          </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2">
             <h1 className="text-white text-[24px] font-semibold font-sf-pro-rounded" >Marketplace</h1>
   <div className="flex items-center gap-2 text-sm">
@@ -174,10 +179,10 @@ export default function MarketplacePage() {
 </div>
           </div>
           <p className="text-[#FFFFFF66] text-[16px] font-medium">Total: 32,875 cards</p>
-        </div>
+        </Reveal>
 
                     {/* Sort and Filters Bar */}
-<div className="flex flex-col md:flex-row  items-center justify-between gap-4 mb-6">
+<Reveal className="flex flex-col md:flex-row  items-center justify-between gap-4 mb-6" y={24} delay={140}>
   {/* Search Input - Left Side */}
   <div className="flex-1  relative">
     <Image 
@@ -188,7 +193,7 @@ export default function MarketplacePage() {
       alt="search"
     />
     <input 
-      className='w-full pl-10 pr-4 py-2 bg-[#1A1A1A] rounded-[16px]  hover:bg-gray-700 placeholder:text-[#FFFFFF66] text-white text-sm border border-[#FFFFFF0D] transition-colors' 
+      className='w-full pl-10 pr-4 py-2 glass-soft rounded-[16px]  placeholder:text-[#FFFFFF66] text-white text-sm border border-[#FFFFFF0D] transition-colors'
       value=""  
       placeholder='Search Cards by Name' 
     /> 
@@ -196,24 +201,24 @@ export default function MarketplacePage() {
 
   {/* Sort and Filter Buttons - Right Side */}
   <div className="flex items-center gap-3">
-    <button className="px-4 py-2 bg-[#1A1A1A] rounded-[16px] hover:bg-gray-700 text-white text-sm border border-[#FFFFFF0D] flex items-center gap-2 transition-colors">
+    <button className="btn-anim px-4 py-2 glass-soft rounded-[16px] text-white text-sm border border-[#FFFFFF0D] flex items-center gap-2 transition-colors">
       <span className='text-[#FFFFFF66] text-[16px] hidden md:flex font-medium'>Sort by:</span>
       <span className="text-[#FFFFFFE5] text-[16px] font-medium">Newest</span>
       <FiChevronDown />
     </button>
-    
-    <button className="px-4 py-2 bg-[#1A1A1A] rounded-[16px] hover:bg-gray-700 text-white text-sm border border-[#FFFFFF0D] flex items-center gap-2 transition-colors">
+
+    <button className="btn-anim px-4 py-2 glass-soft rounded-[16px] text-white text-sm border border-[#FFFFFF0D] flex items-center gap-2 transition-colors">
       <Image src="/filters.svg" width={20} height={20} alt="filters" />
       <span className='text-[#FFFFFFE5] text-[16px] font-medium'>Filters</span>
       <span className="px-2 py-0.5 bg-[#303030] rounded-full text-[#FFFFFFE5] text-[16px] font-medium">3</span>
     </button>
   </div>
-</div>
+</Reveal>
 
         <div className="flex md:flex-row flex-col gap-6 ">
           {/* Sidebar Filters */}
-<div className="md:max-w-[330px] w-full md:w-[250px] lg:w-[310px] xl:w-[330px] flex-shrink-0">
-  <div className="bg-[#101010] rounded-[16px] p-6 space-y-6">
+<Reveal className="md:max-w-[330px] w-full md:w-[250px] lg:w-[310px] xl:w-[330px] flex-shrink-0" x={-24} y={0} delay={200}>
+  <div className="glass rounded-[16px] p-6 space-y-6">
     
     {/* Status Filter */}
     <div>
@@ -221,7 +226,7 @@ export default function MarketplacePage() {
       <div className="flex gap-2">
         <button
           onClick={() => setFilters({...filters, status: 'buy-now'})}
-          className={`px-4 py-2 rounded-[12px] text-[16px] font-medium transition-colors ${
+          className={`btn-anim px-4 py-2 rounded-[12px] text-[16px] font-medium transition-colors ${
             filters.status === 'buy-now'
               ? 'sidebar-bg text-black'
               : 'bg-[#FFFFFF0A] text-[#FFFFFF66] hover:bg-[#FFFFFF1A]'
@@ -231,7 +236,7 @@ export default function MarketplacePage() {
         </button>
         <button
           onClick={() => setFilters({...filters, status: 'offers'})}
-          className={`px-4 py-2 rounded-[12px] text-[16px] font-medium transition-colors ${
+          className={`btn-anim px-4 py-2 rounded-[12px] text-[16px] font-medium transition-colors ${
             filters.status === 'offers'
           ? 'sidebar-bg text-black'
               : 'bg-[#FFFFFF0A] text-[#FFFFFF66] hover:bg-[#FFFFFF1A]'
@@ -255,7 +260,7 @@ onClick={() => {
     : [...filters.selectedTags, tag];
   setFilters({...filters, selectedTags: newTags});
 }}
-        className={`px-3 py-1.5 rounded-[12px] text-[14px] font-medium transition-colors ${
+        className={`btn-anim px-3 py-1.5 rounded-[12px] text-[14px] font-medium transition-colors ${
 filters.selectedTags?.includes(tag)
             ? 'sidebar-bg text-black'
             : 'bg-[#FFFFFF0A] text-[#FFFFFF66] hover:bg-[#FFFFFF1A]'
@@ -343,7 +348,7 @@ filters.selectedTags?.includes(tag)
     <div>
       <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Grade</h3>
       <div className="relative">
-        <select className="w-full px-3 py-2 bg-[#FFFFFF0A] rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer ">
+        <select className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer ">
           <option>Beckett</option>
         </select>
         <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -360,7 +365,7 @@ filters.selectedTags?.includes(tag)
       value={filters.year.min}
       onChange={(e) => setFilters({...filters, year: {...filters.year, min: e.target.value}})}
       maxLength="4"
-      className="w-full px-3 py-2 bg-[#FFFFFF0A] rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
+      className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
     />
     <span className="text-gray-500">-</span>
     <input
@@ -370,7 +375,7 @@ filters.selectedTags?.includes(tag)
       value={filters.year.max}
       onChange={(e) => setFilters({...filters, year: {...filters.year, max: e.target.value}})}
       maxLength="4"
-      className="w-full px-3 py-2 bg-[#FFFFFF0A] rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
+      className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
     />
   </div>
 </div>
@@ -453,7 +458,7 @@ filters.selectedTags?.includes(tag)
       <input
         type="text"
         placeholder="Enter Owner Address"
-      className="w-full px-3 py-2 bg-[#FFFFFF0A] rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
+      className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
       />
     </div>
 
@@ -479,7 +484,7 @@ filters.selectedTags?.includes(tag)
       </label>
     </div>
   </div>
-</div>
+</Reveal>
 
           {/* Main Content */}
           <div className="flex-1">
@@ -487,12 +492,13 @@ filters.selectedTags?.includes(tag)
 
             {/* Cards Grid */}
             <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 mb-8">
-              {currentCards.map((card) => (
-                <Card key={card.id} card={card} onBuyClick={handleBuyClick} />
+              {currentCards.map((card, index) => (
+                <Reveal key={`${currentPage}-${card.id}`} className="h-full relative hover:z-20" y={30} delay={index * 70}><Card card={card} onBuyClick={handleBuyClick} /></Reveal>
               ))}
             </div>
 
             {/* Pagination */}
+            <Reveal y={20} delay={120}>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -500,6 +506,7 @@ filters.selectedTags?.includes(tag)
               totalItems={allCards.length}
               itemsPerPage={cardsPerPage}
             />
+            </Reveal>
           </div>
         </div>
       </div>

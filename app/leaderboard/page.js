@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Pagination from '../components/Pagination';
 import Image from 'next/image';
+import Reveal from '../components/Reveal';
 export default function LeaderboardSection() {
   const [activeTab, setActiveTab] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -135,22 +136,28 @@ export default function LeaderboardSection() {
 
   return (
     <section
-      className="relative w-full min-h-screen lg:py-16 md:pb-12 pt-[200px] lg:pt-[200px] py-8 lg:px-8 md:px-6 px-4 bg-black"
+      className="relative w-full min-h-screen lg:py-16 md:pb-12 pt-[200px] lg:pt-[200px] py-8 lg:px-8 md:px-6 px-4"
       id="leaderboard"
     >
       <div className="max-w-[1400px] mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-white lg:text-[24px] md:text-[22px] text-[20px] font-sf-pro-rounded font-semibold">
-            Leaderboard
-          </h1>
+        <Reveal className="flex items-center justify-between mb-8" y={24} delay={60}>
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="iri-divider w-8" />
+              <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">Top collectors</span>
+            </div>
+            <h1 className="text-white lg:text-[24px] md:text-[22px] text-[20px] font-sf-pro-rounded font-semibold">
+              Leaderboard
+            </h1>
+          </div>
 
           {/* Tab Selector */}
           <div className="relative">
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
-              className="appearance-none bg-[#1A1A1A] text-[#FFFFFF] rounded-[16px] md:px-4 px-3 md:py-2 py-1.5 md:text-base text-sm border border-[#333333] cursor-pointer transition-colors"
+              className="btn-anim appearance-none glass-soft text-[#FFFFFF] rounded-[16px] md:px-4 px-3 md:py-2 py-1.5 md:text-base text-sm border border-[#333333] cursor-pointer transition-colors"
             >
               <option value="all">All packs</option>
               <option value="elite">Elite Packs</option>
@@ -160,7 +167,7 @@ export default function LeaderboardSection() {
               ▼
             </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Podium - Top 3 */}
         <div className="flex py-[100px] bg-red-200 leaderboardbg items-center relative justify-center lg:gap-[200px] md:gap-8 sm:gap-14 gap-10 mb-16 lg:mt-32 md:mt-24 mt-16">
@@ -170,14 +177,14 @@ export default function LeaderboardSection() {
                }}>
           </div>
           {/* 2nd Place */}
-          <div className="flex flex-col items-center">
+          <Reveal className="flex flex-col items-center" y={40} delay={220}>
             <div className="relative mb-4">
               {/* Points at top */}
               <div className="absolute w-full lg:-top-10 md:-top-8 -top-6 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
                 <img src="/coin.svg" alt="coin" className="lg:w-[24px] md:w-[20px] w-[16px] mt-1 lg:h-[24px] md:h-[20px] h-[16px]" />
                 <span className="text-[#A7FFD5] lg:text-[16px] md:text-[14px] text-[12px] font-medium">{topThree[1]?.totalPoints}</span>
               </div>
-              
+
               <img
                 src={topThree[1]?.avatar}
                 alt={topThree[1]?.username}
@@ -189,17 +196,17 @@ export default function LeaderboardSection() {
             </div>
             <div className="text-white font-semibold lg:text-[24px] md:text-[20px] text-[16px] mb-1">{topThree[1]?.username}</div>
             <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium lg:text-[16px] md:text-[14px] text-[12px] mb-3">{topThree[1]?.walletAddress}</div>
-          </div>
+          </Reveal>
 
           {/* 1st Place */}
-          <div className="flex flex-col items-center lg:-mt-16 md:-mt-12 -mt-8">
+          <Reveal className="flex flex-col items-center lg:-mt-16 md:-mt-12 -mt-8" y={40} delay={140}>
             <div className="relative mb-4">
               {/* Points at top */}
               <div className="absolute w-full lg:-top-10 md:-top-8 -top-6 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
                 <img src="/coin.svg" alt="coin" className="lg:w-[24px] md:w-[20px] w-[16px] mt-1 lg:h-[24px] md:h-[20px] h-[16px]" />
                 <span className="text-[#A7FFD5] lg:text-[16px] md:text-[14px] text-[12px] font-medium">{topThree[0]?.totalPoints}</span>
               </div>
-              
+
               <img
                 src={topThree[0]?.avatar}
                 alt={topThree[0]?.username}
@@ -211,17 +218,17 @@ export default function LeaderboardSection() {
             </div>
             <div className="text-white font-semibold lg:text-[24px] md:text-[20px] text-[16px] mb-1">{topThree[0]?.username}</div>
             <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium lg:text-[16px] md:text-[14px] text-[12px] mb-3">{topThree[0]?.walletAddress}</div>
-          </div>
+          </Reveal>
 
           {/* 3rd Place */}
-          <div className="flex flex-col items-center">
+          <Reveal className="flex flex-col items-center" y={40} delay={300}>
             <div className="relative mb-4">
               {/* Points at top */}
               <div className="absolute w-full lg:-top-10 md:-top-8 -top-6 left-1/2 transform -translate-x-1/2 flex items-center gap-1 px-3 py-1.5 rounded-full">
                 <img src="/coin.svg" alt="coin" className="lg:w-[24px] md:w-[20px] w-[16px] mt-1 lg:h-[24px] md:h-[20px] h-[16px]" />
                 <span className="text-[#A7FFD5] lg:text-[16px] md:text-[14px] text-[12px] font-medium">{topThree[2]?.totalPoints}</span>
               </div>
-              
+
               <img
                 src={topThree[2]?.avatar}
                 alt={topThree[2]?.username}
@@ -233,7 +240,7 @@ export default function LeaderboardSection() {
             </div>
             <div className="text-white font-semibold lg:text-[24px] md:text-[20px] text-[16px] mb-1">{topThree[2]?.username}</div>
             <div className="text-white bg-[#FFFFFF1A] border border-[#FFFFFF2E] p-1 rounded-[8px] font-medium lg:text-[16px] md:text-[14px] text-[12px] mb-3">{topThree[2]?.walletAddress}</div>
-          </div>
+          </Reveal>
         </div>
 
         {/* Leaderboard Table */}
@@ -242,20 +249,22 @@ export default function LeaderboardSection() {
           <div className="hidden lg:block mb-3 px-6 py-4">
             <div className="grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 text-gray-400 text-sm font-medium">
               <div>#</div>
-              <div className='text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]'>User</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Primary Points</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Total Points</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Bonus Points</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Referrals</div>
+              <div className='font-mono-data uppercase text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]'>User</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Primary Points</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Total Points</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Bonus Points</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Referrals</div>
             </div>
           </div>
 
           {/* Table Body */}
           <div className="space-y-3">
-            {currentData.map((player) => (
-              <div
+            {currentData.map((player, index) => (
+              <Reveal
                 key={player.rank}
-                className="border border-[#FFFFFF17] rounded-[16px] lg:px-6 md:px-4 px-3 lg:py-4 md:py-3 py-2 transition-colors"
+                className="glass border border-[#FFFFFF17] rounded-[16px] lg:px-6 md:px-4 px-3 lg:py-4 md:py-3 py-2 transition-colors hover-glow"
+                y={20}
+                delay={index * 60}
               >
                 {/* Desktop Layout */}
                 <div className="hidden lg:grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 items-center">
@@ -381,19 +390,21 @@ export default function LeaderboardSection() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          totalItems={leaderboardData.length}
-          itemsPerPage={itemsPerPage}
-        />
+        <Reveal y={20} delay={120}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            totalItems={leaderboardData.length}
+            itemsPerPage={itemsPerPage}
+          />
+        </Reveal>
       </div>
     </section>
   );

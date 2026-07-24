@@ -6,6 +6,7 @@ import Card from "@/app/components/Card";
 import CardSection from "@/app/components/CardSection";
 import GachaHeroSection from "@/app/components/HeroSection";
 import SingleCardSection from "@/app/components/SingleCardSection";
+import Reveal from "@/app/components/Reveal";
 
 export default function CardDetailsPage({ cardId }) {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -32,18 +33,22 @@ export default function CardDetailsPage({ cardId }) {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-20">
+    <div className="min-h-screen pt-20">
       <div className="max-w-[1400px] mx-auto px-6 py-8">
 
 <SingleCardSection/>
 
         {/* Similar Cards Section */}
-        <div className="mt-16">
-          <h2 className="text-white text-2xl font-bold mb-0">
+        <Reveal className="mt-16" y={30} delay={80}>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="iri-divider w-8" />
+            <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">You might like</span>
+          </div>
+          <h2 className="text-white text-2xl font-bold mb-0 font-sf-pro-rounded">
             Similar Cards You Might Like
           </h2>
      <CardSection/>
-        </div>
+        </Reveal>
       </div>
     </div>
   );

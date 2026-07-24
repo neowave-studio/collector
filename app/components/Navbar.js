@@ -32,11 +32,12 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className={`fixed top-0 border-b border-white/20 py-3 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-black/95 backdrop-blur-lg shadow-lg' 
-        : 'bg-black'
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled
+        ? 'py-2 bg-[#070a09]/70 backdrop-blur-2xl shadow-[0_12px_40px_-24px_rgba(0,0,0,0.9)]'
+        : 'py-3 bg-[#070a09]/35 backdrop-blur-lg'
     }`}>
+      <span className="nav-hairline pointer-events-none absolute inset-x-0 bottom-0 h-px" />
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="flex items-center justify-between h-20">
           
@@ -46,7 +47,7 @@ export default function Navbar() {
               <img
                 src="/logo.svg"
                 alt="Logo"
-                className="h-12 w-12"
+                className="h-12 w-12 hover-scale"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'block';
@@ -71,7 +72,7 @@ export default function Navbar() {
                   e.preventDefault(); 
                   handleNavigation(item.href); 
                 }}
-                className="font-[500] text-[14px] text-white  transition-all duration-300 hover:text-gray-300 relative"
+                className="link-underline font-[500] text-[14px] text-white transition-all duration-300 hover:text-white relative"
               >
                 {item.name}
               </a>
@@ -89,9 +90,9 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
+          <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden text-white p-2"
+            className="lg:hidden text-white p-2 rounded-xl glass-soft hover-scale"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isMobileMenuOpen ? (
@@ -104,31 +105,31 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu */}
-        <div className={`lg:hidden overflow-hidden transition-all duration-300 ${
-          isMobileMenuOpen ? 'max-h-96 opacity-100 pb-4' : 'max-h-0 opacity-0'
-        }`}>
-          <div className="flex flex-col space-y-4 pt-4">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={(e) => { 
-                  e.preventDefault(); 
-                  handleNavigation(item.href); 
-                }}
-                className="text-white hover:text-gray-300 transition-colors py-2"
+        {isMobileMenuOpen && (
+          <div className="lg:hidden mt-3 nav-mobile-menu">
+            <div className="glass-menu rounded-2xl p-4 flex flex-col space-y-1">
+              {navItems.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavigation(item.href);
+                  }}
+                  className="text-white/85 hover:text-white hover:bg-white/[0.06] transition-colors py-2.5 px-3 rounded-xl text-[15px] font-medium"
+                >
+                  {item.name}
+                </a>
+              ))}
+              <button
+                onClick={() => handleNavigation('/connect')}
+                className="mt-2 px-6 py-3 font-[700] text-[15px] text-white nav-active rounded-[14px] border border-[#FFFFFF47]"
               >
-                {item.name}
-              </a>
-            ))}
-            <button 
-              onClick={() => handleNavigation('/connect')}
-              className="px-6 py-2.5 font-[700] text-[16px] text-white nav-active  rounded-[12px]  border border-[#FFFFFF47]  "
-            >
-              Connect Wallet
-            </button>
+                Connect Wallet
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
   );

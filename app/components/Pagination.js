@@ -71,7 +71,7 @@ export default function Pagination({
           <button
             onClick={() => handlePageChange(1)}
             disabled={currentPage === 1}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+            className={`btn-anim w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
               currentPage === 1
                 ? "text-[#666666] cursor-not-allowed"
                 : "text-[#FFFFFF] cursor-pointer hover:bg-[#2A2A2A]"
@@ -92,7 +92,7 @@ export default function Pagination({
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+            className={`btn-anim w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
               currentPage === 1
                 ? "text-[#666666] cursor-not-allowed"
                 : "text-[#FFFFFF] cursor-pointer hover:bg-[#2A2A2A]"
@@ -117,7 +117,7 @@ export default function Pagination({
               key={index}
               onClick={() => typeof page === "number" && handlePageChange(page)}
               disabled={page === "..."}
-              className={`min-w-[40px] h-10 rounded-[8px] border font-medium text-sm transition-colors ${
+              className={`btn-anim min-w-[40px] h-10 rounded-[8px] border font-medium text-sm transition-colors ${
                 page === currentPage
                   ? "nav-active border-[#FFFFFF47] text-[#FFFFFF]"
                   : page === "..."
@@ -135,7 +135,7 @@ export default function Pagination({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+            className={`btn-anim w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
               currentPage === totalPages
                 ? "text-[#666666] cursor-not-allowed"
                 : "text-white cursor-pointer hover:bg-[#2A2A2A]"
@@ -156,7 +156,7 @@ export default function Pagination({
           <button
             onClick={() => handlePageChange(totalPages)}
             disabled={currentPage === totalPages}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
+            className={`btn-anim w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
               currentPage === totalPages
                 ? "text-[#666666] cursor-not-allowed"
                 : "text-white cursor-pointer hover:bg-[#2A2A2A]"

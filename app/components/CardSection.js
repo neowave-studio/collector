@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Card from "./Card";
 import Pagination from "./Pagination";
+import Reveal from "./Reveal";
 import chari from "../../public/chari.svg"
 export default function CardSection() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -137,7 +138,7 @@ export default function CardSection() {
 
   return (
     <section
-      className="relative w-full lg:py-16 md:py-12 py-8 lg:px-4 md:px-4 px-4 bg-black"
+      className="relative w-full lg:py-16 md:py-12 py-8 lg:px-4 md:px-4 px-4"
       id="marketplace"
     >
       <div className="max-w-[1400px] mx-auto">
@@ -146,19 +147,28 @@ export default function CardSection() {
 
         {/* Cards Grid */}
         <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6 mb-12">
-          {currentCards.map((card) => (
-            <Card key={card.id} card={card} onBuyClick={handleBuyClick} />
+          {currentCards.map((card, index) => (
+            <Reveal
+              key={`${currentPage}-${card.id}`}
+              className="h-full relative hover:z-20"
+              y={32}
+              delay={index * 70}
+            >
+              <Card card={card} onBuyClick={handleBuyClick} />
+            </Reveal>
           ))}
         </div>
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          totalItems={allCards.length}
-          itemsPerPage={cardsPerPage}
-        />
+        <Reveal y={20} delay={120}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            totalItems={allCards.length}
+            itemsPerPage={cardsPerPage}
+          />
+        </Reveal>
       </div>
     </section>
   );

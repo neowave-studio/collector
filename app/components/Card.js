@@ -31,9 +31,9 @@ const getRarityColor = (rarity) => {
   };
 
   return (
-    <div 
+    <div
       onClick={handleCardClick}
-      className="bg-[#101010] rounded-[12px] overflow-hidden hover:transform hover:scale-105 transition-all duration-300 border border-[#FFFFFF1A] cursor-pointer"
+      className="group relative bg-[#101010] rounded-[12px] overflow-hidden hover:-translate-y-1.5 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] border border-[#FFFFFF1A] hover:border-[#2BD383]/40 hover:shadow-[0_20px_50px_-16px_rgba(43,211,131,0.45)] cursor-pointer"
     >
       {/* Card Header */}
       <div className="relative">
@@ -52,11 +52,11 @@ const getRarityColor = (rarity) => {
 {/* Card Image */}
 <div className="flex items-center w-full justify-center px-14 pt-14">
   {card.image ? (
-    <div className="w-full aspect-[5/7]">
+    <div className="w-full aspect-[5/7] overflow-hidden rounded-lg">
       <img
         src={card.image}
         alt={card.name}
-        className="w-full  h-full object-contain  rounded-lg"
+        className="w-full h-full object-contain rounded-lg transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
       />
     </div>
   ) : null}

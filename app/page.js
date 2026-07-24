@@ -1,25 +1,11 @@
-import HeroSection from './components/HeroSection';
-
-
-import CardSection from './components/CardSection';
-
-import LeaderboardSection from './components/LeaderboardSection';
+import HomeHero from "./components/home/HomeHero";
+import FeaturedDrops from "./components/home/FeaturedDrops";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
-      <HeroSection />
-          
-                <CardSection/>
-       
-     
-        
-       
- 
- 
-
- 
-
+    <main className="relative min-h-screen">
+      <HomeHero />
+      <FeaturedDrops />
     </main>
   );
 }
