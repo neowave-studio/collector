@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FiCopy } from "react-icons/fi";
 import Pagination from "@/app/components/Pagination";
+import Reveal from '@/app/components/Reveal';
 
 export default function UserProfilePage({ userId }) {
   const [activeTab, setActiveTab] = useState("assets");
@@ -245,10 +246,10 @@ export default function UserProfilePage({ userId }) {
     <div className="min-h-screen bg-black pt-20">
       <div className="max-w-[1400px] mx-auto px-6 py-8">
         {/* Profile Header */}
-        <div className="bg-gray-900/50 rounded-xl border border-gray-800 p-6 mb-8">
+        <Reveal className="bg-gray-900/50 rounded-xl border border-gray-800 p-6 mb-8" y={26} delay={80}>
           <div className="flex items-start gap-6">
             {/* Avatar */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center flex-shrink-0">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center flex-shrink-0 hover-scale">
               <span className="text-white text-3xl">👤</span>
             </div>
 
@@ -267,7 +268,7 @@ export default function UserProfilePage({ userId }) {
                 </span>
                 <button
                   onClick={() => copyToClipboard(userData.walletAddress)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-gray-400 hover:text-white transition-colors icon-hover"
                 >
                   <FiCopy size={16} />
                 </button>
@@ -291,10 +292,10 @@ export default function UserProfilePage({ userId }) {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto">
+        <Reveal className="flex gap-2 mb-6 overflow-x-auto" y={22} delay={160}>
           {Object.entries(tabConfigs).map(([key, config]) => (
             <button
               key={key}
@@ -302,7 +303,7 @@ export default function UserProfilePage({ userId }) {
                 setActiveTab(key);
                 setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`btn-anim px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 activeTab === key
                   ? "bg-gray-800 text-white"
                   : "bg-gray-900/50 text-gray-400 hover:text-white hover:bg-gray-800/50"
@@ -311,10 +312,10 @@ export default function UserProfilePage({ userId }) {
               {config.name}
             </button>
           ))}
-        </div>
+        </Reveal>
 
         {/* Table */}
-        <div className="bg-gray-900/50 rounded-xl border border-gray-800 overflow-hidden mb-8">
+        <Reveal className="bg-gray-900/50 rounded-xl border border-gray-800 overflow-hidden mb-8" y={24} delay={240}>
           {/* Table Header */}
           <div
             className="grid gap-4 px-6 py-4 bg-gray-900/50 border-b border-gray-800 text-gray-400 text-sm font-medium"
@@ -399,16 +400,18 @@ export default function UserProfilePage({ userId }) {
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
 
         {/* Pagination */}
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          totalItems={currentTabConfig.data.length}
-          itemsPerPage={itemsPerPage}
-        />
+        <Reveal y={20} delay={120}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            totalItems={currentTabConfig.data.length}
+            itemsPerPage={itemsPerPage}
+          />
+        </Reveal>
       </div>
     </div>
   );

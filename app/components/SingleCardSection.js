@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Reveal from './Reveal';
 
 export default function SingleCardSection() {
   const [turboMode, setTurboMode] = useState(false);
@@ -21,7 +22,7 @@ export default function SingleCardSection() {
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 md:gap-8 items-start">
           
           {/* Left Side - Pack Image */}
-          <div className="relative w-full">
+          <Reveal className="relative w-full" y={34} delay={80}>
             {/* Pack Image Container */}
             <div 
               className="relative rounded-2xl p-6 md:p-8 border border-gray-800 bg-cover bg-center bg-no-repeat"
@@ -66,12 +67,12 @@ export default function SingleCardSection() {
         </button>
       ))}
     </div>
-</div>
+</Reveal>
 
           {/* Right Side - Pack Details */}
           <div className="space-y-4 md:space-y-6 w-full">
             {/* Header with Badge */}
-            <div className="flex flex-col sm:flex-row items-start justify-between gap-3 md:gap-0">
+            <Reveal className="flex flex-col sm:flex-row items-start justify-between gap-3 md:gap-0" y={26} delay={160}>
               <div className="flex-1">
                 <div className="mb-3 flex items-center gap-2">
                   <span className='inline-block px-3 py-1 md:py-0 bg-[#DBB25E]/20 border border-[#DBB25E] rounded-lg text-[#FFCA61] text-[12px] md:text-[14px] font-bold rarity-a'>
@@ -87,11 +88,11 @@ export default function SingleCardSection() {
          Owned by: <span className='text-white text-[14px] md:text-[16px] font-[500]'>(0xa...42148f)</span>
                 </h1>
               </div>
-              
 
-            </div>
-<div className="flex gap-4 ">
-  <button 
+
+            </Reveal>
+<Reveal className="flex gap-4 " y={24} delay={240}>
+  <button
     onClick={() => setActiveTab('buy-now')}
     className={` px-3 tab-button ${activeTab === 'buy-now' ? 'active border-b border-white' : ''}`}
   >
@@ -109,9 +110,9 @@ export default function SingleCardSection() {
   >
     Contract
   </button>
-</div>
+</Reveal>
   {/* Card Details Grid */}
-  <div className="grid grid-cols-2 gap-y-3 text-[14px] md:text-[16px]">
+  <Reveal className="grid grid-cols-2 gap-y-3 text-[14px] md:text-[16px]" y={24} delay={320}>
     <div className="text-[#FFFFFF80]">Grading Company</div>
     <div className="text-[#FFFFFFE5] text-[14px] text-right font-medium">PSA</div>
     
@@ -126,18 +127,18 @@ export default function SingleCardSection() {
     
     <div className="text-[#FFFFFF99] font-medium text-[14px]  ">Authenticated</div>
     <div className="text-[#FFFFFFE5] text-[14px] text-right font-medium">Yes</div>
-  </div>
+  </Reveal>
   {/* Asking Price */}
-  <div className="mt-6">
+  <Reveal className="mt-6" y={24} delay={400}>
     <div className="text-[#FFFFFF99] text-[16px] font-medium mb-2">Asking Price</div>
     <div className="flex items-center gap-2">
       <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
       <span className="text-white text-[22px] md:text-[24px] font-bold">2,600.00</span>
     </div>
-  </div>
+  </Reveal>
 
   {/* Action Buttons */}
-  <div className="flex gap-3 mt-6">
+  <Reveal className="flex gap-3 mt-6" y={22} delay={480}>
 <button
   onClick={(e) => {
     e.stopPropagation(); // Prevent card click when clicking button
@@ -154,29 +155,29 @@ export default function SingleCardSection() {
 
     <Image src="/pig.svg" alt="lock" width={18} height={18} />
 </button>
-  </div>
+  </Reveal>
   {/* Verified Badge */}
-  <div className="flex items-center gap-2 mt-4">
+  <Reveal className="flex items-center gap-2 mt-4" y={20} delay={540}>
     <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
 
     </div>
     <span className="text-white text-[16px] font-bold">Verified by BGS</span>
-  </div>
-  <div className="space-y-3 mt-6">
-    <button className="w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors">
+  </Reveal>
+  <Reveal className="space-y-3 mt-6" y={20} delay={600}>
+    <button className="w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors hover-glow">
       <span className="text-white text-[16px] font-bold">Activities</span>
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M6 8L10 12L14 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     </button>
     
-    <button className="w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors">
+    <button className="w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors hover-glow">
       <span className="text-white text-[16px] font-bold">Offers</span>
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M6 8L10 12L14 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     </button>
-  </div>
+  </Reveal>
 
           </div>
         </div>

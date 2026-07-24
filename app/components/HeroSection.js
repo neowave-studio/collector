@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Reveal from './Reveal';
 
 export default function GachaHeroSection() {
   const [turboMode, setTurboMode] = useState(false);
@@ -20,7 +21,7 @@ export default function GachaHeroSection() {
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 md:gap-8 items-start">
           
           {/* Left Side - Pack Image */}
-          <div className="relative w-full">
+          <Reveal className="relative w-full" y={34} delay={80}>
             {/* Pack Image Container */}
             <div 
               className="relative rounded-2xl p-6 md:p-8 border border-gray-800 bg-cover bg-center bg-no-repeat"
@@ -65,12 +66,12 @@ export default function GachaHeroSection() {
         </button>
       ))}
     </div>
-</div>
+          </Reveal>
 
           {/* Right Side - Pack Details */}
           <div className="space-y-4 md:space-y-6 w-full">
             {/* Header with Badge */}
-            <div className="flex flex-col sm:flex-row items-start justify-between gap-3 md:gap-0">
+            <Reveal className="flex flex-col sm:flex-row items-start justify-between gap-3 md:gap-0" y={28} delay={180}>
               <div className="flex-1">
                 <div className="mb-3 flex items-center gap-2">
                   <span className='inline-block px-3 py-1 md:py-0 bg-[#DBB25E]/20 border border-[#DBB25E] rounded-lg text-[#FFCA61] text-[12px] md:text-[14px] font-bold rarity-a'>
@@ -96,10 +97,10 @@ export default function GachaHeroSection() {
                   <span className="text-white text-[16px] md:text-[18px] font-medium">2,600.00</span>
                 </div>
               </div>
-            </div>
+            </Reveal>
 
             {/* Turbo Mode and Free Packs */}
-            <div className="flex flex-col md:flex-row w-full gap-3 md:gap-4">
+            <Reveal className="flex flex-col md:flex-row w-full gap-3 md:gap-4" y={28} delay={260}>
               {/* Turbo Mode Toggle */}
               <div className="bg-[#FFFFFF]/4 rounded-[16px] p-4 md:p-5 border border-[#FFFFFF]/11 flex-1">
                 <div className="flex items-center justify-between gap-3 md:gap-4">
@@ -135,10 +136,10 @@ export default function GachaHeroSection() {
                   <p className="text-white text-[12px] md:text-[14px]">_</p>
                 </div>
               </div>
-            </div>
+            </Reveal>
 
             {/* Pack Information Grid */}
-            <div className="grid grid-cols-3 gap-3 md:gap-4">
+            <Reveal className="grid grid-cols-3 gap-3 md:gap-4" y={28} delay={340}>
               <div>
                 <p className="text-[#FFFFFF]/60 text-[12px] md:text-[14px] font-medium mb-1">
                   Pack Content
@@ -157,10 +158,10 @@ export default function GachaHeroSection() {
                 </p>
                 <p className="text-white font-medium text-[16px] md:text-[18px]">20%</p>
               </div>
-            </div>
+            </Reveal>
 
             {/* Stats Section */}
-            <div className="bg-[#0A0A0A] rounded-[16px] p-4 md:p-5 border border-[#FFFFFF]/10">
+            <Reveal className="bg-[#0A0A0A] rounded-[16px] p-4 md:p-5 border border-[#FFFFFF]/10" y={28} delay={420}>
               <h3 className="text-white/60 font-regular text-[12px] md:text-[14px] mb-3 md:mb-4">
                 Stats
               </h3>
@@ -219,13 +220,15 @@ export default function GachaHeroSection() {
                   </span>
                 </div>
               </div>
-            </div>
+            </Reveal>
 
             {/* Open Pack Button */}
+            <Reveal y={22} delay={500}>
 <button className="w-full p-[10px] md:p-[12px] bg-[#000000]/39 hover:bg-[#141414] signin-button text-white/20 rounded-[16px] font-semibold text-[14px] md:text-[16px] transition-all duration-300 flex items-center justify-center gap-2">
-  Sign in to open 
+  Sign in to open
   <Image src="/whitelock.svg" alt="lock" width={16} height={16} />
 </button>
+            </Reveal>
           </div>
         </div>
       </div>

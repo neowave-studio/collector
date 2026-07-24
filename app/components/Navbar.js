@@ -46,7 +46,7 @@ export default function Navbar() {
               <img
                 src="/logo.svg"
                 alt="Logo"
-                className="h-12 w-12"
+                className="h-12 w-12 hover-scale"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'block';
@@ -71,7 +71,7 @@ export default function Navbar() {
                   e.preventDefault(); 
                   handleNavigation(item.href); 
                 }}
-                className="font-[500] text-[14px] text-white  transition-all duration-300 hover:text-gray-300 relative"
+                className="link-underline font-[500] text-[14px] text-white transition-all duration-300 hover:text-white relative"
               >
                 {item.name}
               </a>
@@ -116,7 +116,7 @@ export default function Navbar() {
                   e.preventDefault(); 
                   handleNavigation(item.href); 
                 }}
-                className="text-white hover:text-gray-300 transition-colors py-2"
+                className="text-white hover:text-[#A3FFD3] transition-colors py-2 w-fit"
               >
                 {item.name}
               </a>

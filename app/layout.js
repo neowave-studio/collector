@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import SmoothScrollProvider from "./components/SmoothScrollProvider";
+import PageLoader from "./components/PageLoader";
 
 export const metadata = {
   title: "Collector - Trade & Collect Pokemon Cards | NFT Marketplace",
@@ -95,13 +96,8 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className={`${GeistSans.className} antialiased`}>
-        <Suspense fallback={
-          <div className="flex items-center justify-center min-h-screen bg-black">
-            <div className="animate-pulse">
-              <img src="/logo.svg" alt="Loading..." className="w-16 h-16" />
-            </div>
-          </div>
-        }>
+        <PageLoader />
+        <Suspense fallback={<div className="min-h-screen bg-black" />}>
           <SmoothScrollProvider>
             <Navbar />
             {children}

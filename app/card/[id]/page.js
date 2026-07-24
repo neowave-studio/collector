@@ -6,6 +6,7 @@ import Card from "@/app/components/Card";
 import CardSection from "@/app/components/CardSection";
 import GachaHeroSection from "@/app/components/HeroSection";
 import SingleCardSection from "@/app/components/SingleCardSection";
+import Reveal from "@/app/components/Reveal";
 
 export default function CardDetailsPage({ cardId }) {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -38,12 +39,12 @@ export default function CardDetailsPage({ cardId }) {
 <SingleCardSection/>
 
         {/* Similar Cards Section */}
-        <div className="mt-16">
+        <Reveal className="mt-16" y={30} delay={80}>
           <h2 className="text-white text-2xl font-bold mb-0">
             Similar Cards You Might Like
           </h2>
      <CardSection/>
-        </div>
+        </Reveal>
       </div>
     </div>
   );
