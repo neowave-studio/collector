@@ -1,14 +1,11 @@
-import React from 'react'
-import GachaHeroSection from '../components/HeroSection'
-import CardSection from '../components/CardSection'
+import HomeHero from "../components/home/HomeHero";
+import FeaturedDrops from "../components/home/FeaturedDrops";
 
-function page() {
+export default function GachaPage() {
   return (
-    <div>
-      <GachaHeroSection/>
-      <CardSection/>
-    </div>
-  )
+    <main className="relative min-h-screen">
+      <HomeHero />
+      <FeaturedDrops />
+    </main>
+  );
 }
-
-export default page

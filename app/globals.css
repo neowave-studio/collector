@@ -640,3 +640,295 @@ button:disabled.make-offer-button:hover {
     transition: none;
   }
 }
+
+/* ============================================================
+   HOME REVAMP — glassmorphism + iridescence ("holo foil UI")
+   ============================================================ */
+:root {
+  --iri: linear-gradient(
+    115deg,
+    #8be9ff 0%,
+    #a3ffd3 22%,
+    #f7e59b 44%,
+    #f3a7ff 66%,
+    #8be9ff 100%
+  );
+}
+
+@keyframes iriShift {
+  to { background-position: 200% center; }
+}
+@keyframes sheenShift {
+  to { background-position: 0 0, 220% 50%; }
+}
+
+/* Mono utility for grading-slab data labels */
+.font-mono-data {
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+}
+
+/* --- Glass surfaces --- */
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: blur(22px) saturate(1.3);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 50px -30px rgba(0, 0, 0, 0.85);
+}
+.glass-soft {
+  background: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* --- Iridescent text (small accents only) --- */
+.iri-text {
+  background: var(--iri);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: iriShift 8s linear infinite;
+}
+
+/* --- Iridescent hairline divider --- */
+.iri-divider {
+  height: 1px;
+  border-radius: 2px;
+  background: var(--iri);
+  background-size: 200% auto;
+  opacity: 0.55;
+  animation: iriShift 8s linear infinite;
+}
+
+/* --- Iridescent top accent line (stat tiles) --- */
+.iri-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: var(--iri);
+  background-size: 200% auto;
+  opacity: 0.6;
+  animation: iriShift 8s linear infinite;
+}
+
+/* --- Holo display case (the pack) --- */
+.holo-case {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.075),
+    rgba(255, 255, 255, 0.02)
+  );
+  backdrop-filter: blur(24px) saturate(1.35);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 44px 90px -44px rgba(0, 0, 0, 0.92),
+    0 0 70px -24px rgba(43, 211, 131, 0.28);
+  transform-style: preserve-3d;
+  transition: box-shadow 0.35s ease, transform 0.2s ease-out;
+  will-change: transform;
+}
+.holo-case::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--iri);
+  background-size: 200% auto;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.5;
+  animation: iriShift 11s linear infinite;
+  pointer-events: none;
+}
+.holo-case:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 54px 100px -44px rgba(0, 0, 0, 0.95),
+    0 0 90px -22px rgba(43, 211, 131, 0.38);
+}
+
+/* --- Holographic sheen over the pack (mouse-reactive) --- */
+.holo-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(
+      130% 130% at var(--mx, 50%) var(--my, 38%),
+      rgba(255, 255, 255, 0.28),
+      rgba(255, 255, 255, 0) 46%
+    ),
+    linear-gradient(
+      115deg,
+      rgba(139, 233, 255, 0.26) 0%,
+      rgba(163, 255, 211, 0.2) 26%,
+      rgba(247, 229, 155, 0.18) 46%,
+      rgba(243, 167, 255, 0.24) 66%,
+      rgba(139, 233, 255, 0.26) 100%
+    );
+  background-size: auto, 220% 220%;
+  background-position: 0 0, 0% 50%;
+  mix-blend-mode: color-dodge;
+  opacity: 0.42;
+  animation: sheenShift 7s linear infinite;
+  transition: opacity 0.3s ease;
+}
+.holo-case:hover .holo-sheen {
+  opacity: 0.6;
+}
+
+/* --- Premium locked CTA with holo sweep --- */
+.holo-cta {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.015)
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.holo-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 34%,
+    rgba(163, 255, 211, 0.16) 46%,
+    rgba(243, 167, 255, 0.16) 54%,
+    transparent 66%
+  );
+  background-size: 250% 100%;
+  animation: iriShift 5s linear infinite;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.holo-cta:hover {
+  transform: translateY(-2px);
+  border-color: rgba(163, 255, 211, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 14px 32px -14px rgba(43, 211, 131, 0.45);
+}
+.holo-cta:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* --- Ambient iridescent background --- */
+.holo-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.holo-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+}
+.holo-blob-1 {
+  width: 640px;
+  height: 640px;
+  top: -140px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(43, 211, 131, 0.2), transparent 70%);
+  animation: blobDrift1 26s ease-in-out infinite;
+}
+.holo-blob-2 {
+  width: 540px;
+  height: 540px;
+  top: 8%;
+  right: -120px;
+  background: radial-gradient(circle, rgba(139, 233, 255, 0.14), transparent 70%);
+  animation: blobDrift2 32s ease-in-out infinite;
+}
+.holo-blob-3 {
+  width: 580px;
+  height: 580px;
+  bottom: -160px;
+  left: 32%;
+  background: radial-gradient(circle, rgba(243, 167, 255, 0.1), transparent 70%);
+  animation: blobDrift3 30s ease-in-out infinite;
+}
+@keyframes blobDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8%, 6%) scale(1.1); }
+}
+@keyframes blobDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-9%, 8%) scale(1.12); }
+}
+@keyframes blobDrift3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6%, -8%) scale(1.08); }
+}
+
+/* Opaque dark glass for the mobile menu (needs readable contrast) */
+.glass-menu {
+  background: rgba(9, 13, 11, 0.96);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Mobile menu entrance — animates the slide only, never opacity, so the
+   menu is always visible even if animations are disabled/paused. */
+@keyframes navMenuIn {
+  from { transform: translateY(-8px); }
+  to { transform: translateY(0); }
+}
+.nav-mobile-menu {
+  animation: navMenuIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-mobile-menu { animation: none; }
+}
+
+/* Iridescent nav hairline */
+.nav-hairline {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 18%,
+    rgba(43, 211, 131, 0.45) 50%,
+    rgba(139, 233, 255, 0.3) 62%,
+    rgba(255, 255, 255, 0.08) 82%,
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iri-text,
+  .iri-divider,
+  .iri-top::before,
+  .holo-case::before,
+  .holo-sheen,
+  .holo-cta::before,
+  .holo-blob-1,
+  .holo-blob-2,
+  .holo-blob-3 {
+    animation: none;
+  }
+}

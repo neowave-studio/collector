@@ -138,7 +138,7 @@ export default function CardSection() {
 
   return (
     <section
-      className="relative w-full lg:py-16 md:py-12 py-8 lg:px-4 md:px-4 px-4 bg-black"
+      className="relative w-full lg:py-16 md:py-12 py-8 lg:px-4 md:px-4 px-4"
       id="marketplace"
     >
       <div className="max-w-[1400px] mx-auto">

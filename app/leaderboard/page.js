@@ -136,22 +136,28 @@ export default function LeaderboardSection() {
 
   return (
     <section
-      className="relative w-full min-h-screen lg:py-16 md:pb-12 pt-[200px] lg:pt-[200px] py-8 lg:px-8 md:px-6 px-4 bg-black"
+      className="relative w-full min-h-screen lg:py-16 md:pb-12 pt-[200px] lg:pt-[200px] py-8 lg:px-8 md:px-6 px-4"
       id="leaderboard"
     >
       <div className="max-w-[1400px] mx-auto">
         {/* Header */}
         <Reveal className="flex items-center justify-between mb-8" y={24} delay={60}>
-          <h1 className="text-white lg:text-[24px] md:text-[22px] text-[20px] font-sf-pro-rounded font-semibold">
-            Leaderboard
-          </h1>
+          <div>
+            <div className="flex items-center gap-3 mb-3">
+              <span className="iri-divider w-8" />
+              <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">Top collectors</span>
+            </div>
+            <h1 className="text-white lg:text-[24px] md:text-[22px] text-[20px] font-sf-pro-rounded font-semibold">
+              Leaderboard
+            </h1>
+          </div>
 
           {/* Tab Selector */}
           <div className="relative">
             <select
               value={activeTab}
               onChange={(e) => setActiveTab(e.target.value)}
-              className="btn-anim appearance-none bg-[#1A1A1A] text-[#FFFFFF] rounded-[16px] md:px-4 px-3 md:py-2 py-1.5 md:text-base text-sm border border-[#333333] cursor-pointer transition-colors"
+              className="btn-anim appearance-none glass-soft text-[#FFFFFF] rounded-[16px] md:px-4 px-3 md:py-2 py-1.5 md:text-base text-sm border border-[#333333] cursor-pointer transition-colors"
             >
               <option value="all">All packs</option>
               <option value="elite">Elite Packs</option>
@@ -243,11 +249,11 @@ export default function LeaderboardSection() {
           <div className="hidden lg:block mb-3 px-6 py-4">
             <div className="grid grid-cols-[80px_2fr_1fr_1fr_1fr_1fr] gap-4 text-gray-400 text-sm font-medium">
               <div>#</div>
-              <div className='text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]'>User</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Primary Points</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Total Points</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Bonus Points</div>
-              <div className="text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Referrals</div>
+              <div className='font-mono-data uppercase text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]'>User</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Primary Points</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Total Points</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Bonus Points</div>
+              <div className="font-mono-data uppercase text-center text-[#FFFFFF66] font-[500] text-[14px] tracking-[-2%]">Referrals</div>
             </div>
           </div>
 
@@ -256,7 +262,7 @@ export default function LeaderboardSection() {
             {currentData.map((player, index) => (
               <Reveal
                 key={player.rank}
-                className="border border-[#FFFFFF17] rounded-[16px] lg:px-6 md:px-4 px-3 lg:py-4 md:py-3 py-2 transition-colors hover-glow"
+                className="glass border border-[#FFFFFF17] rounded-[16px] lg:px-6 md:px-4 px-3 lg:py-4 md:py-3 py-2 transition-colors hover-glow"
                 y={20}
                 delay={index * 60}
               >

@@ -243,10 +243,10 @@ export default function UserProfilePage({ userId }) {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-20">
+    <div className="min-h-screen pt-20">
       <div className="max-w-[1400px] mx-auto px-6 py-8">
         {/* Profile Header */}
-        <Reveal className="bg-gray-900/50 rounded-xl border border-gray-800 p-6 mb-8" y={26} delay={80}>
+        <Reveal className="glass rounded-xl p-6 mb-8" y={26} delay={80}>
           <div className="flex items-start gap-6">
             {/* Avatar */}
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center flex-shrink-0 hover-scale">
@@ -255,8 +255,12 @@ export default function UserProfilePage({ userId }) {
 
             {/* User Info */}
             <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="iri-divider w-8" />
+                <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">Collector profile</span>
+              </div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-white text-3xl font-bold">{userData.username}</h1>
+                <h1 className="text-white text-3xl font-bold font-sf-pro-rounded">{userData.username}</h1>
                 <span className="px-3 py-1 bg-gray-800 text-gray-400 rounded-lg text-sm">
                   {userData.year}
                 </span>
@@ -305,8 +309,8 @@ export default function UserProfilePage({ userId }) {
               }}
               className={`btn-anim px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 activeTab === key
-                  ? "bg-gray-800 text-white"
-                  : "bg-gray-900/50 text-gray-400 hover:text-white hover:bg-gray-800/50"
+                  ? "nav-active text-white"
+                  : "glass-soft text-white/50 hover:text-white"
               }`}
             >
               {config.name}
@@ -315,23 +319,24 @@ export default function UserProfilePage({ userId }) {
         </Reveal>
 
         {/* Table */}
-        <Reveal className="bg-gray-900/50 rounded-xl border border-gray-800 overflow-hidden mb-8" y={24} delay={240}>
+        <Reveal className="glass rounded-xl overflow-x-auto mb-8" y={24} delay={240}>
+          <div className="min-w-[760px] md:min-w-0">
           {/* Table Header */}
           <div
-            className="grid gap-4 px-6 py-4 bg-gray-900/50 border-b border-gray-800 text-gray-400 text-sm font-medium"
+            className="grid gap-4 px-6 py-4 border-b border-white/10 text-white/45 text-sm font-medium"
             style={{
               gridTemplateColumns: `repeat(${currentTabConfig.headers.length}, minmax(0, 1fr))`,
             }}
           >
             {currentTabConfig.headers.map((header, index) => (
-              <div key={index} className={index === 0 ? "" : "text-center"}>
+              <div key={index} className={`font-mono-data uppercase tracking-[0.15em] text-[11px] ${index === 0 ? "" : "text-center"}`}>
                 {header}
               </div>
             ))}
           </div>
 
           {/* Table Body */}
-          <div className="divide-y divide-gray-800">
+          <div className="divide-y divide-white/8">
             {currentData.map((row) => (
               <div
                 key={row.id}
@@ -385,7 +390,7 @@ export default function UserProfilePage({ userId }) {
                   if (key === "fromTo" || key === "seller" || key === "buyer") {
                     return (
                       <div key={index} className="text-center">
-                        <span className="text-gray-400 text-sm font-mono">{value}</span>
+                        <span className="text-white/55 text-sm font-mono">{value}</span>
                       </div>
                     );
                   }
@@ -399,6 +404,7 @@ export default function UserProfilePage({ userId }) {
                 })}
               </div>
             ))}
+          </div>
           </div>
         </Reveal>
 

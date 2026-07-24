@@ -15,7 +15,7 @@ export default function SingleCardSection() {
 
   return (
     <section 
-      className="relative pt-[80px] font-sf-pro-rounded md:pt-[140px] lg:pt-[200px] w-full bg-black lg:pb-12 md:pb-10 pb-8 lg:px-8 md:px-6 px-4" 
+      className="relative pt-[80px] font-sf-pro-rounded md:pt-[140px] lg:pt-[200px] w-full lg:pb-12 md:pb-10 pb-8 lg:px-8 md:px-6 px-4"
       id="gacha"
     >
       <div className="max-w-[1400px] mx-auto">
@@ -24,17 +24,15 @@ export default function SingleCardSection() {
           {/* Left Side - Pack Image */}
           <Reveal className="relative w-full" y={34} delay={80}>
             {/* Pack Image Container */}
-            <div 
-              className="relative rounded-2xl p-6 md:p-8 border border-gray-800 bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: "url('/productcontainer.png')" }}
-            >
+            <div className="relative rounded-2xl p-6 md:p-8 holo-case">
               {/* Product Image in Center */}
               <div className="aspect-square flex items-center justify-center relative overflow-hidden">
-                <img 
-                  src="/productimage.png" 
-                  alt="Pokemon Pack" 
+                <img
+                  src="/productimage.png"
+                  alt="Pokemon Pack"
                   className="w-full h-full object-contain"
                 />
+                <div className="holo-sheen" />
               </div>
             </div>
             
@@ -112,7 +110,7 @@ export default function SingleCardSection() {
   </button>
 </Reveal>
   {/* Card Details Grid */}
-  <Reveal className="grid grid-cols-2 gap-y-3 text-[14px] md:text-[16px]" y={24} delay={320}>
+  <Reveal className="glass rounded-2xl p-5 grid grid-cols-2 gap-y-3 text-[14px] md:text-[16px]" y={24} delay={320}>
     <div className="text-[#FFFFFF80]">Grading Company</div>
     <div className="text-[#FFFFFFE5] text-[14px] text-right font-medium">PSA</div>
     
@@ -129,7 +127,7 @@ export default function SingleCardSection() {
     <div className="text-[#FFFFFFE5] text-[14px] text-right font-medium">Yes</div>
   </Reveal>
   {/* Asking Price */}
-  <Reveal className="mt-6" y={24} delay={400}>
+  <Reveal className="glass rounded-2xl p-5 mt-6" y={24} delay={400}>
     <div className="text-[#FFFFFF99] text-[16px] font-medium mb-2">Asking Price</div>
     <div className="flex items-center gap-2">
       <img src="/coin.svg" alt="coin" className="w-[24px] mt-1 h-[24px]" />
@@ -164,14 +162,14 @@ export default function SingleCardSection() {
     <span className="text-white text-[16px] font-bold">Verified by BGS</span>
   </Reveal>
   <Reveal className="space-y-3 mt-6" y={20} delay={600}>
-    <button className="w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors hover-glow">
+    <button className="glass w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors hover-glow">
       <span className="text-white text-[16px] font-bold">Activities</span>
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M6 8L10 12L14 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     </button>
     
-    <button className="w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors hover-glow">
+    <button className="glass w-full flex items-center justify-between p-4  border-b border-[#FFFFFF1A] rounded-[12px] hover:bg-[#252525] transition-colors hover-glow">
       <span className="text-white text-[16px] font-bold">Offers</span>
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M6 8L10 12L14 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

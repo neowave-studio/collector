@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import SmoothScrollProvider from "./components/SmoothScrollProvider";
 import PageLoader from "./components/PageLoader";
+import HoloBackground from "./components/home/HoloBackground";
 
 export const metadata = {
   title: "Collector - Trade & Collect Pokemon Cards | NFT Marketplace",
@@ -95,12 +96,13 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={`${GeistSans.className} antialiased`}>
+      <body className={`${GeistSans.className} antialiased bg-[#050706] text-white`}>
         <PageLoader />
-        <Suspense fallback={<div className="min-h-screen bg-black" />}>
+        <HoloBackground />
+        <Suspense fallback={<div className="min-h-screen bg-[#050706]" />}>
           <SmoothScrollProvider>
             <Navbar />
-            {children}
+            <div className="relative z-10">{children}</div>
           </SmoothScrollProvider>
         </Suspense>
       </body>
