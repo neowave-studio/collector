@@ -27,7 +27,7 @@ const prefersReducedMotion = () =>
   window.matchMedia &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export default function HomeHero() {
+export default function HomeHero({ onOpen }) {
   const [turbo, setTurbo] = useState(false);
   const [selectedPack, setSelectedPack] = useState("PKMN 50");
   const caseRef = useRef(null);
@@ -290,16 +290,38 @@ export default function HomeHero() {
 
             {/* CTA */}
             <Reveal y={22} delay={500}>
-              <button className="holo-cta relative w-full rounded-2xl py-4 font-semibold text-[15px] text-white/90 flex items-center justify-center gap-2 overflow-hidden">
-                <span className="relative z-[1]">Sign in to open</span>
-                <Image
-                  src="/whitelock.svg"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className="relative z-[1] opacity-80"
-                />
-              </button>
+              {onOpen ? (
+                <button
+                  onClick={onOpen}
+                  className="holo-cta relative w-full rounded-2xl py-4 font-semibold text-[15px] text-white flex items-center justify-center gap-2 overflow-hidden"
+                >
+                  <span className="relative z-[1]">Open Pack</span>
+                  <svg
+                    className="relative z-[1]"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 2l2.2 5.8L20 10l-5.8 2.2L12 18l-2.2-5.8L4 10l5.8-2.2L12 2z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+              ) : (
+                <button className="holo-cta relative w-full rounded-2xl py-4 font-semibold text-[15px] text-white/90 flex items-center justify-center gap-2 overflow-hidden">
+                  <span className="relative z-[1]">Sign in to open</span>
+                  <Image
+                    src="/whitelock.svg"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="relative z-[1] opacity-80"
+                  />
+                </button>
+              )}
             </Reveal>
           </div>
         </div>
