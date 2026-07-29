@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collector — Verify your odds &amp; claim your card</title>
+<style>
+  :root { color-scheme: dark; --bg:#050706; --panel:#101010; --line:#ffffff1a; --accent:#2BD383; --warn:#FFD36B; --bad:#ff6b6b; --muted:#ffffff99; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:#fff; font:15px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; padding:32px 20px 80px; }
+  main { max-width: 880px; margin: 0 auto; }
+  h1 { font-size:28px; letter-spacing:-0.02em; margin:0 0 8px; }
+  h2 { font-size:16px; margin:32px 0 12px; letter-spacing:-0.01em; }
+  p  { color:var(--muted); margin:0 0 14px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:16px; }
+  label { display:block; font-size:12px; text-transform:uppercase; letter-spacing:0.12em; color:var(--muted); margin-bottom:6px; }
+  input, textarea { width:100%; background:#0a0a0a; border:1px solid var(--line); border-radius:10px; color:#fff; padding:10px 12px; font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  textarea { min-height:120px; resize:vertical; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:640px){ .row { grid-template-columns:1fr; } }
+  button { background:var(--accent); color:#04170e; border:0; border-radius:10px; padding:11px 18px; font-weight:700; font-size:14px; cursor:pointer; margin-top:14px; }
+  button.secondary { background:transparent; color:#fff; border:1px solid var(--line); }
+  pre { background:#0a0a0a; border:1px solid var(--line); border-radius:10px; padding:14px; overflow:auto; font-size:12px; margin:12px 0 0; white-space:pre-wrap; word-break:break-all; }
+  .ok   { color:var(--accent); }
+  .bad  { color:var(--bad); }
+  .warn { color:var(--warn); }
+  .status { font-weight:700; margin-top:14px; }
+  ul { color:var(--muted); padding-left:20px; }
+  code { color:#fff; background:#ffffff10; padding:1px 5px; border-radius:4px; font-size:12px; }
+  .hint { font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Verify your odds &amp; claim your card</h1>
+  <p>
+    This page runs entirely in your browser. It makes no network requests, loads nothing from a CDN, and
+    needs no server — including ours. Save this folder and it keeps working even if Collector disappears.
+  </p>
+
+  <div class="panel">
+    <h2 style="margin-top:0">1. Is this copy intact?</h2>
+    <p class="hint">
+      Confirms the maths in this page produces the same hashes as the deployed contracts. If it fails,
+      the file has been tampered with — get a fresh copy before trusting anything below.
+    </p>
+    <button class="secondary" id="btn-selftest">Run self-test</button>
+    <pre id="out-selftest" hidden></pre>
+  </div>
+
+  <div class="panel">
+    <h2 style="margin-top:0">2. Do the published odds match the chain?</h2>
+    <p class="hint">
+      Paste the pool file (fetch it from any IPFS gateway using the <code>poolCID</code> stored on-chain),
+      and the <code>root</code> returned by <code>getPoolVersion(packId, version)</code>. This checks that
+      the odds tile the whole range exactly once — no gaps, no overlaps, no card listed twice — and that
+      this file is the one that was actually committed.
+    </p>
+    <label for="pool">Pool file (JSON)</label>
+    <textarea id="pool" placeholder='{"schema":"collector.pool.v1", ...}'></textarea>
+    <label for="root" style="margin-top:12px">On-chain merkle root (optional but recommended)</label>
+    <input id="root" placeholder="0x…">
+    <button id="btn-verify">Verify pool</button>
+    <div class="status" id="status-verify"></div>
+    <pre id="out-verify" hidden></pre>
+  </div>
+
+  <div class="panel">
+    <h2 style="margin-top:0">3. Claim your card without us</h2>
+    <p class="hint">
+      Read <code>getDraw(drawId)</code> on-chain and copy its <code>winningWeight</code>. This works out
+      which card that weight must pay out, builds the Merkle proof, and prints a transaction you can paste
+      into any wallet. <strong>Anyone can send it</strong> — the card always goes to the draw's owner, never
+      to whoever submits it.
+    </p>
+    <div class="row">
+      <div>
+        <label for="drawId">Draw ID</label>
+        <input id="drawId" placeholder="42" inputmode="numeric">
+      </div>
+      <div>
+        <label for="weight">Winning weight</label>
+        <input id="weight" placeholder="87" inputmode="numeric">
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div>
+        <label for="to">GachaMachine address</label>
+        <input id="to" placeholder="0x…">
+      </div>
+      <div>
+        <label for="method">Method</label>
+        <input id="method" value="claimAfterTimeout">
+      </div>
+    </div>
+    <p class="hint" style="margin-top:12px">
+      Use <code>claimAfterTimeout</code> once the buyback window has passed: it is permissionless and can
+      never be paused. Use <code>claimUnavailable</code> instead if the card has already gone to an earlier
+      draw — you are then paid its committed reference value from the reserve.
+    </p>
+    <button id="btn-settle">Build transaction</button>
+    <div class="status" id="status-settle"></div>
+    <pre id="out-settle" hidden></pre>
+  </div>
+
+  <div class="panel">
+    <h2 style="margin-top:0">Randomness never arrived?</h2>
+    <p class="hint">
+      If <code>getDraw(drawId).revealed</code> is still false after the reveal timeout, the rip is
+      refundable and the escrowed payment goes back to the buyer. This path is never pausable either.
+    </p>
+    <label for="refundDraw">Draw ID</label>
+    <input id="refundDraw" placeholder="42" inputmode="numeric">
+    <button class="secondary" id="btn-refund">Build refund transaction</button>
+    <pre id="out-refund" hidden></pre>
+  </div>
+
+  <h2>What this proves</h2>
+  <ul>
+    <li>The odds were fixed <em>before</em> your purchase and cannot be edited afterwards — a committed pool version is write-once.</li>
+    <li>Your winning weight maps to exactly one card, so nobody can hand you a different one.</li>
+    <li>You can take delivery yourself, from any address, with the operator paused or gone.</li>
+  </ul>
+</main>
+
+<script type="module">
+import {
+  selfTest, verifyPoolFile, findCardForWeight, buildProof, buildCalldata, buildRefundCalldata,
+} from './collector-verify.js';
+
+const $ = (id) => document.getElementById(id);
+const show = (el, text, cls) => { el.hidden = false; el.textContent = text; if (cls) el.className = cls; };
+
+$('btn-selftest').onclick = () => {
+  const {ok, results} = selfTest();
+  const lines = results.map((r) => `${r.pass ? 'ok  ' : 'FAIL'}  ${r.name}`).join('\n');
+  show($('out-selftest'), `${lines}\n\n${ok
+    ? 'Self-test passed — this page matches the deployed contracts.'
+    : 'SELF-TEST FAILED — this file has been modified. Do not use it.'}`);
+  $('out-selftest').className = ok ? 'ok' : 'bad';
+};
+
+let verified = null;
+
+$('btn-verify').onclick = () => {
+  const status = $('status-verify');
+  try {
+    const file = JSON.parse($('pool').value);
+    const root = $('root').value.trim() || undefined;
+    const result = verifyPoolFile(file, root);
+    verified = result.ok ? {file, result} : null;
+
+    if (result.ok) {
+      status.textContent = root
+        ? 'VERIFIED — these odds are exactly what was committed on-chain.'
+        : 'Internally consistent. Add the on-chain root to confirm it is the committed file.';
+      status.className = root ? 'status ok' : 'status warn';
+    } else {
+      status.textContent = 'NOT VERIFIED — do not trust these odds.';
+      status.className = 'status bad';
+    }
+
+    show($('out-verify'), [
+      `cards        ${file.cards.length}`,
+      `totalWeight  ${result.totalWeight}`,
+      `computedRoot ${result.computedRoot}`,
+      root ? `onChainRoot  ${root}` : '',
+      result.problems.length ? `\nproblems:\n  - ${result.problems.join('\n  - ')}` : '',
+    ].filter(Boolean).join('\n'));
+
+    if (file.gachaMachine && !$('to').value) $('to').value = file.gachaMachine;
+  } catch (err) {
+    verified = null;
+    status.textContent = `Could not read that pool file: ${err.message}`;
+    status.className = 'status bad';
+  }
+};
+
+$('btn-settle').onclick = () => {
+  const status = $('status-settle');
+  if (!verified) {
+    status.textContent = 'Verify a pool file first — building a transaction from an unverified file would be pointless.';
+    status.className = 'status bad';
+    return;
+  }
+  try {
+    const card = findCardForWeight(verified.file, $('weight').value.trim());
+    const proof = buildProof(verified.result.hashes, card.leafIndex);
+    const data = buildCalldata({
+      method: $('method').value.trim() || 'claimAfterTimeout',
+      drawId: $('drawId').value.trim(),
+      card,
+      proof,
+    });
+    status.textContent = `Your draw won: ${card.name ?? `token #${card.tokenId}`}`;
+    status.className = 'status ok';
+    show($('out-settle'), JSON.stringify({
+      to: $('to').value.trim() || verified.file.gachaMachine || '<GachaMachine address>',
+      data,
+      value: '0',
+    }, null, 2));
+  } catch (err) {
+    status.textContent = err.message;
+    status.className = 'status bad';
+  }
+};
+
+$('btn-refund').onclick = () => {
+  const drawId = $('refundDraw').value.trim();
+  if (!drawId) return;
+  show($('out-refund'), JSON.stringify({
+    to: (verified?.file?.gachaMachine) || $('to').value.trim() || '<GachaMachine address>',
+    data: buildRefundCalldata(drawId),
+    value: '0',
+  }, null, 2));
+};
+</script>
+</body>
+</html>

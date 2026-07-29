@@ -1,0 +1,234 @@
+{
+  "$comment": [
+    "Per-chain deployment registry (spec §3).",
+    "gachaEnabled=false means MARKETPLACE-ONLY: spec §3 [FIX H6] forbids launching real-money gacha or",
+    "buyback on a chain without Chainlink VRF v2.5. The commit-reveal fallback (§5.3.6) stays documented",
+    "and disabled. The deploy script reads this file and refuses to deploy the GachaMachine where",
+    "gachaEnabled is false.",
+    "permit2=null selects PaymentRouter's allowance fallback path.",
+    "confirmations are set ABOVE each chain's observed reorg depth (spec §8.4 FIX L5-backend)."
+  ],
+  "chains": [
+    {
+      "key": "anvil",
+      "chainId": 31337,
+      "name": "Anvil Devnet",
+      "priority": -1,
+      "testnet": true,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+        "keyHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "nativePayment": false,
+        "requestConfirmations": 1,
+        "callbackGasLimit": 2500000
+      },
+      "permit2": null,
+      "payTokens": {
+        "USDC": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+      },
+      "confirmations": 1,
+      "moonpayCurrency": null,
+      "explorer": null,
+      "note": "Local devnet, deployed by script/DeployLocal.s.sol with a mock VRF coordinator and a zero-delay Timelock. Never a real chain."
+    },
+    {
+      "key": "base",
+      "chainId": 8453,
+      "name": "Base",
+      "priority": 1,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0xd5D517aBE5cF79B7e95eC98dB0f0277788aFF634",
+        "keyHash": "0xdc2f87677b01473c763cb0aee938ed3341512f6057324a584e5944e786144d70",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+      },
+      "confirmations": 12,
+      "moonpayCurrency": "usdc_base",
+      "explorer": "https://basescan.org"
+    },
+    {
+      "key": "base_sepolia",
+      "chainId": 84532,
+      "name": "Base Sepolia",
+      "priority": 0,
+      "testnet": true,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0x5C210eF41CD1a72de73bF76eC39637bB0d3d7BEE",
+        "keyHash": "0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "vrfNote": "The 30 gwei lane, and the only lane Base Sepolia publishes. This entry previously carried Arbitrum One's 2 gwei hash (0x9e9e4673…a38897) — verified wrong on 2026-07-29 by a live request that the coordinator rejected with 'Invalid key hash'. A wrong hash is accepted by the contract and by the coordinator's request call, then never fulfilled, so the only symptom is a draw that hangs until refundStuckRip. Re-verify any hash you change against docs.chain.link rather than against another chain's entry.",
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "USDC": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
+      },
+      "confirmations": 3,
+      "moonpayCurrency": "usdc_base",
+      "explorer": "https://sepolia.basescan.org"
+    },
+    {
+      "key": "ethereum_sepolia",
+      "chainId": 11155111,
+      "name": "Ethereum Sepolia",
+      "priority": 0,
+      "testnet": true,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B",
+        "keyHash": "0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "vrfNote": "Sepolia publishes a single 500 gwei gas lane, so there is no lane choice to make here. nativePayment=true means the subscription is funded with Sepolia ETH (24% premium) rather than LINK (20%); fund it with ETH or this flips to LINK and requests revert as underfunded.",
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "USDC": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
+      },
+      "confirmations": 3,
+      "moonpayCurrency": null,
+      "explorer": "https://sepolia.etherscan.io",
+      "note": "Rehearsal chain for the live VRF round-trip. Ethereum Sepolia is NOT a proxy for Base or BNB economics — L1 gas and VRF premiums differ by orders of magnitude — so treat a pass here as proof the Chainlink integration works, not as proof the product is affordable."
+    },
+    {
+      "key": "polygon",
+      "chainId": 137,
+      "name": "Polygon PoS",
+      "priority": 2,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0xec0Ed46f36576541C75739E915ADbCb3DE24bD77",
+        "keyHash": "0x719ed7d7664abc3001c18aac8130a2265e1e70b7e036ae20f3ca8b92b3154d86",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "USDC": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359"
+      },
+      "confirmations": 128,
+      "moonpayCurrency": "usdc_polygon",
+      "explorer": "https://polygonscan.com"
+    },
+    {
+      "key": "arbitrum",
+      "chainId": 42161,
+      "name": "Arbitrum One",
+      "priority": 3,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0x3C0Ca683b403E37668AE3DC4FB62F4B29B6f7a3e",
+        "keyHash": "0x9e9e46732b32662b9adc6f3abdf6c5e926a666d174a4d6b8e39c4cca76a38897",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "USDC": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+      },
+      "confirmations": 12,
+      "moonpayCurrency": "usdc_arbitrum",
+      "explorer": "https://arbiscan.io"
+    },
+    {
+      "key": "bnb",
+      "chainId": 56,
+      "name": "BNB Chain",
+      "priority": 4,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0xd691f04bc0C9a24Edb78af9E005Cf85768F694C9",
+        "keyHash": "0x130dba50ad435d4ecc214aad0d5820474137bd68e7e77724144f27c3c377d3d4",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "USDT": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "confirmations": 30,
+      "moonpayCurrency": "usdt_bsc",
+      "explorer": "https://bscscan.com"
+    },
+    {
+      "key": "bnb_testnet",
+      "chainId": 97,
+      "name": "BNB Chain Testnet",
+      "priority": 0,
+      "testnet": true,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0xDA3b641D438362C440Ac5458c57e00a712b66700",
+        "keyHash": "0x8596b430971ac45bdf6088665b9ad8e8630c9d5049ab54b14dff711bee7c0e26",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "vrfNote": "Single 50 gwei lane. nativePayment=true mirrors the mainnet `bnb` entry so the rehearsal exercises the same path — which means the subscription must hold tBNB. A LINK balance is NOT used while this flag is true; flip it to false to spend LINK instead (50% premium vs 60% for native on this chain).",
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "tUSD": "0x4b3C6bdd6ed04D527cBa323F4d924224452Ab82B"
+      },
+      "payTokenNote": "Our own faucet token (script/DeployTestToken.s.sol), 6 decimals, unrestricted mint. BNB testnet has no canonical USDC or USDT — the addresses circulating are community-issued tokens whose supply is controlled by whoever deployed them, which is not a basis for rehearsing a payment path. Minting is open by design so a tester can always get a balance; that is exactly why the contract refuses to deploy to a production chain id.",
+      "confirmations": 3,
+      "moonpayCurrency": null,
+      "explorer": "https://testnet.bscscan.com"
+    },
+    {
+      "key": "ethereum",
+      "chainId": 1,
+      "name": "Ethereum",
+      "priority": 5,
+      "gachaEnabled": true,
+      "vrf": {
+        "coordinator": "0xD7f86b4b8Cae7D942340FF628F82735b7a20893a",
+        "keyHash": "0x8077df514608a09f83e4e8d300645594e5d7234665448ba83f51a50f842bd3d9",
+        "nativePayment": true,
+        "requestConfirmations": 3,
+        "callbackGasLimit": 2500000
+      },
+      "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
+      "payTokens": {
+        "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+      },
+      "confirmations": 12,
+      "moonpayCurrency": "usdc",
+      "explorer": "https://etherscan.io"
+    },
+    {
+      "key": "robinhood",
+      "chainId": 4663,
+      "name": "Robinhood Chain",
+      "priority": 6,
+      "gachaEnabled": false,
+      "marketplaceOnlyReason": "Chainlink VRF v2.5 is not deployed on Robinhood Chain (verified against docs.chain.link/vrf/v2-5/supported-networks, 2026-07-29 — the chain is not listed). Spec §3 [FIX H6] forbids real-money gacha or buyback without VRF, so this deployment ships Marketplace + CollectibleNFT only. Set gachaEnabled=true and fill in the vrf block if and when a VRF v2.5 coordinator is deployed there.",
+      "vrf": null,
+      "permit2": null,
+      "permit2Note": "Not documented as deployed on Robinhood Chain. PaymentRouter's ERC-20 allowance fallback covers this; re-check before launch, because Permit2 is deterministic and may be deployed later.",
+      "payTokens": {
+        "USDG": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168"
+      },
+      "payTokenNote": "USDG (Global Dollar), from the canonical list at docs.robinhood.com/chain/contracts. There is NO canonical USDC on this chain — do not reuse an Ethereum USDC address. Confirm USDG is the intended settlement asset before launch: it is a different issuer from USDC and carries its own redemption and counterparty terms.",
+      "confirmations": 12,
+      "moonpayCurrency": null,
+      "moonpayNote": "MoonPay does not list Robinhood Chain as a supported delivery network. Users fund by bridging in, so the fiat on-ramp is unavailable here. Verify with MoonPay before promising card purchase on this chain.",
+      "explorer": "https://robinhoodchain.blockscout.com",
+      "rpc": "https://rpc.mainnet.chain.robinhood.com",
+      "rpcNote": "Public endpoint is shared and rate limited — Robinhood documents it for wallet connectivity and testing, not production traffic. Use a dedicated provider (Alchemy exposes robinhood-mainnet) for the indexer and relayer.",
+      "stack": "Arbitrum Orbit L2, ETH for gas, Ethereum blobs for data availability. Mainnet opened 2026-07-01."
+    }
+  ]
+}

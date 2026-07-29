@@ -1,0 +1,68 @@
+[
+  {
+    "label": "accessController",
+    "slot": 0,
+    "offset": 0,
+    "type": "contract IAccessController"
+  },
+  {
+    "label": "__gap",
+    "slot": 1,
+    "offset": 0,
+    "type": "uint256[49]"
+  },
+  {
+    "label": "reservedLiabilities",
+    "slot": 50,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "totalDeposited",
+    "slot": 51,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "totalPaid",
+    "slot": 52,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "maxBuybackOutflowPerEpoch",
+    "slot": 53,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "epochOutflow",
+    "slot": 54,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "currentEpoch",
+    "slot": 55,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "epochDuration",
+    "slot": 56,
+    "offset": 0,
+    "type": "uint64"
+  },
+  {
+    "label": "surplusBufferBps",
+    "slot": 56,
+    "offset": 8,
+    "type": "uint16"
+  },
+  {
+    "label": "__gap",
+    "slot": 57,
+    "offset": 0,
+    "type": "uint256[50]"
+  }
+]

@@ -1,423 +1,213 @@
 "use client";
 
 import { useState } from "react";
-import { FiCopy } from "react-icons/fi";
-import Pagination from "@/app/components/Pagination";
-import Reveal from '@/app/components/Reveal';
+import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { useAccount } from "wagmi";
+import { api, formatUnits } from "@/app/lib/api";
+import Reveal from "@/app/components/Reveal";
+import Card from "@/app/components/Card";
 
+/**
+ * A public profile.
+ *
+ * Everything is derived from chain state: cards actually held by this address, draws it has made, and
+ * trades it has settled. "Reference value" is the sum of committed reference prices and is labelled as
+ * such — presenting it as a portfolio valuation would imply a market quote we do not have.
+ */
 export default function UserProfilePage({ userId }) {
-  const [activeTab, setActiveTab] = useState("assets");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const { address } = useAccount();
+  const [tab, setTab] = useState("cards");
 
-  // User profile data
-  const userData = {
-    username: "Coud",
-    year: "2019",
-    avatar: "/avatar.png",
-    walletAddress: "0x7aA23F23D32f9A8C422DFdb2e52AfB20b889Dd2C",
-    joinedDate: "August 2025",
-    totalCards: 127,
-    estimatedValue: "$234,556.02",
-  };
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ["profile", userId],
+    queryFn: () => api.user(userId),
+    retry: false,
+    enabled: Boolean(userId),
+  });
 
-  // Tab configurations - easily customizable
-  const tabConfigs = {
-    assets: {
-      name: "Assets",
-      headers: ["Item", "Price", "Insured Value", "Grade", "Timestamp"],
-      data: [
-        {
-          id: 1,
-          item: { image: "/card1.png", name: "2006 Celebi Gold Star - EX Crystal Guardians" },
-          price: "0.34 SOL",
-          insuredValue: "$200.23",
-          grade: "Ungraded",
-          timestamp: "9/9/25, 11:02:20 pm",
-        },
-        {
-          id: 2,
-          item: { image: "/card2.png", name: "1999 Charizard - Base Set" },
-          price: "1.20 SOL",
-          insuredValue: "$300.59",
-          grade: "A+",
-          timestamp: "9/8/25, 10:45:00 am",
-        },
-        {
-          id: 3,
-          item: { image: "/card3.png", name: "2000 Lugia - Neo Genesis" },
-          price: "0.85 SOL",
-          insuredValue: "$200.23",
-          grade: "A+",
-          timestamp: "9/7/25, 2:15:30 pm",
-        },
-        {
-          id: 4,
-          item: { image: "/card4.png", name: "2003 Rayquaza - EX Deoxys" },
-          price: "1.50 SOL",
-          insuredValue: "$450.00",
-          grade: "Ungraded",
-          timestamp: "9/10/25, 3:30:00 pm",
-        },
-        {
-          id: 5,
-          item: { image: "/card5.png", name: "1996 Mewtwo - Base Set" },
-          price: "0.45 SOL",
-          insuredValue: "$150.75",
-          grade: "Ungraded",
-          timestamp: "9/9/25, 4:22:10 pm",
-        },
-        {
-          id: 6,
-          item: { image: "/card6.png", name: "2005 Gardevoir - EX Emerald" },
-          price: "0.60 SOL",
-          insuredValue: "$180.50",
-          grade: "Ungraded",
-          timestamp: "9/8/25, 1:12:45 pm",
-        },
-        {
-          id: 7,
-          item: { image: "/card7.png", name: "2016 Tapu Koko GX - Sun & Moon" },
-          price: "2.00 SOL",
-          insuredValue: "$600.00",
-          grade: "Ungraded",
-          timestamp: "9/12/25, 9:05:15 am",
-        },
-        {
-          id: 8,
-          item: { image: "/card8.png", name: "2001 Tyranitar - Neo Discovery" },
-          price: "0.75 SOL",
-          insuredValue: "$250.00",
-          grade: "Ungraded",
-          timestamp: "9/11/25, 6:40:00 pm",
-        },
-        {
-          id: 9,
-          item: { image: "/card1.png", name: "2003 Rayquaza - EX Deoxys" },
-          price: "1.20 SOL",
-          insuredValue: "$400.00",
-          grade: "Graded",
-          timestamp: "9/12/25, 5:30:00 pm",
-        },
-        {
-          id: 10,
-          item: { image: "/card2.png", name: "1999 Charizard - Base Set" },
-          price: "2.50 SOL",
-          insuredValue: "$850.00",
-          grade: "Graded",
-          timestamp: "9/13/25, 4:00:00 pm",
-        },
-      ],
-    },
-    activity: {
-      name: "Activity",
-      headers: ["Action", "Item", "Amount", "From/To", "Timestamp"],
-      data: [
-        {
-          id: 1,
-          action: "Purchase",
-          item: { image: "/card1.png", name: "2006 Celebi Gold Star" },
-          amount: "0.34 SOL",
-          fromTo: "0x123...456",
-          timestamp: "9/9/25, 11:02:20 pm",
-        },
-        {
-          id: 2,
-          action: "Sale",
-          item: { image: "/card2.png", name: "1999 Charizard" },
-          amount: "1.20 SOL",
-          fromTo: "0x789...012",
-          timestamp: "9/8/25, 10:45:00 am",
-        },
-        {
-          id: 3,
-          action: "Transfer",
-          item: { image: "/card3.png", name: "2000 Lugia" },
-          amount: "0.85 SOL",
-          fromTo: "0xabc...def",
-          timestamp: "9/7/25, 2:15:30 pm",
-        },
-      ],
-    },
-    activityListings: {
-      name: "Activity Listings",
-      headers: ["Item", "Listed Price", "Status", "Views", "Timestamp"],
-      data: [
-        {
-          id: 1,
-          item: { image: "/card1.png", name: "2006 Celebi Gold Star" },
-          listedPrice: "0.50 SOL",
-          status: "Active",
-          views: 245,
-          timestamp: "9/9/25, 11:02:20 pm",
-        },
-        {
-          id: 2,
-          item: { image: "/card2.png", name: "1999 Charizard" },
-          listedPrice: "1.50 SOL",
-          status: "Sold",
-          views: 512,
-          timestamp: "9/8/25, 10:45:00 am",
-        },
-      ],
-    },
-    offersMade: {
-      name: "Offers Made",
-      headers: ["Item", "Offer Amount", "Status", "Seller", "Timestamp"],
-      data: [
-        {
-          id: 1,
-          item: { image: "/card1.png", name: "2006 Celebi Gold Star" },
-          offerAmount: "0.30 SOL",
-          status: "Pending",
-          seller: "0x123...456",
-          timestamp: "9/9/25, 11:02:20 pm",
-        },
-        {
-          id: 2,
-          item: { image: "/card2.png", name: "1999 Charizard" },
-          offerAmount: "1.00 SOL",
-          status: "Rejected",
-          seller: "0x789...012",
-          timestamp: "9/8/25, 10:45:00 am",
-        },
-        {
-          id: 3,
-          item: { image: "/card3.png", name: "2000 Lugia" },
-          offerAmount: "0.75 SOL",
-          status: "Accepted",
-          seller: "0xabc...def",
-          timestamp: "9/7/25, 2:15:30 pm",
-        },
-      ],
-    },
-    offersReceived: {
-      name: "Offers Received",
-      headers: ["Item", "Offer Amount", "Status", "Buyer", "Timestamp"],
-      data: [
-        {
-          id: 1,
-          item: { image: "/card4.png", name: "2003 Rayquaza" },
-          offerAmount: "1.40 SOL",
-          status: "Pending",
-          buyer: "0x321...654",
-          timestamp: "9/10/25, 3:30:00 pm",
-        },
-        {
-          id: 2,
-          item: { image: "/card5.png", name: "1996 Mewtwo" },
-          offerAmount: "0.40 SOL",
-          status: "Rejected",
-          buyer: "0x987...210",
-          timestamp: "9/9/25, 4:22:10 pm",
-        },
-      ],
-    },
-  };
+  const isMe = address && userId && address.toLowerCase() === userId.toLowerCase();
 
-  const currentTabConfig = tabConfigs[activeTab];
-  const totalPages = Math.ceil(currentTabConfig.data.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = currentTabConfig.data.slice(startIndex, endIndex);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-[130px] px-6">
+        <p className="text-white/40 text-[14px]">Loading profile…</p>
+      </div>
+    );
+  }
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  if (!profile) {
+    return (
+      <div className="min-h-screen pt-[130px] px-6 max-w-[900px] mx-auto">
+        <h1 className="text-white text-[26px] font-bold mb-2">Profile unavailable</h1>
+        <p className="text-white/50 text-[14px]">That address has no activity on this network.</p>
+      </div>
+    );
+  }
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-  };
-
-  const getGradeColor = (grade) => {
-    if (grade === "Graded") return "bg-yellow-600 text-white";
-    if (grade === "A+" || grade === "A") return "bg-yellow-500 text-black";
-    return "bg-gray-600 text-white";
-  };
-
-  const getStatusColor = (status) => {
-    if (status === "Active" || status === "Accepted") return "text-emerald-400";
-    if (status === "Pending") return "text-yellow-400";
-    if (status === "Sold" || status === "Rejected") return "text-gray-400";
-    return "text-white";
-  };
+  const tabs = [
+    ["cards", `Cards (${profile.cards.length})`],
+    ["draws", `Packs (${profile.draws.length})`],
+    ["trades", `Trades (${profile.trades.length})`],
+  ];
 
   return (
-    <div className="min-h-screen pt-20">
-      <div className="max-w-[1400px] mx-auto px-6 py-8">
-        {/* Profile Header */}
-        <Reveal className="glass rounded-xl p-6 mb-8" y={26} delay={80}>
-          <div className="flex items-start gap-6">
-            {/* Avatar */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center flex-shrink-0 hover-scale">
-              <span className="text-white text-3xl">👤</span>
-            </div>
-
-            {/* User Info */}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="iri-divider w-8" />
-                <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">Collector profile</span>
-              </div>
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-white text-3xl font-bold font-sf-pro-rounded">{userData.username}</h1>
-                <span className="px-3 py-1 bg-gray-800 text-gray-400 rounded-lg text-sm">
-                  {userData.year}
-                </span>
+    <div className="min-h-screen pt-[120px] pb-24">
+      <div className="max-w-[1200px] mx-auto px-6">
+        <Reveal y={26}>
+          <div className="glass rounded-2xl p-6 mb-8">
+            <div className="flex flex-wrap items-center justify-between gap-5">
+              <div>
+                <p className="font-mono-data text-[10.5px] tracking-[0.25em] uppercase text-white/40 mb-1.5">
+                  {isMe ? "Your collection" : "Collector"}
+                </p>
+                <h1 className="font-sf-pro-rounded text-white text-[24px] md:text-[28px] font-bold tracking-[-0.02em] break-all">
+                  {profile.address.slice(0, 10)}…{profile.address.slice(-8)}
+                </h1>
               </div>
 
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-gray-400 text-sm font-mono">
-                  {userData.walletAddress}
-                </span>
-                <button
-                  onClick={() => copyToClipboard(userData.walletAddress)}
-                  className="text-gray-400 hover:text-white transition-colors icon-hover"
-                >
-                  <FiCopy size={16} />
-                </button>
-              </div>
-
-              <div className="flex items-center gap-6 text-sm">
+              <div className="flex gap-8">
                 <div>
-                  <span className="text-gray-400">Joined </span>
-                  <span className="text-white">{userData.joinedDate}</span>
+                  <p className="font-mono-data text-[10px] tracking-[0.2em] uppercase text-white/40 mb-1">
+                    Cards held
+                  </p>
+                  <p className="text-white text-[24px] font-bold tabular-nums">{profile.cardCount}</p>
                 </div>
-                <div className="w-px h-4 bg-gray-700"></div>
                 <div>
-                  <span className="text-gray-400">Total Cards: </span>
-                  <span className="text-white">{userData.totalCards}</span>
-                </div>
-                <div className="w-px h-4 bg-gray-700"></div>
-                <div>
-                  <span className="text-gray-400">Est. Value: </span>
-                  <span className="text-white">{userData.estimatedValue}</span>
+                  <p className="font-mono-data text-[10px] tracking-[0.2em] uppercase text-white/40 mb-1">
+                    Reference value
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Image src="/coin.svg" alt="" width={20} height={20} className="mt-0.5" />
+                    <p className="text-white text-[24px] font-bold tabular-nums">
+                      {formatUnits(profile.insuredValue, 6)}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
+            <p className="text-white/30 text-[11.5px] mt-4">{profile.insuredValueBasis}.</p>
           </div>
         </Reveal>
 
-        {/* Tabs */}
-        <Reveal className="flex gap-2 mb-6 overflow-x-auto" y={22} delay={160}>
-          {Object.entries(tabConfigs).map(([key, config]) => (
+        <div className="flex gap-2 mb-6">
+          {tabs.map(([key, label]) => (
             <button
               key={key}
-              onClick={() => {
-                setActiveTab(key);
-                setCurrentPage(1);
-              }}
-              className={`btn-anim px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                activeTab === key
-                  ? "nav-active text-white"
-                  : "glass-soft text-white/50 hover:text-white"
+              onClick={() => setTab(key)}
+              className={`px-4 py-2 rounded-xl text-[13.5px] font-semibold transition-colors ${
+                tab === key
+                  ? "nav-active text-white border border-[#FFFFFF47]"
+                  : "glass-soft text-white/50 hover:text-white/85 border border-transparent"
               }`}
             >
-              {config.name}
+              {label}
             </button>
           ))}
-        </Reveal>
+        </div>
 
-        {/* Table */}
-        <Reveal className="glass rounded-xl overflow-x-auto mb-8" y={24} delay={240}>
-          <div className="min-w-[760px] md:min-w-0">
-          {/* Table Header */}
-          <div
-            className="grid gap-4 px-6 py-4 border-b border-white/10 text-white/45 text-sm font-medium"
-            style={{
-              gridTemplateColumns: `repeat(${currentTabConfig.headers.length}, minmax(0, 1fr))`,
-            }}
-          >
-            {currentTabConfig.headers.map((header, index) => (
-              <div key={index} className={`font-mono-data uppercase tracking-[0.15em] text-[11px] ${index === 0 ? "" : "text-center"}`}>
-                {header}
-              </div>
+        {tab === "cards" && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {profile.cards.length === 0 && (
+              <p className="text-white/40 text-[14px] col-span-full">No cards held.</p>
+            )}
+            {profile.cards.map((card) => (
+              <Card
+                key={`${card.chainId}-${card.tokenId}`}
+                href={`/card/${card.tokenId}?chainId=${card.chainId}`}
+                name={card.name}
+                subtitle={`#${card.tokenId} · ${card.setName ?? "—"}`}
+                year={card.year}
+                grade={card.grade}
+                imageUrl={card.imageUrl}
+              />
             ))}
           </div>
+        )}
 
-          {/* Table Body */}
-          <div className="divide-y divide-white/8">
-            {currentData.map((row) => (
-              <div
-                key={row.id}
-                className="grid gap-4 px-6 py-4 hover:bg-gray-800/30 transition-colors items-center"
-                style={{
-                  gridTemplateColumns: `repeat(${currentTabConfig.headers.length}, minmax(0, 1fr))`,
-                }}
-              >
-                {Object.entries(row).map(([key, value], index) => {
-                  if (key === "id") return null;
-
-                  // Item column with image and name
-                  if (key === "item" && typeof value === "object") {
-                    return (
-                      <div key={index} className="flex items-center gap-3">
-                        <div className="w-12 h-16 bg-gray-800 rounded flex-shrink-0">
-                          <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded"></div>
-                        </div>
-                        <span className="text-white text-sm">{value.name}</span>
-                      </div>
-                    );
-                  }
-
-                  // Grade column with badge
-                  if (key === "grade") {
-                    return (
-                      <div key={index} className="flex justify-center">
+        {tab === "draws" && (
+          <div className="glass rounded-2xl overflow-hidden">
+            {profile.draws.length === 0 ? (
+              <p className="text-white/40 text-[14px] p-6">No packs opened.</p>
+            ) : (
+              <table className="w-full text-[13.5px]">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    {["Draw", "Outcome", "When"].map((h) => (
+                      <th
+                        key={h}
+                        className="text-left font-mono-data text-[10.5px] tracking-[0.15em] uppercase text-white/40 px-5 py-3"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {profile.draws.map((d) => (
+                    <tr key={`${d.chainId}-${d.drawId}`} className="border-b border-white/[0.06]">
+                      <td className="px-5 py-3 text-white/80 font-mono-data text-[12.5px]">#{d.drawId}</td>
+                      <td className="px-5 py-3">
                         <span
-                          className={`px-3 py-1 rounded text-xs font-semibold ${getGradeColor(
-                            value
-                          )}`}
+                          className={`text-[12.5px] font-semibold ${
+                            d.status === "delivered"
+                              ? "text-[#2BD383]"
+                              : d.status === "refunded"
+                                ? "text-white/45"
+                                : "text-[#FFD36B]"
+                          }`}
                         >
-                          {value}
+                          {d.status}
                         </span>
-                      </div>
-                    );
-                  }
+                      </td>
+                      <td className="px-5 py-3 text-white/45">{new Date(d.at).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        )}
 
-                  // Status column with color
-                  if (key === "status") {
-                    return (
-                      <div key={index} className="text-center">
-                        <span className={`text-sm font-semibold ${getStatusColor(value)}`}>
-                          {value}
+        {tab === "trades" && (
+          <div className="glass rounded-2xl overflow-hidden">
+            {profile.trades.length === 0 ? (
+              <p className="text-white/40 text-[14px] p-6">No trades yet.</p>
+            ) : (
+              <table className="w-full text-[13.5px]">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    {["Card", "Side", "Price", "Counterparty", "When"].map((h) => (
+                      <th
+                        key={h}
+                        className="text-left font-mono-data text-[10.5px] tracking-[0.15em] uppercase text-white/40 px-5 py-3"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {profile.trades.map((t, i) => (
+                    <tr key={i} className="border-b border-white/[0.06]">
+                      <td className="px-5 py-3 text-white/80">#{t.tokenId}</td>
+                      <td className="px-5 py-3">
+                        <span className={t.side === "sold" ? "text-[#FFD36B]" : "text-[#2BD383]"}>
+                          {t.side}
                         </span>
-                      </div>
-                    );
-                  }
-
-                  // From/To, Seller, Buyer columns (wallet addresses)
-                  if (key === "fromTo" || key === "seller" || key === "buyer") {
-                    return (
-                      <div key={index} className="text-center">
-                        <span className="text-white/55 text-sm font-mono">{value}</span>
-                      </div>
-                    );
-                  }
-
-                  // Default column
-                  return (
-                    <div key={index} className="text-center">
-                      <span className="text-white text-sm">{value}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+                      </td>
+                      <td className="px-5 py-3 text-white/85 tabular-nums">${formatUnits(t.price, 6)}</td>
+                      <td className="px-5 py-3 text-white/45 font-mono-data text-[12px]">
+                        {t.counterparty?.slice(0, 10)}…
+                      </td>
+                      <td className="px-5 py-3 text-white/45">{new Date(t.at).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
-          </div>
-        </Reveal>
-
-        {/* Pagination */}
-        <Reveal y={20} delay={120}>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            totalItems={currentTabConfig.data.length}
-            itemsPerPage={itemsPerPage}
-          />
-        </Reveal>
+        )}
       </div>
     </div>
   );

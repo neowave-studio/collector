@@ -1,0 +1,21 @@
+{
+  "name": "@collector/contracts",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Collector — provably-fair gacha + graded-collectible marketplace contracts (spec v1.1)",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test -vv",
+    "test:ci": "FOUNDRY_PROFILE=ci forge test",
+    "invariant": "forge test --match-path 'test/invariant/*'",
+    "coverage": "forge coverage --report lcov --report summary",
+    "size": "FOUNDRY_PROFILE=size forge build --sizes",
+    "fmt": "forge fmt",
+    "slither": "slither . --config-file slither.config.json",
+    "storage-check": "forge build && node script/check-storage-layout.mjs"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.1.0",
+    "@openzeppelin/contracts-upgradeable": "5.1.0"
+  }
+}

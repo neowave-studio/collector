@@ -1,102 +1,111 @@
-// components/Card.jsx
 "use client";
-import { FiLock } from "react-icons/fi";
-import { useRouter } from "next/navigation";
+
 import Image from "next/image";
-export default function Card({ card, onBuyClick }) {
-  const router = useRouter();
-const getRarityColor = (rarity) => {
-  const rarityUpper = rarity.toUpperCase();
-  
-  // Check if it starts with S (S, S+, S++, etc.)
-  if (rarityUpper.startsWith('S')) {
-    return "rarity-s";
-  }
-  // Check if it starts with A (A, A+, A++, etc.)
-  else if (rarityUpper.startsWith('A')) {
-    return "rarity-a";
-  }
-  // Check if it starts with B (B, B+, B++, etc.)
-  else if (rarityUpper.startsWith('B')) {
-    return "rarity-b";
-  }
-  // Ungraded or default
-  else {
+import { useRouter } from "next/navigation";
+
+/**
+ * The collectible card tile, shared by the marketplace, profile and featured-drop grids.
+ *
+ * Kept from the original design — the hover lift, the grade chip, the coin-marked value — but the
+ * content is passed in rather than baked in, and the action under the price is a slot so the same
+ * tile can carry "Buy now" in one grid and a list-price field in another.
+ */
+
+/**
+ * Grades arrive as grading-company strings ("PSA 10"), not as the S/A/B letters the original tile
+ * assumed, so map the numeric grade onto the rarity palette. Anything unrecognised is styled as
+ * ungraded rather than guessed at — a card shown in gold it has not earned misleads a buyer.
+ */
+export function rarityClass(grade) {
+  if (!grade) return "rarity-ungraded";
+  const g = String(grade).toUpperCase();
+
+  const numeric = g.match(/(\d+(?:\.\d+)?)/);
+  if (numeric) {
+    const n = Number(numeric[1]);
+    if (n >= 10) return "rarity-s";
+    if (n >= 9) return "rarity-a";
+    if (n >= 8) return "rarity-b";
     return "rarity-ungraded";
   }
-};
 
-  const handleCardClick = () => {
-    router.push(`/card/${card.id}`);
-  };
+  if (g.startsWith("S")) return "rarity-s";
+  if (g.startsWith("A")) return "rarity-a";
+  if (g.startsWith("B")) return "rarity-b";
+  return "rarity-ungraded";
+}
+
+export default function Card({
+  href,
+  name,
+  subtitle,
+  year,
+  grade,
+  imageUrl,
+  valueLabel = "Insured Value",
+  value,
+  action,
+}) {
+  const router = useRouter();
 
   return (
     <div
-      onClick={handleCardClick}
-      className="group relative bg-[#101010] rounded-[12px] overflow-hidden hover:-translate-y-1.5 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] border border-[#FFFFFF1A] hover:border-[#2BD383]/40 hover:shadow-[0_20px_50px_-16px_rgba(43,211,131,0.45)] cursor-pointer"
+      onClick={href ? () => router.push(href) : undefined}
+      className={`group relative bg-[#101010] rounded-[12px] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] border border-[#FFFFFF1A] hover:border-[#2BD383]/40 hover:shadow-[0_20px_50px_-16px_rgba(43,211,131,0.45)] ${
+        href ? "hover:-translate-y-1.5 cursor-pointer" : ""
+      }`}
     >
-      {/* Card Header */}
       <div className="relative">
-        <div className="absolute top-3 left-3 text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] tracking-[-3%] backdrop-blur-sm px-2 py-1 rounded z-10">
-          {card.year}
-        </div>
-        <div
-          className={`absolute top-3 right-3 rounded-lg px-3 py-0 min-w-fit mx-auto flex justify-center  text-[#FFFFFF99] font-[700] text-[14px] leading-[150%] tracking-[-3%]  border z-10 ${getRarityColor(
-            card.rarity
-          )}`}
-        >
-          {card.rarity}
-        </div>
+        {year && (
+          <div className="absolute top-3 left-3 text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] backdrop-blur-sm px-2 py-1 rounded z-10">
+            {year}
+          </div>
+        )}
+        {grade && (
+          <div
+            className={`absolute top-3 right-3 rounded-lg px-3 py-0 min-w-fit flex justify-center text-[#FFFFFF99] font-[700] text-[14px] leading-[150%] border z-10 ${rarityClass(grade)}`}
+          >
+            {grade}
+          </div>
+        )}
 
-        {/* Card Image */}
-{/* Card Image */}
-<div className="flex items-center w-full justify-center px-14 pt-14">
-  {card.image ? (
-    <div className="w-full aspect-[5/7] overflow-hidden rounded-lg">
-      <img
-        src={card.image}
-        alt={card.name}
-        className="w-full h-full object-contain rounded-lg transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
-      />
-    </div>
-  ) : null}
-</div>
+        <div className="flex items-center w-full justify-center px-14 pt-14">
+          <div className="w-full aspect-[5/7] overflow-hidden rounded-lg">
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt={name}
+                className="w-full h-full object-contain rounded-lg transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+              />
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Card Details */}
       <div className="px-4 py-2 pb-4">
-        <h3 className="text-white font-bold text-[24px] leading-[150%] tracking-[-3%]  truncate">
-          {card.name}
-        </h3>
-        <p className="text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] tracking-[-3%] mb-4 line-clamp-2">
-          {card.collection}
+        <h3 className="text-white font-bold text-[22px] leading-[150%] truncate">{name}</h3>
+        <p className="text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] mb-4 truncate">
+          {subtitle}
         </p>
 
-        {/* Price and Button */}
-        <div className="space-y-3 ">
+        {value != null && (
           <div className="mb-5">
-                   <p className="text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] tracking-[-3%] mb-2 ">Insured Value</p>
-<div className="flex items-center justify-start gap-2 ">
-  <div className="flex items-center justify-center w-[24px] h-[24px] ">
-    <Image src="/coin.svg" alt="coin" width={24} height={24} className="mt-1" />
-  </div>
-  <p className="text-[#FFFFFF] font-[700] text-[18px] leading-[150%] tracking-[-3%]">
-    {card.price}
-  </p>
-</div>
+            <p className="text-[#FFFFFF99] font-[500] text-[14px] leading-[140%] mb-2">{valueLabel}</p>
+            <div className="flex items-center justify-start gap-2">
+              <Image src="/coin.svg" alt="" width={24} height={24} className="mt-1" />
+              <p className="text-[#FFFFFF] font-[700] text-[18px] leading-[150%] tabular-nums">
+                {value}
+              </p>
+            </div>
           </div>
+        )}
 
-<button
-  onClick={(e) => {
-    e.stopPropagation(); // Prevent card click when clicking button
-    onBuyClick && onBuyClick(card);
-  }}
-  className="buy-now-button w-full rounded-[16px] border px-3 py-4 border-[#FFFFFF1A] font-[600] text-[16px] leading-[100%] tracking-[-3%] duration-300 flex items-center justify-center gap-2"
->
-  <span className="buy-now-button-text">Buy Now</span>
-  <Image src="/lock.svg" alt="lock" width={18} height={18} />
-</button>
-        </div>
+        {/* The action sits inside the clickable tile, so stop the click from also navigating. */}
+        {action && (
+          <div onClick={(e) => e.stopPropagation()} role="presentation">
+            {action}
+          </div>
+        )}
       </div>
     </div>
   );

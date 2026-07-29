@@ -1,0 +1,50 @@
+[
+  {
+    "label": "accessController",
+    "slot": 0,
+    "offset": 0,
+    "type": "contract IAccessController"
+  },
+  {
+    "label": "__gap",
+    "slot": 1,
+    "offset": 0,
+    "type": "uint256[49]"
+  },
+  {
+    "label": "cardCommitment",
+    "slot": 50,
+    "offset": 0,
+    "type": "mapping(uint256 => bytes32)"
+  },
+  {
+    "label": "commitmentOwner",
+    "slot": 51,
+    "offset": 0,
+    "type": "mapping(bytes32 => uint256)"
+  },
+  {
+    "label": "redeemed",
+    "slot": 52,
+    "offset": 0,
+    "type": "mapping(uint256 => bool)"
+  },
+  {
+    "label": "transferLockedUntil",
+    "slot": 53,
+    "offset": 0,
+    "type": "mapping(uint256 => uint64)"
+  },
+  {
+    "label": "_baseTokenURI",
+    "slot": 54,
+    "offset": 0,
+    "type": "string"
+  },
+  {
+    "label": "__gap",
+    "slot": 55,
+    "offset": 0,
+    "type": "uint256[50]"
+  }
+]

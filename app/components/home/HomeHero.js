@@ -3,6 +3,9 @@
 import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Reveal from "../Reveal";
+import OddsDisclosure from "../OddsDisclosure";
+import MoonPayButton from "../MoonPayButton";
+import { formatUnits } from "../../lib/api";
 
 const RARITIES = [
   { label: "Common", range: "$30 – $60", chance: "80%", dot: "#8A8F98" },
@@ -11,26 +14,44 @@ const RARITIES = [
   { label: "Epic", range: "$250 – $2,000+", chance: "1%", dot: "#2BD383" },
 ];
 
-const PACKS = [
-  { id: "PKMN 50", label: "PKMN 50" },
-  { id: "PKMN 250", label: "PKMN 250" },
-];
-
-const QUICK_STATS = [
-  { k: "Pack Content", v: "1 Card" },
-  { k: "Instant Buyback", v: "85%" },
-  { k: "Big Win Chance", v: "20%" },
-];
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export default function HomeHero({ onOpen }) {
-  const [turbo, setTurbo] = useState(false);
-  const [selectedPack, setSelectedPack] = useState("PKMN 50");
+/**
+ * @param {object} props
+ * @param {() => void} [props.onOpen]   Starts the rip flow.
+ * @param {object}     [props.pack]     Live pack from the backend, including its committed odds.
+ * @param {boolean}    [props.disabled] True when the user cannot buy (not signed in, not verified,
+ *                                      or on a marketplace-only chain).
+ * @param {string}     [props.blockedReason] Why, shown verbatim so a refusal is never mysterious.
+ * @param {number}     [props.chainId]
+ */
+export default function HomeHero({ onOpen, pack, disabled, blockedReason, chainId }) {
   const caseRef = useRef(null);
+
+  // Derived from the committed pool, never hardcoded: a "big win" is any card whose reference value
+  // exceeds the pack price, which is a fact about the odds rather than a marketing number.
+  const stats = pack
+    ? [
+        {k: "Pack content", v: "1 card"},
+        {k: "Sell-back", v: `${(pack.buybackBps / 100).toFixed(0)}%`},
+        {
+          k: "Above pack price",
+          v: `${(
+            (pack.odds ?? [])
+              .filter((o) => BigInt(o.priceRef) > BigInt(pack.pricePerRip))
+              .reduce((sum, o) => sum + o.probability, 0) * 100
+          ).toFixed(1)}%`,
+        },
+      ]
+    : [
+        {k: "Pack content", v: "1 card"},
+        {k: "Sell-back", v: "—"},
+        {k: "Above pack price", v: "—"},
+      ];
 
   const handleMove = useCallback((e) => {
     const el = caseRef.current;
@@ -85,8 +106,8 @@ export default function HomeHero({ onOpen }) {
               >
                 <div className="relative aspect-square rounded-[18px] overflow-hidden flex items-center justify-center">
                   <img
-                    src="/productimage.png"
-                    alt="Elite Pokémon Gacha Pack"
+                    src={pack?.imageUrl ?? "/productimage.png"}
+                    alt={pack?.name ?? "Gacha pack"}
                     draggable="false"
                     className="relative z-[1] w-full h-full object-contain drop-shadow-[0_24px_44px_rgba(0,0,0,0.55)]"
                   />
@@ -94,38 +115,21 @@ export default function HomeHero({ onOpen }) {
                 </div>
               </div>
 
-              {/* Pack selector */}
-              <div className="flex gap-3 mt-6">
-                {PACKS.map((p) => {
-                  const active = selectedPack === p.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => setSelectedPack(p.id)}
-                      className={`btn-anim flex-1 flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[13px] md:text-[15px] font-semibold ${
-                        active
-                          ? "nav-active text-white"
-                          : "glass-soft text-white/50 hover:text-white/85"
-                      }`}
-                    >
-                      <span
-                        className={`rounded-xl p-2.5 ${
-                          active
-                            ? "bg-white/[0.12] border border-white/20"
-                            : "bg-white/[0.06] border border-transparent"
-                        }`}
-                      >
-                        <img
-                          src="/productimage.png"
-                          className="w-6 h-6 md:w-8 md:h-8 object-contain"
-                          alt=""
-                        />
-                      </span>
-                      {p.label}
-                    </button>
-                  );
-                })}
-              </div>
+              {/* The live pack. One entry because one pool is active; more appear as they are committed. */}
+              {pack && (
+                <div className="flex gap-3 mt-6">
+                  <div className="nav-active flex-1 flex items-center gap-3 rounded-2xl px-3 py-2.5 text-[13px] md:text-[15px] font-semibold text-white">
+                    <span className="rounded-xl p-2.5 bg-white/[0.12] border border-white/20">
+                      <img
+                        src={pack.imageUrl ?? "/productimage.png"}
+                        className="w-6 h-6 md:w-8 md:h-8 object-contain"
+                        alt=""
+                      />
+                    </span>
+                    {pack.name}
+                  </div>
+                </div>
+              )}
             </div>
           </Reveal>
 
@@ -151,14 +155,12 @@ export default function HomeHero({ onOpen }) {
                       </span>
                     </div>
                     <h1 className="font-sf-pro-rounded text-white text-[30px] md:text-[38px] leading-[1.04] font-bold tracking-[-0.02em]">
-                      Elite Pokémon
-                      <br />
-                      Gacha Pack
+                      {pack?.name ?? "Gacha Pack"}
                     </h1>
                   </div>
                   <div className="text-left sm:text-right shrink-0">
                     <p className="font-mono-data text-[10px] tracking-[0.25em] uppercase text-white/40 mb-1.5">
-                      Expected value
+                      Price per pack
                     </p>
                     <div className="flex items-center gap-2 sm:justify-end">
                       <Image
@@ -169,8 +171,7 @@ export default function HomeHero({ onOpen }) {
                         className="mt-0.5"
                       />
                       <span className="text-white text-[26px] md:text-[30px] font-bold tracking-tight tabular-nums">
-                        2,600
-                        <span className="text-white/40 text-[18px]">.00</span>
+                        {pack ? formatUnits(pack.pricePerRip, 6) : "—"}
                       </span>
                     </div>
                   </div>
@@ -181,7 +182,7 @@ export default function HomeHero({ onOpen }) {
             {/* Quick stats */}
             <Reveal y={24} delay={260}>
               <div className="grid grid-cols-3 gap-3">
-                {QUICK_STATS.map((s) => (
+                {stats.map((s) => (
                   <div
                     key={s.k}
                     className="glass iri-top relative rounded-2xl px-4 py-3.5 overflow-hidden"
@@ -197,131 +198,95 @@ export default function HomeHero({ onOpen }) {
               </div>
             </Reveal>
 
-            {/* Pull odds */}
+            {/* Pull odds — committed on-chain, disclosed at the point of purchase (spec §12) */}
             <Reveal y={24} delay={340}>
-              <div className="glass rounded-2xl p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="font-mono-data text-[11px] tracking-[0.25em] uppercase text-white/50">
-                    Pull odds
-                  </span>
-                  <span className="font-mono-data text-[11px] text-white/30">
-                    per card
-                  </span>
-                </div>
-                <div className="flex h-2.5 rounded-full overflow-hidden mb-5 bg-white/[0.06]">
-                  <div style={{ width: "80%", background: "#4b5158" }} />
-                  <div style={{ width: "15%", background: "#6B8AFF" }} />
-                  <div style={{ width: "4%", background: "#FFD36B" }} />
-                  <div
-                    style={{
-                      width: "1%",
-                      background: "linear-gradient(90deg,#2BD383,#A3FFD3)",
-                    }}
-                  />
-                </div>
-                <div className="space-y-2.5">
-                  {RARITIES.map((r) => (
-                    <div
-                      key={r.label}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className="w-2.5 h-2.5 rounded-full"
-                          style={{
-                            background: r.dot,
-                            boxShadow: `0 0 8px ${r.dot}66`,
-                          }}
-                        />
-                        <span className="text-white/85 text-[13px] md:text-[14px] font-medium">
-                          {r.label}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-4">
+              {pack ? (
+                <OddsDisclosure pack={pack} />
+              ) : (
+                <div className="glass rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono-data text-[11px] tracking-[0.25em] uppercase text-white/50">
+                      Pull odds
+                    </span>
+                  </div>
+                  <div className="space-y-2.5">
+                    {RARITIES.map((r) => (
+                      <div key={r.label} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full"
+                            style={{ background: r.dot, boxShadow: `0 0 8px ${r.dot}66` }}
+                          />
+                          <span className="text-white/85 text-[13px] md:text-[14px] font-medium">
+                            {r.label}
+                          </span>
+                        </div>
                         <span className="text-white/40 text-[12px] md:text-[13px] tabular-nums">
                           {r.range}
                         </span>
-                        <span className="text-white/70 text-[12px] md:text-[13px] font-semibold tabular-nums w-9 text-right">
-                          {r.chance}
-                        </span>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <p className="text-white/35 text-[12px] mt-3">
+                    Indicative only — connect to load the odds actually committed on-chain.
+                  </p>
                 </div>
-              </div>
+              )}
             </Reveal>
 
-            {/* Turbo + Free packs */}
+            {/* Where the reserve stands, read live from chain — this is the claim worth surfacing. */}
             <Reveal y={24} delay={420}>
-              <div className="grid md:grid-cols-[1fr_auto] gap-3">
-                <div className="glass rounded-2xl p-5 flex items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-white font-semibold text-[15px] mb-1">
-                      Turbo Mode
-                    </h3>
-                    <p className="text-white/50 text-[12.5px] leading-[1.5] max-w-[320px]">
-                      Auto-sells common cards and hunts grails at maximum speed.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setTurbo(!turbo)}
-                    aria-pressed={turbo}
-                    className={`flex items-center w-[54px] h-[30px] rounded-full shrink-0 transition-colors ${
-                      turbo ? "justify-end" : "justify-start"
-                    }`}
-                    style={{
-                      padding: "3px",
-                      background: turbo
-                        ? "linear-gradient(180deg,#2BD383,#A3FFD3)"
-                        : "rgba(255,255,255,0.1)",
-                    }}
-                  >
-                    <span className="w-6 h-6 rounded-full bg-white shadow-[0_2px_6px_rgba(0,0,0,0.4)]" />
-                  </button>
+              <div className="glass rounded-2xl p-5">
+                <div className="flex items-center justify-between mb-1.5">
+                  <h3 className="text-white font-semibold text-[15px]">Sell-back is funded</h3>
+                  <a href="/verify" className="link-underline text-white/45 hover:text-white text-[12.5px]">
+                    proof of reserves →
+                  </a>
                 </div>
-                <div className="glass rounded-2xl p-5 md:w-[170px] flex flex-col justify-center">
-                  <p className="font-mono-data text-[10px] tracking-[0.12em] uppercase text-white/40 mb-1">
-                    Free Packs
-                  </p>
-                  <p className="text-white text-[20px] font-semibold">—</p>
-                </div>
+                <p className="text-white/50 text-[12.5px] leading-[1.55]">
+                  {pack
+                    ? `Pull a card and you can keep it, have the physical card shipped, sell it to another collector, or sell it back to us for up to ${(pack.buybackBps / 100).toFixed(0)}% of its committed reference value. That money is set aside on-chain the moment your draw is revealed.`
+                    : "Every sell-back offer is backed by funds set aside on-chain before you are ever offered one."}
+                </p>
               </div>
             </Reveal>
 
             {/* CTA */}
             <Reveal y={22} delay={500}>
-              {onOpen ? (
+              <div className="space-y-3">
                 <button
                   onClick={onOpen}
-                  className="holo-cta relative w-full rounded-2xl py-4 font-semibold text-[15px] text-white flex items-center justify-center gap-2 overflow-hidden"
+                  disabled={disabled || !onOpen}
+                  className="holo-cta relative w-full rounded-2xl py-4 font-semibold text-[15px] text-white flex items-center justify-center gap-2 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="relative z-[1]">Open Pack</span>
-                  <svg
-                    className="relative z-[1]"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M12 2l2.2 5.8L20 10l-5.8 2.2L12 18l-2.2-5.8L4 10l5.8-2.2L12 2z"
-                      fill="currentColor"
-                    />
-                  </svg>
+                  <span className="relative z-[1]">
+                    {disabled ? "Unavailable" : "Open Pack"}
+                  </span>
+                  {!disabled && (
+                    <svg
+                      className="relative z-[1]"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 2l2.2 5.8L20 10l-5.8 2.2L12 18l-2.2-5.8L4 10l5.8-2.2L12 2z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  )}
                 </button>
-              ) : (
-                <button className="holo-cta relative w-full rounded-2xl py-4 font-semibold text-[15px] text-white/90 flex items-center justify-center gap-2 overflow-hidden">
-                  <span className="relative z-[1]">Sign in to open</span>
-                  <Image
-                    src="/whitelock.svg"
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="relative z-[1] opacity-80"
-                  />
-                </button>
-              )}
+
+                {blockedReason && (
+                  <p className="text-white/45 text-[12.5px] leading-[1.55] text-center">
+                    {blockedReason}
+                  </p>
+                )}
+
+                {chainId ? <MoonPayButton chainId={chainId} /> : null}
+              </div>
             </Reveal>
           </div>
         </div>

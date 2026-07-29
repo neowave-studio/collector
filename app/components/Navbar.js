@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import ConnectButton from './ConnectButton';
+import NetworkSwitcher from './NetworkSwitcher';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -28,7 +30,8 @@ export default function Navbar() {
     { name: 'Gacha', href: '/gacha' },
     { name: 'Marketplace', href: '/marketplace' },
     { name: 'Leaderboard', href: '/leaderboard' },
-    { name: 'How it Works', href: '/how-it-works' }
+    { name: 'How it Works', href: '/how-it-works' },
+    { name: 'Verify', href: '/verify' }
   ];
 
   return (
@@ -79,14 +82,10 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Connect Wallet Button */}
-          <div className="hidden lg:flex items-center">
-            <button 
-              onClick={() => handleNavigation('/connect')}
-              className="px-6 py-2.5 font-[700] text-[16px] text-white nav-active  rounded-[12px]  border border-[#FFFFFF47]  "
-            >
-              Connect Wallet
-            </button>
+          {/* Network + wallet + session */}
+          <div className="hidden lg:flex items-center gap-2.5">
+            <NetworkSwitcher />
+            <ConnectButton />
           </div>
 
           {/* Mobile Menu Button */}
@@ -121,12 +120,10 @@ export default function Navbar() {
                   {item.name}
                 </a>
               ))}
-              <button
-                onClick={() => handleNavigation('/connect')}
-                className="mt-2 px-6 py-3 font-[700] text-[15px] text-white nav-active rounded-[14px] border border-[#FFFFFF47]"
-              >
-                Connect Wallet
-              </button>
+              <div className="mt-2 space-y-2">
+                <NetworkSwitcher className="w-full" />
+                <ConnectButton className="w-full" />
+              </div>
             </div>
           </div>
         )}

@@ -1,0 +1,53 @@
+{
+  "name": "@collector/backend",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Collector backend — API, oracle signer, relayer, indexer/reconciler, MoonPay orchestration",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "migrate": "tsx src/db/migrate.ts",
+    "worker": "tsx src/workers/index.ts",
+    "pool:author": "tsx src/cli/author-pool.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "preflight": "tsx src/cli/preflight.ts",
+    "dev:all": "tsx src/index.ts",
+    "devnet:seed": "tsx src/cli/seed-devnet.ts",
+    "seed:testnet": "tsx src/cli/seed-testnet.ts",
+    "devnet:e2e": "tsx src/cli/devnet-e2e.ts",
+    "devnet:reveal": "tsx src/cli/devnet-reveal.ts",
+    "devnet:vrf": "tsx src/cli/devnet-vrf.ts",
+    "devnet:fund": "tsx src/cli/devnet-fund.ts",
+    "devnet:market": "tsx src/cli/devnet-market-e2e.ts",
+    "devnet:populate": "tsx src/cli/devnet-populate.ts",
+    "devnet:refund": "tsx src/cli/devnet-refund.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-kms": "^3.1096.0",
+    "@electric-sql/pglite": "^0.5.4",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^10.0.2",
+    "@fastify/helmet": "^13.0.1",
+    "@fastify/rate-limit": "^10.2.2",
+    "fastify": "^5.2.1",
+    "ioredis": "^5.4.2",
+    "pg": "^8.13.1",
+    "pino": "^9.6.0",
+    "siwe": "^3.0.0",
+    "viem": "^2.22.8",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

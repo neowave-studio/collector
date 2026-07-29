@@ -1,0 +1,200 @@
+[
+  {
+    "label": "accessController",
+    "slot": 0,
+    "offset": 0,
+    "type": "contract IAccessController"
+  },
+  {
+    "label": "__gap",
+    "slot": 1,
+    "offset": 0,
+    "type": "uint256[49]"
+  },
+  {
+    "label": "vrfCoordinator",
+    "slot": 50,
+    "offset": 0,
+    "type": "contract IVRFCoordinatorV2Plus"
+  },
+  {
+    "label": "vrfSubscriptionId",
+    "slot": 51,
+    "offset": 0,
+    "type": "uint256"
+  },
+  {
+    "label": "vrfKeyHash",
+    "slot": 52,
+    "offset": 0,
+    "type": "bytes32"
+  },
+  {
+    "label": "vrfCallbackGasLimit",
+    "slot": 53,
+    "offset": 0,
+    "type": "uint32"
+  },
+  {
+    "label": "vrfRequestConfirmations",
+    "slot": 53,
+    "offset": 4,
+    "type": "uint16"
+  },
+  {
+    "label": "vrfNativePayment",
+    "slot": 53,
+    "offset": 6,
+    "type": "bool"
+  },
+  {
+    "label": "__gap",
+    "slot": 54,
+    "offset": 0,
+    "type": "uint256[44]"
+  },
+  {
+    "label": "vault",
+    "slot": 98,
+    "offset": 0,
+    "type": "contract IVault"
+  },
+  {
+    "label": "reserveVault",
+    "slot": 99,
+    "offset": 0,
+    "type": "contract IReserveVault"
+  },
+  {
+    "label": "paymentRouter",
+    "slot": 100,
+    "offset": 0,
+    "type": "contract IPaymentRouter"
+  },
+  {
+    "label": "treasury",
+    "slot": 101,
+    "offset": 0,
+    "type": "address"
+  },
+  {
+    "label": "poolVersions",
+    "slot": 102,
+    "offset": 0,
+    "type": "mapping(bytes32 => mapping(uint256 => struct PoolLib.PoolVersion))"
+  },
+  {
+    "label": "_drafts",
+    "slot": 103,
+    "offset": 0,
+    "type": "mapping(bytes32 => mapping(uint256 => struct PoolLib.PoolDraft))"
+  },
+  {
+    "label": "_poolLeafHashes",
+    "slot": 104,
+    "offset": 0,
+    "type": "mapping(bytes32 => mapping(uint256 => bytes32[]))"
+  },
+  {
+    "label": "poolVersionBurned",
+    "slot": 105,
+    "offset": 0,
+    "type": "mapping(bytes32 => mapping(uint256 => bool))"
+  },
+  {
+    "label": "settledActiveVersion",
+    "slot": 106,
+    "offset": 0,
+    "type": "mapping(bytes32 => uint256)"
+  },
+  {
+    "label": "scheduledVersion",
+    "slot": 107,
+    "offset": 0,
+    "type": "mapping(bytes32 => uint256)"
+  },
+  {
+    "label": "activeFromBlock",
+    "slot": 108,
+    "offset": 0,
+    "type": "mapping(bytes32 => uint64)"
+  },
+  {
+    "label": "draws",
+    "slot": 109,
+    "offset": 0,
+    "type": "mapping(uint256 => struct GachaMachine.Draw)"
+  },
+  {
+    "label": "vrfRequests",
+    "slot": 110,
+    "offset": 0,
+    "type": "mapping(uint256 => struct GachaMachine.VRFRequest)"
+  },
+  {
+    "label": "nonces",
+    "slot": 111,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "pendingDraws",
+    "slot": 112,
+    "offset": 0,
+    "type": "mapping(bytes32 => uint256)"
+  },
+  {
+    "label": "escrowedFunds",
+    "slot": 113,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "pendingReserveRevenue",
+    "slot": 114,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "pendingTreasuryRevenue",
+    "slot": 115,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "buybackLockedUntil",
+    "slot": 116,
+    "offset": 0,
+    "type": "mapping(address => uint64)"
+  },
+  {
+    "label": "nextDrawId",
+    "slot": 117,
+    "offset": 0,
+    "type": "uint256"
+  },
+  {
+    "label": "buybackWindow",
+    "slot": 118,
+    "offset": 0,
+    "type": "uint64"
+  },
+  {
+    "label": "ripRevealTimeout",
+    "slot": 118,
+    "offset": 8,
+    "type": "uint64"
+  },
+  {
+    "label": "poolStaleThresholdBps",
+    "slot": 118,
+    "offset": 16,
+    "type": "uint16"
+  },
+  {
+    "label": "__gap",
+    "slot": 119,
+    "offset": 0,
+    "type": "uint256[50]"
+  }
+]

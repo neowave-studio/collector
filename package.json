@@ -5,9 +5,18 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "sync:verifier": "node -e \"const fs=require('fs');fs.mkdirSync('public/tools/proof-generator',{recursive:true});for(const f of ['index.html','collector-verify.js'])fs.copyFileSync('tools/proof-generator/'+f,'public/tools/proof-generator/'+f);console.log('verifier synced')\"",
+    "prebuild": "npm run sync:verifier",
+    "devnet": "node scripts/devnet.mjs",
+    "testnet": "node scripts/testnet.mjs"
   },
   "dependencies": {
+    "@reown/appkit": "^1.8.23",
+    "@reown/appkit-adapter-wagmi": "^1.8.23",
+    "@tanstack/react-query": "^5.101.4",
+    "@x402/core": "^2.20.0",
+    "@x402/evm": "^2.20.0",
     "geist": "^1.5.1",
     "lenis": "^1.3.11",
     "next": "15.5.21",
@@ -15,7 +24,9 @@
     "react-dom": "19.1.0",
     "react-fast-marquee": "^1.6.5",
     "react-icons": "^5.5.0",
-    "react-use-draggable-scroll": "^0.4.7"
+    "react-use-draggable-scroll": "^0.4.7",
+    "viem": "^2.55.10",
+    "wagmi": "^3.7.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

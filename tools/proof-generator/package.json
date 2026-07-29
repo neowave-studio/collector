@@ -1,0 +1,7 @@
+{
+  "name": "@collector/proof-generator",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline, dependency-free pool verifier and settlement-proof generator"
+}

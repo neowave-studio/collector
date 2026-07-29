@@ -1,0 +1,56 @@
+[
+  {
+    "label": "accessController",
+    "slot": 0,
+    "offset": 0,
+    "type": "contract IAccessController"
+  },
+  {
+    "label": "__gap",
+    "slot": 1,
+    "offset": 0,
+    "type": "uint256[49]"
+  },
+  {
+    "label": "collectible",
+    "slot": 50,
+    "offset": 0,
+    "type": "contract IERC721"
+  },
+  {
+    "label": "paymentRouter",
+    "slot": 51,
+    "offset": 0,
+    "type": "contract IPaymentRouter"
+  },
+  {
+    "label": "feeRecipient",
+    "slot": 52,
+    "offset": 0,
+    "type": "address"
+  },
+  {
+    "label": "feeBps",
+    "slot": 52,
+    "offset": 20,
+    "type": "uint16"
+  },
+  {
+    "label": "orderNonceUsed",
+    "slot": 53,
+    "offset": 0,
+    "type": "mapping(address => mapping(uint256 => bool))"
+  },
+  {
+    "label": "minOrderNonce",
+    "slot": 54,
+    "offset": 0,
+    "type": "mapping(address => uint256)"
+  },
+  {
+    "label": "__gap",
+    "slot": 55,
+    "offset": 0,
+    "type": "uint256[50]"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "accessController": "0xE2fa70DcA2b1087D5EE97c702a279c63d2753460",
+  "chainId": 11155111,
+  "chainKey": "ethereum_sepolia",
+  "collectibleNFT": "0x5675be78d332dc60364d014260A12544B6Ef8f5C",
+  "factory": "0xfb6992CB85910A980ff534EC5403B8bfBEd2F9fd",
+  "gachaEnabled": true,
+  "gachaMachine": "0x41755a4906f60f019E7682dEa9926EF62f4A7296",
+  "marketplace": "0xA0C2ac4616C699D6487FD62533652ae80F81053a",
+  "paymentRouter": "0x4065D786AAEC3550C959451390553Af8b54258b9",
+  "reserveVault": "0x96B6F1C93f5D26E0eBf1a4EF6d73359CE5b18edC",
+  "timelock": "0x1eb64EB30E98665fDc227Bdf5F7a7aD400872496",
+  "vault": "0x64D6d152794E8737AB9b691D9EC08f7b4f18CBa8"
+}

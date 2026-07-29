@@ -1,515 +1,283 @@
 "use client";
 
-import { useState } from 'react';
-import { FiChevronDown } from 'react-icons/fi';
-import Card from '../components/Card';
-import Pagination from '../components/Pagination';
-import Image from 'next/image';
-import Reveal from '../components/Reveal';
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAccount, useChainId } from "wagmi";
+import { api, formatUnits } from "../lib/api";
+import { useMarketplace } from "../hooks/useMarketplace";
+import { useSession } from "../hooks/useSession";
+import Reveal from "../components/Reveal";
+import Pagination from "../components/Pagination";
+import Card from "../components/Card";
+
+/**
+ * The marketplace.
+ *
+ * Every card here is a real signed order fetched from the order-book index and filled directly by the
+ * buyer's wallet — there is no escrow and no relayer in this path. Cards you own can be listed by
+ * signing an order; the price lives inside that signature, so nobody (including us) can alter it.
+ *
+ * Both grids paginate. The order book is fetched a page-set at a time rather than in full, so the
+ * page does not get slower as the market grows.
+ */
+const PER_PAGE = 9;
+
 export default function MarketplacePage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState('newest');
-  const [filters, setFilters] = useState({
-    status: 'buy-now',
-    priceMin: 30,
-      selectedTags: [], // Add this
-    priceMax: 400,
-    insuredMin: 30,
-    insuredMax: 400,
-    year: { min: 2019, max: 2024 },
-    beckett: false,
-    owner: '',
-    authenticated: false,
-    anonymized: false
+  const chainId = useChainId();
+  const { isConnected } = useAccount();
+  const { isAuthenticated } = useSession();
+  const queryClient = useQueryClient();
+  const { buy, list, busy, error } = useMarketplace();
+
+  const [tab, setTab] = useState("browse");
+  const [priceInput, setPriceInput] = useState({});
+  const [notice, setNotice] = useState(null);
+  const [browsePage, setBrowsePage] = useState(1);
+  const [minePage, setMinePage] = useState(1);
+
+  const { data: listings, isLoading } = useQuery({
+    queryKey: ["listings", chainId],
+    queryFn: () => api.listings({ chainId, limit: 100 }),
+    refetchInterval: 15_000,
   });
 
-  const cardsPerPage = 9;
+  const { data: myCards } = useQuery({
+    queryKey: ["myCards"],
+    queryFn: api.myCards,
+    enabled: isAuthenticated,
+  });
 
-  // Dummy card data
-  const allCards = [
-    {
-      id: 1,
-      name: "Charizard Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "S+",
-      price: "2,600.00",
-      image: "/chari.png",
-    },
-    {
-      id: 2,
-      name: "Mewtwo Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "B",
-      price: "2,600.00",
-    image: "/chari.png",
-    },
-    {
-      id: 3,
-      name: "Venusaur Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "B",
-      price: "2,600.00",
-    image: "/chari.png",
-    },
-    {
-      id: 4,
-      name: "Pikachu Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "A+",
-      price: "2,600.00",
-    image: "/chari.png",
-    },
-    {
-      id: 5,
-      name: "Lugia Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "A+",
-      price: "2,600.00",
-    image: "/chari.png",
-    },
-    {
-      id: 6,
-      name: "Beedrill Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "S+",
-      price: "2,600.00",
-     image: "/chari.png",
-    },
-    {
-      id: 7,
-      name: "Blastoise Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "Ungraded",
-      price: "2,600.00",
-      image: "/chari.svg",
-    },
-    {
-      id: 8,
-      name: "Solgaleo Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2019",
-      rarity: "B",
-      price: "2,600.00",
-      image: "/chari.svg",
-    },
-    {
-      id: 9,
-      name: "Rayquaza Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2020",
-      rarity: "S+",
-      price: "3,200.00",
-       image: "/chari.svg",
-    },
-    {
-      id: 10,
-      name: "Gyarados Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2020",
-      rarity: "A+",
-      price: "2,800.00",
-       image: "/chari.svg",
-    },
-    {
-      id: 11,
-      name: "Dragonite Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2020",
-      rarity: "B",
-      price: "2,400.00",
-       image: "/chari.svg",
-    },
-    {
-      id: 12,
-      name: "Alakazam Holo Rare",
-      collection: "36 Packs (Sun & Moon Series)",
-      year: "2020",
-      rarity: "A+",
-      price: "2,700.00",
-      image: "/chari.svg",
-    },
-  ];
-
-  const totalPages = Math.ceil(allCards.length / cardsPerPage);
-  const indexOfLastCard = currentPage * cardsPerPage;
-  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentCards = allCards.slice(indexOfFirstCard, indexOfLastCard);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  // A page slice that survives the list shrinking underneath it — a fill or an expiry can remove a
+  // row between refetches, and landing on a blank page after buying something reads as a failure.
+  const paged = (items, page) => {
+    const all = items ?? [];
+    const totalPages = Math.max(1, Math.ceil(all.length / PER_PAGE));
+    const current = Math.min(page, totalPages);
+    return {
+      totalPages,
+      current,
+      total: all.length,
+      visible: all.slice((current - 1) * PER_PAGE, current * PER_PAGE),
+    };
   };
 
-  const handleBuyClick = (card) => {
-    console.log("Buy clicked for:", card);
-    // Add your buy logic here
+  const browse = paged(listings, browsePage);
+  const mine = paged(myCards, minePage);
+
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["listings"] });
+    void queryClient.invalidateQueries({ queryKey: ["myCards"] });
+  };
+
+  const onBuy = async (listing) => {
+    setNotice(null);
+    try {
+      const hash = await buy(listing);
+      setNotice({ kind: "ok", text: `Bought ${listing.card.name}. ${hash.slice(0, 12)}…` });
+      refresh();
+    } catch {
+      /* surfaced via `error` */
+    }
+  };
+
+  const onList = async (card) => {
+    setNotice(null);
+    const raw = priceInput[card.tokenId];
+    if (!raw || Number(raw) <= 0) {
+      setNotice({ kind: "bad", text: "Enter a price first." });
+      return;
+    }
+    try {
+      // USDC has 6 decimals. Round to integer units before signing so no float artefact reaches a
+      // signature the contract will then enforce to the last unit.
+      const units = BigInt(Math.round(Number(raw) * 1e6));
+      await list({ card, priceUnits: units });
+      setNotice({ kind: "ok", text: `${card.name} listed for $${raw}.` });
+      setPriceInput((p) => ({ ...p, [card.tokenId]: "" }));
+      refresh();
+    } catch {
+      /* surfaced via `error` */
+    }
   };
 
   return (
-    <div className="min-h-screen pt-20">
-      <div className="max-w-[1600px] mx-auto px-6 py-8">
-        {/* Header */}
-        <Reveal className="mb-8 mt-10" y={24} delay={60}>
+    <main className="min-h-screen pt-[130px] pb-24 lg:px-8 md:px-6 px-4">
+      <div className="max-w-[1300px] mx-auto">
+        <Reveal y={20}>
           <div className="flex items-center gap-3 mb-3">
             <span className="iri-divider w-8" />
-            <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">The vault</span>
+            <span className="font-mono-data text-[11px] tracking-[0.35em] uppercase iri-text">
+              Peer to peer
+            </span>
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2">
-            <h1 className="text-white text-[24px] font-semibold font-sf-pro-rounded" >Marketplace</h1>
-  <div className="flex items-center gap-2 text-sm">
-  <span className="text-[#FFFFFF66] text-[16px] font-medium">Hide Owned Cards</span>
-  <button
-    onClick={() => setFilters({...filters, hideOwnedCards: !filters.hideOwnedCards})}
-    className={`relative w-12 h-6 rounded-full transition-colors ${
-      filters.hideOwnedCards ? 'bg-[#FFFFFF33]' : 'bg-[#FFFFFF33]'
-    }`}
-  >
-    <div
-      className={`absolute top-0.5 w-5 h-5 rounded-full buy-now-button transition-transform ${
-        filters.hideOwnedCards ? 'translate-x-6' : 'translate-x-0.5'
-      }`}
-    />
-  </button>
-</div>
-          </div>
-          <p className="text-[#FFFFFF66] text-[16px] font-medium">Total: 32,875 cards</p>
+          <h1 className="font-sf-pro-rounded text-white text-[30px] md:text-[38px] font-bold tracking-[-0.02em] mb-2">
+            Marketplace
+          </h1>
+          <p className="text-white/50 text-[14px] leading-[1.6] max-w-[620px] mb-8">
+            Cards trade directly between collectors. Your wallet fills the seller&apos;s signed order
+            on-chain — we never hold the card or the money, and the price is inside the signature.
+          </p>
         </Reveal>
 
-                    {/* Sort and Filters Bar */}
-<Reveal className="flex flex-col md:flex-row  items-center justify-between gap-4 mb-6" y={24} delay={140}>
-  {/* Search Input - Left Side */}
-  <div className="flex-1  relative">
-    <Image 
-      src="/search.svg" 
-      width={20} 
-      height={20} 
-      className="absolute left-4 top-1/2 transform -translate-y-1/2"
-      alt="search"
-    />
-    <input 
-      className='w-full pl-10 pr-4 py-2 glass-soft rounded-[16px]  placeholder:text-[#FFFFFF66] text-white text-sm border border-[#FFFFFF0D] transition-colors'
-      value=""  
-      placeholder='Search Cards by Name' 
-    /> 
-  </div>
+        <div className="flex gap-2 mb-6">
+          {[
+            ["browse", `Browse${listings ? ` (${listings.length})` : ""}`],
+            ["mine", `My cards${myCards ? ` (${myCards.length})` : ""}`],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`px-4 py-2 rounded-xl text-[13.5px] font-semibold transition-colors ${
+                tab === key
+                  ? "nav-active text-white border border-[#FFFFFF47]"
+                  : "glass-soft text-white/50 hover:text-white/85 border border-transparent"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
 
-  {/* Sort and Filter Buttons - Right Side */}
-  <div className="flex items-center gap-3">
-    <button className="btn-anim px-4 py-2 glass-soft rounded-[16px] text-white text-sm border border-[#FFFFFF0D] flex items-center gap-2 transition-colors">
-      <span className='text-[#FFFFFF66] text-[16px] hidden md:flex font-medium'>Sort by:</span>
-      <span className="text-[#FFFFFFE5] text-[16px] font-medium">Newest</span>
-      <FiChevronDown />
-    </button>
+        {(notice || error) && (
+          <div
+            className={`glass rounded-xl px-4 py-3 mb-5 text-[13.5px] ${
+              error || notice?.kind === "bad" ? "text-[#ff6b6b]" : "text-[#2BD383]"
+            }`}
+          >
+            {error ?? notice?.text}
+          </div>
+        )}
 
-    <button className="btn-anim px-4 py-2 glass-soft rounded-[16px] text-white text-sm border border-[#FFFFFF0D] flex items-center gap-2 transition-colors">
-      <Image src="/filters.svg" width={20} height={20} alt="filters" />
-      <span className='text-[#FFFFFFE5] text-[16px] font-medium'>Filters</span>
-      <span className="px-2 py-0.5 bg-[#303030] rounded-full text-[#FFFFFFE5] text-[16px] font-medium">3</span>
-    </button>
-  </div>
-</Reveal>
+        {tab === "browse" && (
+          <>
+            {isLoading && <p className="text-white/40 text-[14px]">Loading orders…</p>}
+            {!isLoading && (!listings || listings.length === 0) && (
+              <div className="glass rounded-2xl p-8 text-center">
+                <p className="text-white/60 text-[15px] mb-1">No cards listed yet.</p>
+                <p className="text-white/35 text-[13.5px]">
+                  Open a pack, then list what you pull from the <strong>My cards</strong> tab.
+                </p>
+              </div>
+            )}
 
-        <div className="flex md:flex-row flex-col gap-6 ">
-          {/* Sidebar Filters */}
-<Reveal className="md:max-w-[330px] w-full md:w-[250px] lg:w-[310px] xl:w-[330px] flex-shrink-0" x={-24} y={0} delay={200}>
-  <div className="glass rounded-[16px] p-6 space-y-6">
-    
-    {/* Status Filter */}
-    <div>
-      <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Status</h3>
-      <div className="flex gap-2">
-        <button
-          onClick={() => setFilters({...filters, status: 'buy-now'})}
-          className={`btn-anim px-4 py-2 rounded-[12px] text-[16px] font-medium transition-colors ${
-            filters.status === 'buy-now'
-              ? 'sidebar-bg text-black'
-              : 'bg-[#FFFFFF0A] text-[#FFFFFF66] hover:bg-[#FFFFFF1A]'
-          }`}
-        >
-          Buy Now
-        </button>
-        <button
-          onClick={() => setFilters({...filters, status: 'offers'})}
-          className={`btn-anim px-4 py-2 rounded-[12px] text-[16px] font-medium transition-colors ${
-            filters.status === 'offers'
-          ? 'sidebar-bg text-black'
-              : 'bg-[#FFFFFF0A] text-[#FFFFFF66] hover:bg-[#FFFFFF1A]'
-          }`}
-        >
-          Offers
-        </button>
-      </div>
-    </div>
-
-    {/* Tags */}
-<div>
-  <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Tags</h3>
-  <div className="flex flex-wrap gap-2">
-    {['Grail', 'Open to Offers', 'Open to Trade'].map((tag) => (
-      <button
-        key={tag}
-onClick={() => {
-  const newTags = filters.selectedTags.includes(tag)
-    ? filters.selectedTags.filter(t => t !== tag)
-    : [...filters.selectedTags, tag];
-  setFilters({...filters, selectedTags: newTags});
-}}
-        className={`btn-anim px-3 py-1.5 rounded-[12px] text-[14px] font-medium transition-colors ${
-filters.selectedTags?.includes(tag)
-            ? 'sidebar-bg text-black'
-            : 'bg-[#FFFFFF0A] text-[#FFFFFF66] hover:bg-[#FFFFFF1A]'
-        }`}
-      >
-        {tag}
-      </button>
-    ))}
-  </div>
-</div>
-
-    {/* Price Range */}
-<div>
-  <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Price Range</h3>
-  <div className="relative pt-10 pb-2">
-    {/* Min value tooltip */}
-    <div 
-      className="absolute top-0 bg-[#1C1C1C] border border-[#FFFFFF1A] text-white text-xs px-2 py-1 rounded-[8px] font-medium"
-      style={{
-        left: `${((filters.priceMin - 0) / 400) * 100}%`,
-        transform: 'translateX(-50%)'
-      }}
-    >
-      ${filters.priceMin}
-      {/* Down arrow */}
-      <div className="absolute left-1/2 -bottom-1 transform -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1C1C1C]"></div>
-    </div>
-    
-    {/* Max value tooltip */}
-    <div 
-      className="absolute top-0 bg-[#1C1C1C] border border-[#FFFFFF1A] text-white text-xs px-2 py-1 rounded-[8px] font-medium"
-      style={{
-        left: `${((filters.priceMax - 0) / 400) * 100}%`,
-        transform: 'translateX(-50%)'
-      }}
-    >
-      ${filters.priceMax}
-      {/* Down arrow */}
-      <div className="absolute left-1/2 -bottom-1 transform -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1C1C1C]"></div>
-    </div>
-
-    {/* Track background */}
-    <div className="relative h-1 bg-[#FFFFFF1A] rounded-lg">
-      {/* Active track */}
-      <div 
-        className="absolute h-1 bg-[#2BD383] rounded-lg"
-        style={{
-          left: `${((filters.priceMin - 0) / 400) * 100}%`,
-          right: `${100 - ((filters.priceMax - 0) / 400) * 100}%`
-        }}
-      />
-    </div>
-
-    {/* Min range input */}
-    <input
-      type="range"
-      min="0"
-      max="400"
-      value={filters.priceMin}
-      onChange={(e) => {
-        const value = Math.min(Number(e.target.value), filters.priceMax - 10);
-        setFilters({...filters, priceMin: value});
-      }}
-      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#2BD383] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#2BD383] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-      style={{ top: '35px' }}
-    />
-
-    {/* Max range input */}
-    <input
-      type="range"
-      min="0"
-      max="400"
-      value={filters.priceMax}
-      onChange={(e) => {
-        const value = Math.max(Number(e.target.value), filters.priceMin + 10);
-        setFilters({...filters, priceMax: value});
-      }}
-      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#2BD383] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#2BD383] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-      style={{ top: '35px' }}
-    />
-  </div>
-</div>
-
-    {/* Grade */}
-    <div>
-      <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Grade</h3>
-      <div className="relative">
-        <select className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer ">
-          <option>Beckett</option>
-        </select>
-        <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
-      </div>
-    </div>
-
-    {/* Year */}
-<div>
-  <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Year</h3>
-  <div className="flex items-center gap-3">
-    <input
-      type="number"       max={4}
-      placeholder="YYYY"
-      value={filters.year.min}
-      onChange={(e) => setFilters({...filters, year: {...filters.year, min: e.target.value}})}
-      maxLength="4"
-      className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
-    />
-    <span className="text-gray-500">-</span>
-    <input
-      type="number"
-      max={4}
-      placeholder="YYYY"
-      value={filters.year.max}
-      onChange={(e) => setFilters({...filters, year: {...filters.year, max: e.target.value}})}
-      maxLength="4"
-      className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
-    />
-  </div>
-</div>
-
-    {/* Insured Value */}
-<div>
-  <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Insured Value</h3>
-  <div className="relative pt-10 pb-2">
-    {/* Min value tooltip */}
-    <div 
-      className="absolute top-0 bg-[#1C1C1C] border border-[#FFFFFF1A] text-white text-xs px-2 py-1 rounded-[8px] font-medium"
-      style={{
-        left: `${((filters.insuredMin - 0) / 400) * 100}%`,
-        transform: 'translateX(-50%)'
-      }}
-    >
-      ${filters.insuredMin}
-      {/* Down arrow */}
-      <div className="absolute left-1/2 -bottom-1 transform -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1C1C1C]"></div>
-    </div>
-    
-    {/* Max value tooltip */}
-    <div 
-      className="absolute top-0 bg-[#1C1C1C] border border-[#FFFFFF1A] text-white text-xs px-2 py-1 rounded-[8px] font-medium"
-      style={{
-        left: `${((filters.insuredMax - 0) / 400) * 100}%`,
-        transform: 'translateX(-50%)'
-      }}
-    >
-      ${filters.insuredMax}
-      {/* Down arrow */}
-      <div className="absolute left-1/2 -bottom-1 transform -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1C1C1C]"></div>
-    </div>
-
-    {/* Track background */}
-    <div className="relative h-1 bg-[#FFFFFF1A] rounded-lg">
-      {/* Active track */}
-      <div 
-        className="absolute h-1 bg-[#2BD383] rounded-lg"
-        style={{
-          left: `${((filters.insuredMin - 0) / 400) * 100}%`,
-          right: `${100 - ((filters.insuredMax - 0) / 400) * 100}%`
-        }}
-      />
-    </div>
-
-    {/* Min range input */}
-    <input
-      type="range"
-      min="0"
-      max="400"
-      value={filters.insuredMin}
-      onChange={(e) => {
-        const value = Math.min(Number(e.target.value), filters.insuredMax - 10);
-        setFilters({...filters, insuredMin: value});
-      }}
-      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#2BD383] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#2BD383] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-      style={{ top: '35px' }}
-    />
-
-    {/* Max range input */}
-    <input
-      type="range"
-      min="0"
-      max="400"
-      value={filters.insuredMax}
-      onChange={(e) => {
-        const value = Math.max(Number(e.target.value), filters.insuredMin + 10);
-        setFilters({...filters, insuredMax: value});
-      }}
-      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#2BD383] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#2BD383] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-      style={{ top: '35px' }}
-    />
-  </div>
-</div>
-
-    {/* Owner */}
-    <div>
-      <h3 className="text-[#C8C8C8] font-medium mb-3 text-[14px]">Owner</h3>
-      <input
-        type="text"
-        placeholder="Enter Owner Address"
-      className="w-full px-3 py-2 glass-soft rounded-[12px] text-[#FFFFFF66] hover:bg-[#FFFFFF1A] outline-none appearance-none cursor-pointer"
-      />
-    </div>
-
-    {/* Checkboxes */}
-    <div className="space-y-3 flex flex-col">
-      <label className="flex items-center  gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={filters.authenticated}
-          onChange={(e) => setFilters({...filters, authenticated: e.target.checked})}
-     className="w-4 h-4  cursor-pointer"
-        />
-        <span className="text-[#C8C8C8] font-medium  text-[14px]">Autographed</span>
-      </label>
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={filters.anonymized}
-          onChange={(e) => setFilters({...filters, anonymized: e.target.checked})}
-          className="w-4 h-4 rounded accent-[#2BD383]"
-        />
-        <span className="text-[#C8C8C8] font-medium  text-[14px]">Authenticated</span>
-      </label>
-    </div>
-  </div>
-</Reveal>
-
-          {/* Main Content */}
-          <div className="flex-1">
-
-
-            {/* Cards Grid */}
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 mb-8">
-              {currentCards.map((card, index) => (
-                <Reveal key={`${currentPage}-${card.id}`} className="h-full relative hover:z-20" y={30} delay={index * 70}><Card card={card} onBuyClick={handleBuyClick} /></Reveal>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {browse.visible.map((listing) => (
+                <Card
+                  key={listing.id}
+                  href={`/card/${listing.order.tokenId}?chainId=${listing.chainId}`}
+                  name={listing.card.name}
+                  subtitle={listing.card.setName ?? "—"}
+                  year={listing.card.year}
+                  grade={listing.card.grade}
+                  imageUrl={listing.card.imageUrl}
+                  valueLabel="Asking price"
+                  value={formatUnits(listing.order.price, 6)}
+                  action={
+                    <button
+                      onClick={() => onBuy(listing)}
+                      disabled={!isConnected || busy === `buy:${listing.id}`}
+                      className="buy-now-button w-full rounded-[16px] border px-3 py-3.5 border-[#FFFFFF1A] font-[600] text-[15px] disabled:opacity-50"
+                    >
+                      <span className="buy-now-button-text">
+                        {busy === `buy:${listing.id}`
+                          ? "Confirm in wallet…"
+                          : !isConnected
+                            ? "Connect wallet"
+                            : "Buy now"}
+                      </span>
+                    </button>
+                  }
+                />
               ))}
             </div>
 
-            {/* Pagination */}
-            <Reveal y={20} delay={120}>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              totalItems={allCards.length}
-              itemsPerPage={cardsPerPage}
-            />
-            </Reveal>
-          </div>
-        </div>
+            {browse.totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination
+                  currentPage={browse.current}
+                  totalPages={browse.totalPages}
+                  onPageChange={setBrowsePage}
+                  totalItems={browse.total}
+                  itemsPerPage={PER_PAGE}
+                />
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === "mine" && (
+          <>
+            {!isAuthenticated && (
+              <div className="glass rounded-2xl p-8 text-center">
+                <p className="text-white/60 text-[15px]">Sign in to see the cards you own.</p>
+              </div>
+            )}
+
+            {isAuthenticated && myCards?.length === 0 && (
+              <div className="glass rounded-2xl p-8 text-center">
+                <p className="text-white/60 text-[15px] mb-1">You don&apos;t own any cards yet.</p>
+                <a href="/gacha" className="link-underline text-white/80 text-[13.5px]">
+                  Open a pack →
+                </a>
+              </div>
+            )}
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {mine.visible.map((card) => (
+                <Card
+                  key={card.tokenId}
+                  href={`/card/${card.tokenId}?chainId=${card.chainId}`}
+                  name={card.name}
+                  subtitle={`#${card.tokenId} · ${card.setName ?? "—"}`}
+                  year={card.year}
+                  grade={card.grade}
+                  imageUrl={card.imageUrl}
+                  action={
+                    card.listing ? (
+                      <p className="text-[#2BD383] text-[13.5px] font-semibold py-3">
+                        Listed for ${formatUnits(card.listing.price, 6)}
+                      </p>
+                    ) : (
+                      <div className="flex gap-2">
+                        <input
+                          value={priceInput[card.tokenId] ?? ""}
+                          onChange={(e) =>
+                            setPriceInput((p) => ({ ...p, [card.tokenId]: e.target.value }))
+                          }
+                          placeholder="Price in USDC"
+                          inputMode="decimal"
+                          className="flex-1 min-w-0 bg-[#0a0a0a] border border-[#FFFFFF1A] rounded-xl px-3 py-2.5 text-white text-[13.5px]"
+                        />
+                        <button
+                          onClick={() => onList(card)}
+                          disabled={busy === `list:${card.tokenId}`}
+                          className="buy-now-button rounded-xl border px-4 py-2.5 border-[#FFFFFF1A] font-[600] text-[13.5px] disabled:opacity-50 shrink-0"
+                        >
+                          <span className="buy-now-button-text">
+                            {busy === `list:${card.tokenId}` ? "Signing…" : "List"}
+                          </span>
+                        </button>
+                      </div>
+                    )
+                  }
+                />
+              ))}
+            </div>
+
+            {mine.totalPages > 1 && (
+              <div className="mt-6">
+                <Pagination
+                  currentPage={mine.current}
+                  totalPages={mine.totalPages}
+                  onPageChange={setMinePage}
+                  totalItems={mine.total}
+                  itemsPerPage={PER_PAGE}
+                />
+              </div>
+            )}
+          </>
+        )}
       </div>
-    </div>
+    </main>
   );
 }

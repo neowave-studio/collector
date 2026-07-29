@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import SmoothScrollProvider from "./components/SmoothScrollProvider";
 import PageLoader from "./components/PageLoader";
 import HoloBackground from "./components/home/HoloBackground";
+import Web3Provider from "./providers/Web3Provider";
 
 export const metadata = {
   title: "Collector - Trade & Collect Pokemon Cards | NFT Marketplace",
@@ -99,12 +100,14 @@ export default function RootLayout({ children }) {
       <body className={`${GeistSans.className} antialiased bg-[#050706] text-white`}>
         <PageLoader />
         <HoloBackground />
-        <Suspense fallback={<div className="min-h-screen bg-[#050706]" />}>
-          <SmoothScrollProvider>
-            <Navbar />
-            <div className="relative z-10">{children}</div>
-          </SmoothScrollProvider>
-        </Suspense>
+        <Web3Provider>
+          <Suspense fallback={<div className="min-h-screen bg-[#050706]" />}>
+            <SmoothScrollProvider>
+              <Navbar />
+              <div className="relative z-10">{children}</div>
+            </SmoothScrollProvider>
+          </Suspense>
+        </Web3Provider>
       </body>
     </html>
   );
