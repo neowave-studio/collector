@@ -107,7 +107,7 @@ contract SetupTestnet is Script {
             Roles.RISK_ADMIN_ROLE
         ];
 
-        uint256 n = opsRoles.length + 8;
+        uint256 n = opsRoles.length + 9;
         targets = new address[](n);
         values = new uint256[](n);
         payloads = new bytes[](n);
@@ -145,6 +145,12 @@ contract SetupTestnet is Script {
 
         targets[i] = a.paymentRouter;
         payloads[i++] = abi.encodeCall(PaymentRouter.setAllowedPayToken, (payToken, true));
+
+        // Zero is not "no limit", it is "no buyback": every payout checks against this cap, so
+        // leaving it unset blocks sell-back entirely while everything else looks correctly wired.
+        // The reconciler says so once per pass, which is how this was caught.
+        targets[i] = a.reserveVault;
+        payloads[i++] = abi.encodeCall(ReserveVault.setMaxBuybackOutflow, (payToken, vm.envUint("MAX_BUYBACK_OUTFLOW")));
 
         require(i == n, "batch length mismatch");
     }

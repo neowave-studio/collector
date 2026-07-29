@@ -27,7 +27,8 @@ export default function GachaPage() {
   const chainId = useChainId();
   const { isConnected } = useAccount();
   const { open: openWalletModal } = useAppKit();
-  const { isAuthenticated, compliance, refresh: refreshSession } = useSession();
+  const { isAuthenticated, compliance, refresh: refreshSession, signIn } = useSession();
+  const [signingIn, setSigningIn] = useState(false);
 
   const queryClient = useQueryClient();
   const { data: chains } = useQuery({queryKey: ["chains"], queryFn: api.chains});
@@ -72,6 +73,32 @@ export default function GachaPage() {
       return "Packs are a game of chance, so we verify identity and age before a paid draw.";
     }
     if (!pack) return "No pack is currently active on this network.";
+    return null;
+  })();
+
+  /**
+   * The one blocker the user can clear from this button, paired with the control that clears it.
+   *
+   * Connecting and switching networks already have their own controls in the header, so duplicating
+   * them here would give two places to do the same thing. Signing in has none — the CTA was the only
+   * surface mentioning it, and it was disabled.
+   */
+  const action = (() => {
+    if (isConnected && !onWrongNetwork && !isAuthenticated) {
+      return {
+        label: signingIn ? "Check your wallet…" : "Sign in",
+        onClick: async () => {
+          setSigningIn(true);
+          try {
+            await signIn();
+          } catch {
+            /* surfaced by useSession */
+          } finally {
+            setSigningIn(false);
+          }
+        },
+      };
+    }
     return null;
   })();
 
@@ -152,6 +179,7 @@ export default function GachaPage() {
         pack={pack}
         disabled={Boolean(blockedReason)}
         blockedReason={blockedReason}
+        action={action}
         chainId={isAuthenticated ? chainId : undefined}
       />
       <FeaturedDrops />

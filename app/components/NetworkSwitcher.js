@@ -55,6 +55,19 @@ export default function NetworkSwitcher({ className = "" }) {
   const options = chains.filter((c) => walletKnows.has(c.chainId));
   if (options.length === 0) return null;
 
+  /**
+   * Order: the configured default first, then gacha chains, then the rest.
+   *
+   * `/chains` returns whatever order the backend enumerated, which is an implementation detail. The
+   * chain we most want people on should be the first thing they see when they open the menu.
+   */
+  const preferred = Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID);
+  options.sort((a, b) => {
+    if (a.chainId === preferred) return -1;
+    if (b.chainId === preferred) return 1;
+    return Number(b.gachaEnabled) - Number(a.gachaEnabled);
+  });
+
   const active = options.find((c) => c.chainId === chainId);
   const onWrongNetwork = isConnected && !active;
 

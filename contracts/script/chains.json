@@ -6,7 +6,13 @@
     "and disabled. The deploy script reads this file and refuses to deploy the GachaMachine where",
     "gachaEnabled is false.",
     "permit2=null selects PaymentRouter's allowance fallback path.",
-    "confirmations are set ABOVE each chain's observed reorg depth (spec §8.4 FIX L5-backend)."
+    "confirmations are set ABOVE each chain's observed reorg depth (spec §8.4 FIX L5-backend).",
+    "callbackGasLimit is 200000: measured worst case is 38554 (MAX_RIPS_PER_TX draws in one callback,",
+    "pinned by test/unit/CallbackGas.t.sol), so this is ~5x headroom. Do NOT raise it 'to be safe' —",
+    "Chainlink reserves maxGasPrice x callbackGasLimit from the subscription BEFORE accepting a",
+    "request, and each gas lane has its own max price. At the old 2500000 the reserve was 0.075 ETH on",
+    "Base's 30 gwei lane and 1.81 ETH on Sepolia's 500 gwei lane, which parked every Sepolia request as",
+    "'pending, insufficient balance' with no error on-chain."
   ],
   "chains": [
     {
@@ -21,7 +27,7 @@
         "keyHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
         "nativePayment": false,
         "requestConfirmations": 1,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "permit2": null,
       "payTokens": {
@@ -43,7 +49,7 @@
         "keyHash": "0xdc2f87677b01473c763cb0aee938ed3341512f6057324a584e5944e786144d70",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {
@@ -65,7 +71,7 @@
         "keyHash": "0x9e1344a1247c8a1785d0a4681a27152bffdb43666ae5bf7d14d24a5efd44bf71",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "vrfNote": "The 30 gwei lane, and the only lane Base Sepolia publishes. This entry previously carried Arbitrum One's 2 gwei hash (0x9e9e4673…a38897) — verified wrong on 2026-07-29 by a live request that the coordinator rejected with 'Invalid key hash'. A wrong hash is accepted by the contract and by the coordinator's request call, then never fulfilled, so the only symptom is a draw that hangs until refundStuckRip. Re-verify any hash you change against docs.chain.link rather than against another chain's entry.",
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
@@ -88,7 +94,7 @@
         "keyHash": "0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "vrfNote": "Sepolia publishes a single 500 gwei gas lane, so there is no lane choice to make here. nativePayment=true means the subscription is funded with Sepolia ETH (24% premium) rather than LINK (20%); fund it with ETH or this flips to LINK and requests revert as underfunded.",
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
@@ -111,7 +117,7 @@
         "keyHash": "0x719ed7d7664abc3001c18aac8130a2265e1e70b7e036ae20f3ca8b92b3154d86",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {
@@ -132,7 +138,7 @@
         "keyHash": "0x9e9e46732b32662b9adc6f3abdf6c5e926a666d174a4d6b8e39c4cca76a38897",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {
@@ -153,7 +159,7 @@
         "keyHash": "0x130dba50ad435d4ecc214aad0d5820474137bd68e7e77724144f27c3c377d3d4",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {
@@ -175,7 +181,7 @@
         "keyHash": "0x8596b430971ac45bdf6088665b9ad8e8630c9d5049ab54b14dff711bee7c0e26",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "vrfNote": "Single 50 gwei lane. nativePayment=true mirrors the mainnet `bnb` entry so the rehearsal exercises the same path — which means the subscription must hold tBNB. A LINK balance is NOT used while this flag is true; flip it to false to spend LINK instead (50% premium vs 60% for native on this chain).",
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
@@ -198,7 +204,7 @@
         "keyHash": "0x8077df514608a09f83e4e8d300645594e5d7234665448ba83f51a50f842bd3d9",
         "nativePayment": true,
         "requestConfirmations": 3,
-        "callbackGasLimit": 2500000
+        "callbackGasLimit": 200000
       },
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {

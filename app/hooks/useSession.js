@@ -41,9 +41,17 @@ export function useSession() {
     }
   }, []);
 
+  /**
+   * Re-check whenever the connected wallet changes, not only on mount.
+   *
+   * `refresh` has no dependencies, so with `[refresh]` this ran exactly once — before the wallet was
+   * connected, when the answer is always "not authenticated". Connecting afterwards changed nothing,
+   * and the UI kept showing the signed-out state until the page was reloaded by hand. Keying on the
+   * address means connecting, disconnecting and switching accounts each re-ask the server.
+   */
   useEffect(() => {
     void refresh();
-  }, [refresh]);
+  }, [refresh, address, isConnected]);
 
   // A session is bound to one wallet. If the user switches accounts in their wallet, the old session
   // no longer describes who is here, so drop it rather than showing another address's state.

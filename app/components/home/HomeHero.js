@@ -29,7 +29,7 @@ const prefersReducedMotion = () =>
  * @param {string}     [props.blockedReason] Why, shown verbatim so a refusal is never mysterious.
  * @param {number}     [props.chainId]
  */
-export default function HomeHero({ onOpen, pack, disabled, blockedReason, chainId }) {
+export default function HomeHero({ onOpen, pack, disabled, blockedReason, chainId, action }) {
   const caseRef = useRef(null);
 
   // Derived from the committed pool, never hardcoded: a "big win" is any card whose reference value
@@ -254,15 +254,20 @@ export default function HomeHero({ onOpen, pack, disabled, blockedReason, chainI
             {/* CTA */}
             <Reveal y={22} delay={500}>
               <div className="space-y-3">
+                {/*
+                  A blocker the user can clear themselves gets a working button, not a greyed-out
+                  one. "Unavailable" next to "Sign in to continue" states a problem and then removes
+                  the means to fix it, which reads as broken rather than as a prompt.
+                */}
                 <button
-                  onClick={onOpen}
-                  disabled={disabled || !onOpen}
+                  onClick={action?.onClick ?? onOpen}
+                  disabled={(disabled && !action) || (!onOpen && !action)}
                   className="holo-cta relative w-full rounded-2xl py-4 font-semibold text-[15px] text-white flex items-center justify-center gap-2 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span className="relative z-[1]">
-                    {disabled ? "Unavailable" : "Open Pack"}
+                    {action ? action.label : disabled ? "Unavailable" : "Open Pack"}
                   </span>
-                  {!disabled && (
+                  {!disabled && !action && (
                     <svg
                       className="relative z-[1]"
                       width="16"
