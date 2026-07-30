@@ -20,6 +20,8 @@
     "dev:all": "tsx src/index.ts",
     "devnet:seed": "tsx src/cli/seed-devnet.ts",
     "seed:testnet": "tsx src/cli/seed-testnet.ts",
+    "pool:make": "tsx src/cli/make-pool.ts",
+    "pool:commit": "tsx src/cli/commit-pool.ts",
     "devnet:e2e": "tsx src/cli/devnet-e2e.ts",
     "devnet:reveal": "tsx src/cli/devnet-reveal.ts",
     "devnet:vrf": "tsx src/cli/devnet-vrf.ts",

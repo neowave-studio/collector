@@ -32,6 +32,19 @@ export interface ChainEntry {
   explorer: string | null;
   /** Per-chain `eth_getLogs` span; providers cap this very differently. */
   logBatchSize?: number;
+  /**
+   * Self-service test-token faucet, or null where there is none.
+   *
+   * Surfaced to the frontend so the claim button appears only where a faucet actually exists — and,
+   * more importantly, never on a chain where the pay token is real money.
+   */
+  faucet?: {
+    token: Address;
+    symbol: string;
+    decimals: number;
+    claimAmount: string;
+    cooldownHours: number;
+  } | null;
 }
 
 export interface Deployment {

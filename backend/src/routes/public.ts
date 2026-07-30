@@ -23,6 +23,7 @@ export async function publicRoutes(app: FastifyInstance): Promise<void> {
       // cannot open packs there, and "no verifiable randomness" is the honest answer (spec §3).
       marketplaceOnlyReason: c.marketplaceOnlyReason ?? null,
       payTokens: c.payTokens,
+      faucet: c.faucet ?? null,
       explorer: c.explorer,
       contracts: {
         gachaMachine: c.deployment.gachaMachine,

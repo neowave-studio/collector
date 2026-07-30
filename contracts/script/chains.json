@@ -36,7 +36,8 @@
       "confirmations": 1,
       "moonpayCurrency": null,
       "explorer": null,
-      "note": "Local devnet, deployed by script/DeployLocal.s.sol with a mock VRF coordinator and a zero-delay Timelock. Never a real chain."
+      "note": "Local devnet, deployed by script/DeployLocal.s.sol with a mock VRF coordinator and a zero-delay Timelock. Never a real chain.",
+      "faucet": null
     },
     {
       "key": "base",
@@ -57,7 +58,8 @@
       },
       "confirmations": 12,
       "moonpayCurrency": "usdc_base",
-      "explorer": "https://basescan.org"
+      "explorer": "https://basescan.org",
+      "faucet": null
     },
     {
       "key": "base_sepolia",
@@ -76,11 +78,20 @@
       "vrfNote": "The 30 gwei lane, and the only lane Base Sepolia publishes. This entry previously carried Arbitrum One's 2 gwei hash (0x9e9e4673…a38897) — verified wrong on 2026-07-29 by a live request that the coordinator rejected with 'Invalid key hash'. A wrong hash is accepted by the contract and by the coordinator's request call, then never fulfilled, so the only symptom is a draw that hangs until refundStuckRip. Re-verify any hash you change against docs.chain.link rather than against another chain's entry.",
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {
+        "cUSD": "0xa78c96751c80889789Ea96AFdb5C4718BaA92c9e",
         "USDC": "0x036CbD53842c5426634e7929541eC2318f3dCF7e"
       },
       "confirmations": 3,
       "moonpayCurrency": "usdc_base",
-      "explorer": "https://sepolia.basescan.org"
+      "explorer": "https://sepolia.basescan.org",
+      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol): 6 decimals, claim() gives any address 500 per 24h, mint() is unrestricted for reserve funding. It is listed FIRST because the code takes the first entry as the default pay token. The canonical stablecoin is kept below it for reference and can be made primary again by reordering — a pool version records its own payToken, so switching is a new pool commit plus setAllowedPayToken, never a redeploy. The faucet token's constructor refuses to exist on a production chain id.",
+      "faucet": {
+        "token": "0xa78c96751c80889789Ea96AFdb5C4718BaA92c9e",
+        "symbol": "cUSD",
+        "decimals": 6,
+        "claimAmount": "500000000",
+        "cooldownHours": 24
+      }
     },
     {
       "key": "ethereum_sepolia",
@@ -99,12 +110,21 @@
       "vrfNote": "Sepolia publishes a single 500 gwei gas lane, so there is no lane choice to make here. nativePayment=true means the subscription is funded with Sepolia ETH (24% premium) rather than LINK (20%); fund it with ETH or this flips to LINK and requests revert as underfunded.",
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {
+        "cUSD": "0x8dC36340Db35dAB73858B67A36A0288e2A1ce945",
         "USDC": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
       },
       "confirmations": 3,
       "moonpayCurrency": null,
       "explorer": "https://sepolia.etherscan.io",
-      "note": "Rehearsal chain for the live VRF round-trip. Ethereum Sepolia is NOT a proxy for Base or BNB economics — L1 gas and VRF premiums differ by orders of magnitude — so treat a pass here as proof the Chainlink integration works, not as proof the product is affordable."
+      "note": "Rehearsal chain for the live VRF round-trip. Ethereum Sepolia is NOT a proxy for Base or BNB economics — L1 gas and VRF premiums differ by orders of magnitude — so treat a pass here as proof the Chainlink integration works, not as proof the product is affordable.",
+      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol): 6 decimals, claim() gives any address 500 per 24h, mint() is unrestricted for reserve funding. It is listed FIRST because the code takes the first entry as the default pay token. The canonical stablecoin is kept below it for reference and can be made primary again by reordering — a pool version records its own payToken, so switching is a new pool commit plus setAllowedPayToken, never a redeploy. The faucet token's constructor refuses to exist on a production chain id.",
+      "faucet": {
+        "token": "0x8dC36340Db35dAB73858B67A36A0288e2A1ce945",
+        "symbol": "cUSD",
+        "decimals": 6,
+        "claimAmount": "500000000",
+        "cooldownHours": 24
+      }
     },
     {
       "key": "polygon",
@@ -125,7 +145,8 @@
       },
       "confirmations": 128,
       "moonpayCurrency": "usdc_polygon",
-      "explorer": "https://polygonscan.com"
+      "explorer": "https://polygonscan.com",
+      "faucet": null
     },
     {
       "key": "arbitrum",
@@ -146,7 +167,8 @@
       },
       "confirmations": 12,
       "moonpayCurrency": "usdc_arbitrum",
-      "explorer": "https://arbiscan.io"
+      "explorer": "https://arbiscan.io",
+      "faucet": null
     },
     {
       "key": "bnb",
@@ -167,7 +189,8 @@
       },
       "confirmations": 30,
       "moonpayCurrency": "usdt_bsc",
-      "explorer": "https://bscscan.com"
+      "explorer": "https://bscscan.com",
+      "faucet": null
     },
     {
       "key": "bnb_testnet",
@@ -186,12 +209,20 @@
       "vrfNote": "Single 50 gwei lane. nativePayment=true mirrors the mainnet `bnb` entry so the rehearsal exercises the same path — which means the subscription must hold tBNB. A LINK balance is NOT used while this flag is true; flip it to false to spend LINK instead (50% premium vs 60% for native on this chain).",
       "permit2": "0x000000000022D473030F116dDEE9F6B43aC78BA3",
       "payTokens": {
+        "cUSD": "0x4B7Fabc8216Fb0ce9D30Ee7b6b0150d3Da357A07",
         "tUSD": "0x4b3C6bdd6ed04D527cBa323F4d924224452Ab82B"
       },
-      "payTokenNote": "Our own faucet token (script/DeployTestToken.s.sol), 6 decimals, unrestricted mint. BNB testnet has no canonical USDC or USDT — the addresses circulating are community-issued tokens whose supply is controlled by whoever deployed them, which is not a basis for rehearsing a payment path. Minting is open by design so a tester can always get a balance; that is exactly why the contract refuses to deploy to a production chain id.",
+      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol): 6 decimals, claim() gives any address 500 per 24h, mint() is unrestricted for reserve funding. It is listed FIRST because the code takes the first entry as the default pay token. The canonical stablecoin is kept below it for reference and can be made primary again by reordering — a pool version records its own payToken, so switching is a new pool commit plus setAllowedPayToken, never a redeploy. The faucet token's constructor refuses to exist on a production chain id.",
       "confirmations": 3,
       "moonpayCurrency": null,
-      "explorer": "https://testnet.bscscan.com"
+      "explorer": "https://testnet.bscscan.com",
+      "faucet": {
+        "token": "0x4B7Fabc8216Fb0ce9D30Ee7b6b0150d3Da357A07",
+        "symbol": "cUSD",
+        "decimals": 6,
+        "claimAmount": "500000000",
+        "cooldownHours": 24
+      }
     },
     {
       "key": "ethereum",
@@ -212,7 +243,8 @@
       },
       "confirmations": 12,
       "moonpayCurrency": "usdc",
-      "explorer": "https://etherscan.io"
+      "explorer": "https://etherscan.io",
+      "faucet": null
     },
     {
       "key": "robinhood",
@@ -234,7 +266,8 @@
       "explorer": "https://robinhoodchain.blockscout.com",
       "rpc": "https://rpc.mainnet.chain.robinhood.com",
       "rpcNote": "Public endpoint is shared and rate limited — Robinhood documents it for wallet connectivity and testing, not production traffic. Use a dedicated provider (Alchemy exposes robinhood-mainnet) for the indexer and relayer.",
-      "stack": "Arbitrum Orbit L2, ETH for gas, Ethereum blobs for data availability. Mainnet opened 2026-07-01."
+      "stack": "Arbitrum Orbit L2, ETH for gas, Ethereum blobs for data availability. Mainnet opened 2026-07-01.",
+      "faucet": null
     }
   ]
 }

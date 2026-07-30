@@ -10,6 +10,7 @@ import PackOpenModal from "../components/home/PackOpenModal";
 import { useSession } from "../hooks/useSession";
 import { useRipFlow } from "../hooks/useRipFlow";
 import { api } from "../lib/api";
+import ClaimTokens from "../components/ClaimTokens";
 
 /**
  * The gacha page.
@@ -182,6 +183,11 @@ export default function GachaPage() {
         action={action}
         chainId={isAuthenticated ? chainId : undefined}
       />
+      {chain?.faucet && (
+        <div className="max-w-[420px] mx-auto px-6 -mt-6 mb-10">
+          <ClaimTokens faucet={chain.faucet} />
+        </div>
+      )}
       <FeaturedDrops />
       <PackOpenModal
         open={modalOpen}

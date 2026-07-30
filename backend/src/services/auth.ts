@@ -99,7 +99,17 @@ export function setSessionCookie(reply: FastifyReply, sessionId: string, expires
   reply.setCookie(SESSION_COOKIE, sign(sessionId), {
     path: '/',
     httpOnly: true,
-    secure: config.NODE_ENV === 'production',
+    // Keyed on whether this deployment is actually served over HTTPS, not on NODE_ENV.
+    //
+    // `NODE_ENV=production` additionally requires KMS signers, so a publicly hosted TESTNET runs with
+    // NODE_ENV=development — and tying `secure` to that flag would have sent the session cookie over
+    // plaintext on a real domain. The transport is what decides whether the flag is safe to set, and
+    // PUBLIC_ORIGIN is the transport we are reachable on.
+    secure: config.PUBLIC_ORIGIN.startsWith('https://'),
+    // Lax, so the cookie is dropped on genuinely cross-SITE requests. That is why the API must live on
+    // a subdomain of the frontend's registrable domain rather than on an unrelated host — see
+    // docs/TESTNET-PUBLIC-DEPLOY.md. SameSite=None would work cross-site but makes the cookie
+    // third-party, which Safari and Brave block outright.
     sameSite: 'lax',
     expires: expiresAt,
   });
