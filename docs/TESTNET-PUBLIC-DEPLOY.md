@@ -233,7 +233,7 @@ Then in a browser, from a wallet that has never touched this deployment:
 
 1. connect → the network dropdown lists both chains with logos
 2. **Sign in** — proves the cookie survived the domain split, the single most likely thing to be broken
-3. **Claim 500 cUSD** — proves the faucet and the frontend RPC
+3. **Get 2,000 cUSD** — proves the faucet and the frontend RPC
 4. confirm age → **Open Pack** → a real Chainlink VRF reveal in ~10s
 5. **Keep it** → the card appears under Marketplace → My cards
 6. list it, then buy it from a second wallet
@@ -259,8 +259,10 @@ one registrable domain and that the API is on HTTPS.
 
 Put this on the page or in the invite. Some of it is already in the UI; the rest is not.
 
-- **cUSD is play money.** Anyone can mint unlimited via the token's open `mint()`. The reserve's
-  solvency proof is therefore a demonstration of the mechanism, not evidence of backing.
+- **cUSD is play money and the supply is unlimited.** The token's `mint()` is public, so anyone can take
+  any amount — the faucet button dispenses 2,000 (about six packs) and can be pressed repeatedly. The
+  reserve is funded from the same tap, so its solvency proof demonstrates the mechanism and says nothing
+  about backing.
 - **The cards are not real.** Grading commitments are literally
   `TESTNET-NOT-A-REAL-CERT-…`, and reference prices are labelled
   `testnet rehearsal fixture (NOT a real price feed)` in the API.

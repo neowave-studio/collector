@@ -84,13 +84,13 @@
       "confirmations": 3,
       "moonpayCurrency": "usdc_base",
       "explorer": "https://sepolia.basescan.org",
-      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol): 6 decimals, claim() gives any address 500 per 24h, mint() is unrestricted for reserve funding. It is listed FIRST because the code takes the first entry as the default pay token. The canonical stablecoin is kept below it for reference and can be made primary again by reordering — a pool version records its own payToken, so switching is a new pool commit plus setAllowedPayToken, never a redeploy. The faucet token's constructor refuses to exist on a production chain id.",
+      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol), 6 decimals. mint() is PUBLIC and unrestricted, which is how both testers and the reserve are funded — so supply here is unlimited and the reserve's size proves the mechanism, not any backing. The token also has a claim() with a 24h cooldown; it bounds nothing while mint() is open, so the UI does not present it as a limit. Listed FIRST because the code takes the first payTokens entry as the default. A pool version records its own payToken, so switching tokens is a new pool commit plus setAllowedPayToken — never a redeploy, but it DOES orphan the previously committed pool. The constructor refuses to exist on a production chain id.",
       "faucet": {
         "token": "0xa78c96751c80889789Ea96AFdb5C4718BaA92c9e",
         "symbol": "cUSD",
         "decimals": 6,
-        "claimAmount": "500000000",
-        "cooldownHours": 24
+        "claimAmount": "2000000000",
+        "note": "Dispensed by the token's unrestricted mint(), not by claim(). claim() exists and enforces 500 per address per 24h, but mint() is public on this token so that cooldown bounds nothing — presenting it as a limit would be false. Anyone can mint any amount up to 100M; that is deliberate on a testnet and is exactly why the contract refuses to deploy to a production chain id."
       }
     },
     {
@@ -117,13 +117,13 @@
       "moonpayCurrency": null,
       "explorer": "https://sepolia.etherscan.io",
       "note": "Rehearsal chain for the live VRF round-trip. Ethereum Sepolia is NOT a proxy for Base or BNB economics — L1 gas and VRF premiums differ by orders of magnitude — so treat a pass here as proof the Chainlink integration works, not as proof the product is affordable.",
-      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol): 6 decimals, claim() gives any address 500 per 24h, mint() is unrestricted for reserve funding. It is listed FIRST because the code takes the first entry as the default pay token. The canonical stablecoin is kept below it for reference and can be made primary again by reordering — a pool version records its own payToken, so switching is a new pool commit plus setAllowedPayToken, never a redeploy. The faucet token's constructor refuses to exist on a production chain id.",
+      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol), 6 decimals. mint() is PUBLIC and unrestricted, which is how both testers and the reserve are funded — so supply here is unlimited and the reserve's size proves the mechanism, not any backing. The token also has a claim() with a 24h cooldown; it bounds nothing while mint() is open, so the UI does not present it as a limit. Listed FIRST because the code takes the first payTokens entry as the default. A pool version records its own payToken, so switching tokens is a new pool commit plus setAllowedPayToken — never a redeploy, but it DOES orphan the previously committed pool. The constructor refuses to exist on a production chain id.",
       "faucet": {
         "token": "0x8dC36340Db35dAB73858B67A36A0288e2A1ce945",
         "symbol": "cUSD",
         "decimals": 6,
-        "claimAmount": "500000000",
-        "cooldownHours": 24
+        "claimAmount": "2000000000",
+        "note": "Dispensed by the token's unrestricted mint(), not by claim(). claim() exists and enforces 500 per address per 24h, but mint() is public on this token so that cooldown bounds nothing — presenting it as a limit would be false. Anyone can mint any amount up to 100M; that is deliberate on a testnet and is exactly why the contract refuses to deploy to a production chain id."
       }
     },
     {
@@ -212,7 +212,7 @@
         "cUSD": "0x4B7Fabc8216Fb0ce9D30Ee7b6b0150d3Da357A07",
         "tUSD": "0x4b3C6bdd6ed04D527cBa323F4d924224452Ab82B"
       },
-      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol): 6 decimals, claim() gives any address 500 per 24h, mint() is unrestricted for reserve funding. It is listed FIRST because the code takes the first entry as the default pay token. The canonical stablecoin is kept below it for reference and can be made primary again by reordering — a pool version records its own payToken, so switching is a new pool commit plus setAllowedPayToken, never a redeploy. The faucet token's constructor refuses to exist on a production chain id.",
+      "payTokenNote": "cUSD is our own FaucetStablecoin (src/testing/FaucetStablecoin.sol), 6 decimals. mint() is PUBLIC and unrestricted, which is how both testers and the reserve are funded — so supply here is unlimited and the reserve's size proves the mechanism, not any backing. The token also has a claim() with a 24h cooldown; it bounds nothing while mint() is open, so the UI does not present it as a limit. Listed FIRST because the code takes the first payTokens entry as the default. A pool version records its own payToken, so switching tokens is a new pool commit plus setAllowedPayToken — never a redeploy, but it DOES orphan the previously committed pool. The constructor refuses to exist on a production chain id.",
       "confirmations": 3,
       "moonpayCurrency": null,
       "explorer": "https://testnet.bscscan.com",
@@ -220,8 +220,8 @@
         "token": "0x4B7Fabc8216Fb0ce9D30Ee7b6b0150d3Da357A07",
         "symbol": "cUSD",
         "decimals": 6,
-        "claimAmount": "500000000",
-        "cooldownHours": 24
+        "claimAmount": "2000000000",
+        "note": "Dispensed by the token's unrestricted mint(), not by claim(). claim() exists and enforces 500 per address per 24h, but mint() is public on this token so that cooldown bounds nothing — presenting it as a limit would be false. Anyone can mint any amount up to 100M; that is deliberate on a testnet and is exactly why the contract refuses to deploy to a production chain id."
       }
     },
     {

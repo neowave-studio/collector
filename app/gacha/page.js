@@ -185,7 +185,7 @@ export default function GachaPage() {
       />
       {chain?.faucet && (
         <div className="max-w-[420px] mx-auto px-6 -mt-6 mb-10">
-          <ClaimTokens faucet={chain.faucet} />
+          <ClaimTokens faucet={chain.faucet} pack={pack} />
         </div>
       )}
       <FeaturedDrops />

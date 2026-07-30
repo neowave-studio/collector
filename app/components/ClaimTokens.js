@@ -8,24 +8,26 @@ import { formatUnits } from "../lib/api";
 /**
  * Self-service test-token faucet.
  *
- * Calls `claim()` on the faucet token directly from the user's own wallet. There is no backend step
- * and no relayer: the contract's only rule is one claim per address per cooldown, which it enforces
- * itself. Routing this through our API would add a service that can fail, a key that can be drained,
- * and a queue to explain — for a button whose entire job is "mint yourself test money".
+ * Calls the token's `mint()` directly from the user's own wallet. There is no backend step and no
+ * relayer: routing this through our API would add a service that can fail and a key that can be
+ * drained, for a button whose whole job is "give yourself play money".
+ *
+ * `mint()` rather than `claim()` on purpose. The token also has a `claim()` with a 24-hour per-address
+ * cooldown, which reads like a limit and is not one — `mint()` is public on the same contract, so
+ * anyone can take any amount regardless. Showing a countdown next to an unrestricted mint would be
+ * theatre, and the copy below says what is actually true instead.
  *
  * Rendered only where `/chains` reports a faucet, so it cannot appear on a chain whose pay token is
- * real money. The contract refuses to deploy to a production chain id as well; this is the second of
- * the two guards, not the only one.
+ * real money. The contract's constructor refuses production chain ids as the second of the two guards.
  */
 
 const FAUCET_ABI = [
-  {type: "function", name: "claim", stateMutability: "nonpayable", inputs: [], outputs: []},
   {
     type: "function",
-    name: "claimAvailableIn",
-    stateMutability: "view",
-    inputs: [{type: "address"}],
-    outputs: [{type: "uint256"}],
+    name: "mint",
+    stateMutability: "nonpayable",
+    inputs: [{type: "address"}, {type: "uint256"}],
+    outputs: [],
   },
   {
     type: "function",
@@ -36,15 +38,7 @@ const FAUCET_ABI = [
   },
 ];
 
-function humanWait(seconds) {
-  if (seconds <= 0) return null;
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.round((seconds % 3600) / 60);
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${Math.max(1, minutes)}m`;
-}
-
-export default function ClaimTokens({ faucet, className = "" }) {
+export default function ClaimTokens({ faucet, pack, className = "" }) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const client = usePublicClient();
@@ -55,42 +49,43 @@ export default function ClaimTokens({ faucet, className = "" }) {
 
   const enabled = Boolean(faucet?.token && address && client);
 
-  const { data, refetch } = useQuery({
+  const { data: balance, refetch } = useQuery({
     queryKey: ["faucet", chainId, faucet?.token, address],
     enabled,
     refetchInterval: 30_000,
-    queryFn: async () => {
-      const [balance, waitFor] = await Promise.all([
-        client.readContract({address: faucet.token, abi: FAUCET_ABI, functionName: "balanceOf", args: [address]}),
-        client.readContract({
-          address: faucet.token,
-          abi: FAUCET_ABI,
-          functionName: "claimAvailableIn",
-          args: [address],
-        }),
-      ]);
-      return {balance, waitFor: Number(waitFor)};
-    },
+    queryFn: () =>
+      client.readContract({
+        address: faucet.token,
+        abi: FAUCET_ABI,
+        functionName: "balanceOf",
+        args: [address],
+      }),
   });
 
   if (!faucet?.token) return null;
 
-  const wait = humanWait(data?.waitFor ?? 0);
   const amount = formatUnits(faucet.claimAmount, faucet.decimals, 0);
 
-  const claim = async () => {
+  // Stated in packs, because that is the unit the number actually matters in.
+  const packs =
+    pack?.pricePerRip && BigInt(pack.pricePerRip) > 0n
+      ? Number(BigInt(faucet.claimAmount) / BigInt(pack.pricePerRip))
+      : null;
+
+  const getTokens = async () => {
     setError(null);
     setBusy(true);
     try {
       const hash = await writeContractAsync({
         address: faucet.token,
         abi: FAUCET_ABI,
-        functionName: "claim",
+        functionName: "mint",
+        args: [address, BigInt(faucet.claimAmount)],
       });
       await client.waitForTransactionReceipt({hash});
       await refetch();
     } catch (err) {
-      setError(err?.shortMessage ?? err?.message ?? "The claim was declined.");
+      setError(err?.shortMessage ?? err?.message ?? "The wallet declined it.");
     } finally {
       setBusy(false);
     }
@@ -104,24 +99,25 @@ export default function ClaimTokens({ faucet, className = "" }) {
             Test funds
           </p>
           <p className="text-white/85 text-[14px] font-semibold">
-            Claim {amount} {faucet.symbol}
+            Get {amount} {faucet.symbol}
+            {packs ? <span className="text-white/40 font-normal"> · about {packs} packs</span> : null}
           </p>
         </div>
-        {data?.balance !== undefined && (
+        {balance !== undefined && (
           <div className="text-right">
             <p className="font-mono-data text-[10px] tracking-[0.2em] uppercase text-white/40 mb-1">
               You hold
             </p>
             <p className="text-white text-[15px] font-semibold tabular-nums">
-              {formatUnits(data.balance, faucet.decimals)}
+              {formatUnits(balance, faucet.decimals)}
             </p>
           </div>
         )}
       </div>
 
       <button
-        onClick={claim}
-        disabled={!isConnected || busy || Boolean(wait)}
+        onClick={getTokens}
+        disabled={!isConnected || busy}
         className="buy-now-button w-full rounded-xl border px-3 py-3 border-[#FFFFFF1A] font-[600] text-[14px] disabled:opacity-50"
       >
         <span className="buy-now-button-text">
@@ -129,17 +125,16 @@ export default function ClaimTokens({ faucet, className = "" }) {
             ? "Connect wallet"
             : busy
               ? "Confirm in wallet…"
-              : wait
-                ? `Claim again in ${wait}`
-                : `Claim ${amount} ${faucet.symbol}`}
+              : `Get ${amount} ${faucet.symbol}`}
         </span>
       </button>
 
       {error && <p className="text-[#ff6b6b] text-[12px] mt-2.5 leading-[1.5]">{error}</p>}
 
       <p className="text-white/30 text-[11.5px] mt-3 leading-[1.55]">
-        {faucet.symbol} is a test token with no value, mintable by anyone on this network. One claim per
-        address every {faucet.cooldownHours} hours, enforced by the contract rather than by us.
+        {faucet.symbol} is a test token with no value. Minting is open to anyone on this network and
+        unlimited, so take it as many times as you need — and read nothing into the reserve&apos;s size,
+        which is funded from the same tap.
       </p>
     </div>
   );

@@ -10,13 +10,19 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 /// Circle's Sepolia faucet gives roughly 10 USDC a day, which cannot fund a reserve or even a single
 /// premium pack, and that turns "try the product" into a week-long errand.
 ///
-/// Two ways in, deliberately separated:
-///   - `claim()`  self-service, {CLAIM_AMOUNT} per address per {CLAIM_COOLDOWN}. What users touch.
-///   - `mint()`   unrestricted, for funding reserves and seeding demo wallets. What ops touches.
+/// Two ways in:
+///   - `claim()`  {CLAIM_AMOUNT} per address per {CLAIM_COOLDOWN}.
+///   - `mint()`   unrestricted, for funding reserves and seeding demo wallets.
 ///
 /// `mint` being open is not an oversight: on a testnet there is no value to protect and a permissioned
 /// mint would just mean one more key to hold. It is also precisely why the constructor refuses to let
 /// this contract exist on a chain where the token would represent money.
+///
+/// BUT NOTE, if you are about to surface `claim()` in a UI: its cooldown bounds NOTHING while `mint()`
+/// is public. The same caller can take any amount from `mint()` a block later. Presenting the cooldown
+/// as a limit is therefore false, and the frontend deliberately calls `mint()` and says supply is
+/// unlimited instead. If you ever want the cooldown to mean something, restrict `mint()` to a role
+/// first — the two only make sense together.
 contract FaucetStablecoin is ERC20 {
     uint8 private constant DECIMALS = 6;
 
