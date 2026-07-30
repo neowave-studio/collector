@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
 import { api, formatUnits } from "../../lib/api";
 import Reveal from "../Reveal";
+import { CardGridSkeleton } from "../Skeleton";
 
 /**
  * Cards currently for sale, straight from the order book.
@@ -48,7 +49,9 @@ export default function FeaturedDrops() {
           </div>
         </Reveal>
 
-        {isLoading && <p className="text-white/40 text-[14px]">Loading listings…</p>}
+        {isLoading && (
+          <CardGridSkeleton count={4} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" />
+        )}
 
         {!isLoading && !hasAny && (
           <div className="glass rounded-2xl p-8 text-center">

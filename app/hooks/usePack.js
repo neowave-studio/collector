@@ -20,7 +20,7 @@ export function usePack() {
   const { isConnected } = useAccount();
 
   const { data: chains } = useQuery({queryKey: ["chains"], queryFn: api.chains});
-  const { data: packs } = useQuery({queryKey: ["packs"], queryFn: api.packs});
+  const { data: packs, isLoading: packsLoading } = useQuery({queryKey: ["packs"], queryFn: api.packs});
 
   const servedChainIds = useMemo(() => new Set((chains ?? []).map((c) => c.chainId)), [chains]);
   const onWrongNetwork = isConnected && chains !== undefined && !servedChainIds.has(chainId);
@@ -46,5 +46,5 @@ export function usePack() {
     [packs, displayChainId],
   );
 
-  return {chainId, displayChainId, chains, chain, pack, servedChainIds, onWrongNetwork, targetChain};
+  return {chainId, displayChainId, chains, chain, pack, packsLoading, servedChainIds, onWrongNetwork, targetChain};
 }

@@ -168,13 +168,24 @@ export function useRipFlow({ chainId, packId }) {
         try {
           const mine = await api.myDraws();
           const latest = mine?.[0];
-          if (latest && (latest.status === "revealed" || latest.status === "delivered")) {
-            stopPolling();
-            const detail = await api.draw(latest.chain_id ?? chainId, latest.draw_id);
-            setDraw({ ...latest, ...detail });
-            setPhase("revealed");
-            resolve(detail);
-            return;
+          if (latest) {
+            // Trust the chain, not the DB `status` column. The indexer can lag — or, after a cache
+            // rebuild, be mid-resync — leaving status='requested' while the reveal is already final
+            // on-chain, which stranded the modal on "waiting" forever. `/draws/:id` reads `revealed`
+            // live from the contract, so key the transition off that and fall back to the cached
+            // status only if the on-chain read is momentarily unavailable.
+            const detail = await api
+              .draw(latest.chain_id ?? chainId, latest.draw_id)
+              .catch(() => null);
+            const isRevealed =
+              detail?.revealed || latest.status === "revealed" || latest.status === "delivered";
+            if (isRevealed) {
+              stopPolling();
+              setDraw({ ...latest, ...(detail ?? {}) });
+              setPhase("revealed");
+              resolve(detail ?? latest);
+              return;
+            }
           }
           if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
             stopPolling();

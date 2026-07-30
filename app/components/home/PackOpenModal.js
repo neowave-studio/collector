@@ -140,74 +140,94 @@ export default function PackOpenModal({ open, onClose, flow, pack, onKeep, onSel
           <div className="pack-reveal-halo" />
           {rarity.label === "Epic" && <div className="pack-rays" />}
 
-          <div className="pack-card">
-            <div className="pack-card-inner">
-              <img
-                src={card?.imageUrl ?? "/chari.png"}
-                alt={card?.name ?? "Your card"}
-                className="pack-card-img"
-                draggable="false"
-              />
-              <div className="holo-sheen" />
+          <div className="pack-reveal-panel">
+            <div className="pack-card">
+              <div className="pack-card-inner">
+                <img
+                  src={card?.imageUrl ?? "/chari.png"}
+                  alt={card?.name ?? "Your card"}
+                  className="pack-card-img"
+                  draggable="false"
+                />
+                <div className="holo-sheen" />
+              </div>
             </div>
-          </div>
 
-          <div className="pack-meta">
-            <span className={`pack-badge ${rarity.badge}`}>{card?.grade ?? rarity.rarity}</span>
-            <h3 className="pack-name font-sf-pro-rounded">{card?.name ?? "Your card"}</h3>
-            <div className="pack-value">
-              <Image src="/coin.svg" alt="" width={22} height={22} className="mt-0.5" />
-              <span className="tabular-nums">{formatUnits(card?.priceRef, 6)}</span>
+            <div className="pack-meta">
+              <span className="pack-eyebrow">You pulled</span>
+              <h3 className="pack-name font-sf-pro-rounded">{card?.name ?? "Your card"}</h3>
+              <span className={`pack-badge ${rarity.badge}`}>{card?.grade ?? rarity.rarity}</span>
+              <div className="pack-value-block">
+                <span className="pack-value-label">Reference value</span>
+                <div className="pack-value">
+                  <Image src="/coin.svg" alt="" width={22} height={22} className="mt-0.5" />
+                  <span className="tabular-nums">{formatUnits(card?.priceRef, 6)}</span>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* The receipt: exactly which committed odds produced this card. */}
-          <div className="font-mono-data text-[10.5px] text-white/35 text-center leading-[1.7] mt-1">
-            <div>
-              draw #{draw?.drawId} · weight {draw?.winningWeight} / {terms?.terms?.totalWeight}
+            {/* The receipt: exactly which committed odds produced this card, as a verifiable record. */}
+            <div className="pack-receipt">
+              <span className="pack-receipt-title">Provenance</span>
+              <dl className="pack-receipt-rows font-mono-data">
+                <div>
+                  <dt>draw</dt>
+                  <dd>#{draw?.drawId}</dd>
+                </div>
+                <div>
+                  <dt>weight</dt>
+                  <dd>
+                    {draw?.winningWeight} / {terms?.terms?.totalWeight}
+                  </dd>
+                </div>
+                <div>
+                  <dt>odds</dt>
+                  <dd>
+                    v{draw?.poolVersion} · {String(terms?.terms?.merkleRoot ?? "").slice(0, 10)}…
+                  </dd>
+                </div>
+              </dl>
+              <a className="pack-receipt-link" href="/verify">
+                verify this draw yourself →
+              </a>
             </div>
-            <div>
-              odds v{draw?.poolVersion} · root {String(terms?.terms?.merkleRoot ?? "").slice(0, 10)}…
-            </div>
-            <a className="link-underline text-white/55" href="/verify">
-              verify this draw yourself →
-            </a>
-          </div>
 
-          <div className="pack-actions">
-            <button
-              className="pack-btn-secondary btn-anim"
-              disabled={keeping}
-              onClick={async () => {
-                // Keeping is a real action now — it delivers the card out of the vault rather than
-                // just dismissing the dialog. Close either way: the draw belongs to the user and is
-                // deliverable by anyone once the window passes, so a failed relay is not a dead end.
-                setKeeping(true);
-                try {
-                  await onKeep?.(draw);
-                } finally {
-                  setKeeping(false);
-                  close();
-                }
-              }}
-            >
-              {keeping ? "Delivering…" : "Keep it"}
-            </button>
-            {onSellBack && (
+            <div className="pack-actions">
               <button
-                className="pack-btn-primary buy-now-button"
+                className="pack-btn-secondary btn-anim"
                 disabled={keeping}
-                onClick={() => onSellBack(draw)}
+                onClick={async () => {
+                  // Keeping is a real action now — it delivers the card out of the vault rather than
+                  // just dismissing the dialog. Close either way: the draw belongs to the user and is
+                  // deliverable by anyone once the window passes, so a failed relay is not a dead end.
+                  setKeeping(true);
+                  try {
+                    await onKeep?.(draw);
+                  } finally {
+                    setKeeping(false);
+                    close();
+                  }
+                }}
               >
-                <span className="buy-now-button-text">Sell back</span>
+                {keeping ? "Delivering…" : "Keep it"}
               </button>
-            )}
+              {onSellBack && (
+                <button
+                  className="pack-btn-primary buy-now-button"
+                  disabled={keeping}
+                  onClick={() => onSellBack(draw)}
+                >
+                  <span className="buy-now-button-text">Sell back</span>
+                </button>
+              )}
+            </div>
+
+            <p className="pack-note">
+              Keeping moves the card into your collection now. You can also do nothing — it is yours
+              either way, and is delivered automatically once the sell-back window
+              {windowLabel ? ` (${windowLabel})` : ""} closes.
+            </p>
           </div>
-          <p className="text-white/35 text-[11.5px] text-center mt-3 leading-[1.6]">
-            Keeping moves the card into your collection now. You can also do nothing — it is yours
-            either way, and is delivered automatically once the sell-back window
-            {windowLabel ? ` (${windowLabel})` : ""} closes.
-          </p>
         </div>
       )}
     </div>

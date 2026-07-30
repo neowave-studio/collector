@@ -56,8 +56,6 @@ export const metadata = {
   // Favicon setup
   icons: {
     icon: "/favicon.svg",
-    shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
   },
   
   // Web app manifest
@@ -67,7 +65,6 @@ export const metadata = {
   other: {
     "application-name": "Collector",
     "msapplication-TileColor": "#2BD383",
-    "msapplication-config": "/browserconfig.xml",
   }
 };
 
@@ -77,8 +74,6 @@ export default function RootLayout({ children }) {
       <head>
         {/* Essential favicon links */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="Collector" />
         <link rel="manifest" href="/site.webmanifest" />
         

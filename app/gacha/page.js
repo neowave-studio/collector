@@ -12,6 +12,7 @@ import { useRipFlow } from "../hooks/useRipFlow";
 import { api } from "../lib/api";
 import { usePack } from "../hooks/usePack";
 import ClaimTokens from "../components/ClaimTokens";
+import PendingDraws from "../components/PendingDraws";
 
 /**
  * The gacha page.
@@ -36,7 +37,7 @@ export default function GachaPage() {
 
   // Shared with the landing page. Both render this hero, and keeping two copies of the "which pack"
   // logic is precisely how the landing page ended up permanently blank.
-  const { chain, pack, displayChainId, onWrongNetwork, targetChain } = usePack();
+  const { chain, pack, displayChainId, packsLoading, onWrongNetwork, targetChain } = usePack();
 
   const flow = useRipFlow({ chainId: pack?.chainId ?? chainId, packId: pack?.packId });
 
@@ -171,6 +172,7 @@ export default function GachaPage() {
       <HomeHero
         onOpen={blockedReason ? undefined : openPack}
         pack={pack}
+        loading={packsLoading}
         disabled={Boolean(blockedReason)}
         blockedReason={blockedReason}
         action={action}
@@ -181,6 +183,7 @@ export default function GachaPage() {
           <ClaimTokens faucet={chain.faucet} pack={pack} />
         </div>
       )}
+      <PendingDraws />
       <FeaturedDrops />
       <PackOpenModal
         open={modalOpen}

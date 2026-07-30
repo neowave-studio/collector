@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useChainId } from "wagmi";
 import { api, formatUnits } from "@/app/lib/api";
 import { useMarketplace } from "@/app/hooks/useMarketplace";
 import Reveal from "@/app/components/Reveal";
 import { rarityClass } from "@/app/components/Card";
+import { Skeleton } from "@/app/components/Skeleton";
 
 /**
  * A single card.
@@ -18,7 +19,10 @@ import { rarityClass } from "@/app/components/Card";
  * value" is the reference price committed in the pool it was drawn from, which is why it is labelled
  * as a committed figure rather than presented as a live market quote.
  */
-export default function CardDetailsPage({ cardId }) {
+export default function CardDetailsPage() {
+  // App Router passes route params via useParams(), not as a prop — reading a `cardId` prop left it
+  // undefined, so every card 404'd.
+  const cardId = useParams()?.id;
   const searchParams = useSearchParams();
   const connectedChain = useChainId();
   const chainId = Number(searchParams.get("chainId") ?? connectedChain);
@@ -56,8 +60,33 @@ export default function CardDetailsPage({ cardId }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-[130px] px-6">
-        <p className="text-white/40 text-[14px]">Loading card…</p>
+      <div className="min-h-screen pt-[120px] pb-24">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] gap-10 items-start">
+            <div className="holo-case relative rounded-[28px] p-6">
+              <div className="aspect-[5/7] rounded-[18px] skeleton" />
+            </div>
+            <div className="space-y-5">
+              <div>
+                <Skeleton className="h-[22px] w-20 rounded-lg mb-3" />
+                <Skeleton className="h-[34px] w-64 max-w-full mb-2.5" />
+                <Skeleton className="h-[14px] w-40" />
+              </div>
+              <div className="glass rounded-2xl p-5 space-y-3">
+                <Skeleton className="h-[11px] w-44" />
+                <Skeleton className="h-[26px] w-28" />
+                <Skeleton className="h-[12px] w-full max-w-[280px]" />
+              </div>
+              <div className="glass rounded-2xl p-5 space-y-2.5">
+                <Skeleton className="h-[11px] w-36 mb-1.5" />
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-[13px] w-full" />
+                ))}
+              </div>
+              <Skeleton className="h-[56px] w-full rounded-2xl" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

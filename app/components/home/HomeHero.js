@@ -5,6 +5,7 @@ import Image from "next/image";
 import Reveal from "../Reveal";
 import OddsDisclosure from "../OddsDisclosure";
 import MoonPayButton from "../MoonPayButton";
+import { Skeleton } from "../Skeleton";
 import { formatUnits } from "../../lib/api";
 
 const prefersReducedMotion = () =>
@@ -21,7 +22,7 @@ const prefersReducedMotion = () =>
  * @param {string}     [props.blockedReason] Why, shown verbatim so a refusal is never mysterious.
  * @param {number}     [props.chainId]
  */
-export default function HomeHero({ onOpen, pack, disabled, blockedReason, chainId, action }) {
+export default function HomeHero({ onOpen, pack, loading, disabled, blockedReason, chainId, action }) {
   const caseRef = useRef(null);
 
   // Derived from the committed pool, never hardcoded: a "big win" is any card whose reference value
@@ -202,6 +203,22 @@ export default function HomeHero({ onOpen, pack, disabled, blockedReason, chainI
               */}
               {pack ? (
                 <OddsDisclosure pack={pack} />
+              ) : loading ? (
+                <div className="glass rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <Skeleton className="h-[11px] w-20" />
+                    <Skeleton className="h-[11px] w-28" />
+                  </div>
+                  <Skeleton className="h-[8px] w-full rounded-full mb-4" />
+                  <div className="space-y-2.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <Skeleton className="h-[13px] w-28" />
+                        <Skeleton className="h-[13px] w-12" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : (
                 <div className="glass rounded-2xl p-5">
                   <span className="font-mono-data text-[11px] tracking-[0.25em] uppercase text-white/50">

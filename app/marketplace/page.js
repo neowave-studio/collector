@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useChainId } from "wagmi";
 import { api, formatUnits } from "../lib/api";
+import { chainName } from "../lib/wagmi";
 import { useMarketplace } from "../hooks/useMarketplace";
 import { useSession } from "../hooks/useSession";
 import Reveal from "../components/Reveal";
 import Pagination from "../components/Pagination";
 import Card from "../components/Card";
+import { CardGridSkeleton } from "../components/Skeleton";
 
 /**
  * The marketplace.
@@ -46,6 +48,16 @@ export default function MarketplacePage() {
     queryFn: api.myCards,
     enabled: isAuthenticated,
   });
+
+  // The contracts every trade actually runs through, exposed so a buyer can check the addresses their
+  // wallet is about to sign against rather than trusting the UI.
+  const { data: mktConfig } = useQuery({
+    queryKey: ["marketplaceConfig"],
+    queryFn: api.marketplaceConfig,
+  });
+  // Prefer the connected chain; fall back to the primary config entry so the addresses are still shown
+  // before a wallet is connected (chainId can be undefined until then).
+  const contracts = mktConfig?.find((c) => c.chainId === chainId) ?? mktConfig?.[0];
 
   // A page slice that survives the list shrinking underneath it — a fill or an expiry can remove a
   // row between refetches, and landing on a blank page after buying something reads as a failure.
@@ -161,7 +173,7 @@ export default function MarketplacePage() {
 
         {tab === "browse" && (
           <>
-            {isLoading && <p className="text-white/40 text-[14px]">Loading orders…</p>}
+            {isLoading && <CardGridSkeleton count={6} />}
             {!isLoading && (!listings || listings.length === 0) && (
               <div className="glass rounded-2xl p-8 text-center">
                 <p className="text-white/60 text-[15px] mb-1">No cards listed yet.</p>
@@ -255,6 +267,8 @@ export default function MarketplacePage() {
               </div>
             )}
 
+            {isAuthenticated && !myCards && <CardGridSkeleton count={3} />}
+
             {isAuthenticated && myCards?.length === 0 && (
               <div className="glass rounded-2xl p-8 text-center">
                 <p className="text-white/60 text-[15px] mb-1">You don&apos;t own any cards yet.</p>
@@ -319,6 +333,26 @@ export default function MarketplacePage() {
               </div>
             )}
           </>
+        )}
+        {contracts && (
+          <Reveal y={20}>
+            <div className="glass-soft rounded-xl p-4 mt-10">
+              <p className="font-mono-data text-[10px] tracking-[0.24em] uppercase text-white/40 mb-2.5">
+                On-chain contracts · {chainName(chainId)} · {Number(contracts.feeBps) / 100}% fee
+              </p>
+              <div className="font-mono-data text-[11px] text-white/45 space-y-1 break-all">
+                <div>
+                  <span className="text-white/30">marketplace</span> {contracts.marketplace}
+                </div>
+                <div>
+                  <span className="text-white/30">payment router</span> {contracts.paymentRouter}
+                </div>
+                <div>
+                  <span className="text-white/30">collectible NFT</span> {contracts.collectibleNFT}
+                </div>
+              </div>
+            </div>
+          </Reveal>
         )}
       </div>
     </main>

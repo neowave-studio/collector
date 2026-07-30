@@ -18,11 +18,16 @@ import { usePack } from "./hooks/usePack";
  */
 export default function HomePage() {
   const router = useRouter();
-  const { pack, displayChainId } = usePack();
+  const { pack, displayChainId, packsLoading } = usePack();
 
   return (
     <main className="relative min-h-screen">
-      <HomeHero pack={pack} chainId={displayChainId} onOpen={() => router.push("/gacha")} />
+      <HomeHero
+        pack={pack}
+        loading={packsLoading}
+        chainId={displayChainId}
+        onOpen={() => router.push("/gacha")}
+      />
       <FeaturedDrops />
     </main>
   );
