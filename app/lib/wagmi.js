@@ -42,6 +42,8 @@ if (!projectId) {
 
 const LOCAL_DEVNET = process.env.NEXT_PUBLIC_ANVIL_RPC_URL ? [anvil] : [];
 
+export const DEFAULT_CHAIN_ID = Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID ?? baseSepolia.id);
+
 /**
  * Networks the wallet stack can be asked to switch to.
  *
@@ -49,17 +51,18 @@ const LOCAL_DEVNET = process.env.NEXT_PUBLIC_ANVIL_RPC_URL ? [anvil] : [];
  * list only says a chain is *reachable*. Which chains are actually live is `/chains`, and the
  * NetworkSwitcher intersects the two — so a chain here that the backend does not serve is simply
  * never offered.
+ *
+ * ORDER MATTERS, and not only cosmetically. With no wallet connected, wagmi's `useChainId()` returns
+ * `chains[0]` — AppKit's `defaultNetwork` does not govern it. Leaving Base mainnet first meant every
+ * visitor who had not yet connected was treated as being on chain 8453, which this deployment does not
+ * serve: no pack was found, the pack stats rendered as dashes, and the odds panel fell through to a
+ * placeholder. Putting the configured default first makes the disconnected view show the real thing.
  */
+const ALL_CHAINS = [...LOCAL_DEVNET, base, baseSepolia, bsc, bscTestnet, mainnet, sepolia, polygon, arbitrum];
+
 export const SUPPORTED_CHAINS = [
-  ...LOCAL_DEVNET,
-  base,
-  baseSepolia,
-  bsc,
-  bscTestnet,
-  mainnet,
-  sepolia,
-  polygon,
-  arbitrum,
+  ...ALL_CHAINS.filter((c) => c.id === DEFAULT_CHAIN_ID),
+  ...ALL_CHAINS.filter((c) => c.id !== DEFAULT_CHAIN_ID),
 ];
 
 /**
@@ -105,10 +108,6 @@ export const wagmiAdapter = new WagmiAdapter({
 });
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
-
-export const DEFAULT_CHAIN_ID = Number(
-  process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID ?? baseSepolia.id
-);
 
 export function chainName(chainId) {
   return SUPPORTED_CHAINS.find((c) => c.id === chainId)?.name ?? `Chain ${chainId}`;

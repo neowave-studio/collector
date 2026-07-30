@@ -1,15 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { useAppKit } from "@reown/appkit/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import HomeHero from "../components/home/HomeHero";
 import FeaturedDrops from "../components/home/FeaturedDrops";
 import PackOpenModal from "../components/home/PackOpenModal";
 import { useSession } from "../hooks/useSession";
 import { useRipFlow } from "../hooks/useRipFlow";
 import { api } from "../lib/api";
+import { usePack } from "../hooks/usePack";
 import ClaimTokens from "../components/ClaimTokens";
 
 /**
@@ -32,18 +33,10 @@ export default function GachaPage() {
   const [signingIn, setSigningIn] = useState(false);
 
   const queryClient = useQueryClient();
-  const { data: chains } = useQuery({queryKey: ["chains"], queryFn: api.chains});
-  const { data: packs } = useQuery({queryKey: ["packs"], queryFn: api.packs});
 
-  const chain = chains?.find((c) => c.chainId === chainId);
-
-  // Only ever offer a pack for the chain the wallet is ACTUALLY on. Falling back to "any pack" made
-  // the button look usable while every transaction would have gone to the wrong network.
-  const pack = useMemo(() => packs?.find((p) => p.chainId === chainId) ?? null, [packs, chainId]);
-
-  const servedChainIds = useMemo(() => new Set((chains ?? []).map((c) => c.chainId)), [chains]);
-  const onWrongNetwork = isConnected && chains !== undefined && !servedChainIds.has(chainId);
-  const targetChain = chains?.find((c) => c.gachaEnabled) ?? chains?.[0] ?? null;
+  // Shared with the landing page. Both render this hero, and keeping two copies of the "which pack"
+  // logic is precisely how the landing page ended up permanently blank.
+  const { chain, pack, displayChainId, onWrongNetwork, targetChain } = usePack();
 
   const flow = useRipFlow({ chainId: pack?.chainId ?? chainId, packId: pack?.packId });
 

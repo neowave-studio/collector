@@ -7,14 +7,6 @@ import OddsDisclosure from "../OddsDisclosure";
 import MoonPayButton from "../MoonPayButton";
 import { formatUnits } from "../../lib/api";
 
-const RARITIES = [
-  { label: "Common", range: "$30 – $60", chance: "80%", dot: "#8A8F98" },
-  { label: "Uncommon", range: "$60 – $110", chance: "15%", dot: "#6B8AFF" },
-  { label: "Rare", range: "$110 – $250", chance: "4%", dot: "#FFD36B" },
-  { label: "Epic", range: "$250 – $2,000+", chance: "1%", dot: "#2BD383" },
-];
-
-
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia &&
@@ -200,35 +192,24 @@ export default function HomeHero({ onOpen, pack, disabled, blockedReason, chainI
 
             {/* Pull odds — committed on-chain, disclosed at the point of purchase (spec §12) */}
             <Reveal y={24} delay={340}>
+              {/*
+                No pack means no odds — say so, rather than showing a plausible-looking table.
+                This slot used to render four invented tiers ("Common $30–$60", 80%…) behind an
+                "indicative only" caption. Nothing in them came from the committed pool, and odds are
+                the one number this product exists to make verifiable: publishing a made-up version
+                while the real one is one request away is the worst possible placeholder. An empty
+                state costs a reader nothing; a fabricated one costs them their trust.
+              */}
               {pack ? (
                 <OddsDisclosure pack={pack} />
               ) : (
                 <div className="glass rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono-data text-[11px] tracking-[0.25em] uppercase text-white/50">
-                      Pull odds
-                    </span>
-                  </div>
-                  <div className="space-y-2.5">
-                    {RARITIES.map((r) => (
-                      <div key={r.label} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <span
-                            className="w-2.5 h-2.5 rounded-full"
-                            style={{ background: r.dot, boxShadow: `0 0 8px ${r.dot}66` }}
-                          />
-                          <span className="text-white/85 text-[13px] md:text-[14px] font-medium">
-                            {r.label}
-                          </span>
-                        </div>
-                        <span className="text-white/40 text-[12px] md:text-[13px] tabular-nums">
-                          {r.range}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-white/35 text-[12px] mt-3">
-                    Indicative only — connect to load the odds actually committed on-chain.
+                  <span className="font-mono-data text-[11px] tracking-[0.25em] uppercase text-white/50">
+                    Pull odds
+                  </span>
+                  <p className="text-white/45 text-[13px] mt-3 leading-[1.6]">
+                    Loaded from the pool committed on-chain, so there is nothing to show until a pack is
+                    active on this network. Connect a wallet, or switch to a network that has one.
                   </p>
                 </div>
               )}
