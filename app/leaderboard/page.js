@@ -60,12 +60,12 @@ export default function LeaderboardPage() {
         {isLoading && <p className="text-white/40 text-[14px]">Reading holdings…</p>}
 
         {!isLoading && entries.length === 0 && (
-          <div className="glass rounded-2xl p-8 text-center">
+          <Reveal y={20} className="glass-soft rounded-2xl p-8 text-center block">
             <p className="text-white/60 text-[15px] mb-1">Nobody holds a card yet.</p>
-            <a href="/gacha" className="link-underline text-white/80 text-[13.5px]">
+            <a href="/gacha" className="link-underline btn-anim inline-block text-white/80 text-[13.5px]">
               Be the first — open a pack →
             </a>
-          </div>
+          </Reveal>
         )}
 
         {entries.length > 0 && (
@@ -75,6 +75,7 @@ export default function LeaderboardPage() {
         )}
 
         {entries.length > 0 && (
+          <Reveal y={24} delay={120}>
           <div className="glass rounded-2xl overflow-hidden">
             <table className="w-full text-[14px]">
               <thead>
@@ -97,8 +98,8 @@ export default function LeaderboardPage() {
                   return (
                     <tr
                       key={entry.address}
-                      className={`border-b border-white/[0.06] transition-colors ${
-                        isMe ? "bg-[#2BD383]/[0.07]" : "hover:bg-white/[0.03]"
+                      className={`border-b border-white/[0.06] transition-colors duration-200 ${
+                        isMe ? "bg-[#2BD383]/[0.07]" : "hover:bg-white/[0.04]"
                       }`}
                     >
                       <td className="px-5 py-3.5">
@@ -117,7 +118,7 @@ export default function LeaderboardPage() {
                       <td className="px-5 py-3.5">
                         <a
                           href={`/profile/${entry.address}`}
-                          className="link-underline text-white/85 hover:text-white font-mono-data text-[12.5px]"
+                          className="link-underline btn-anim inline-block text-white/85 hover:text-white font-mono-data text-[12.5px]"
                         >
                           {entry.address.slice(0, 10)}…{entry.address.slice(-6)}
                         </a>
@@ -145,6 +146,7 @@ export default function LeaderboardPage() {
               </tbody>
             </table>
           </div>
+          </Reveal>
         )}
 
         {totalPages > 1 && (

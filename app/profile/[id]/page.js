@@ -58,9 +58,12 @@ export default function UserProfilePage({ userId }) {
           <div className="glass rounded-2xl p-6 mb-8">
             <div className="flex flex-wrap items-center justify-between gap-5">
               <div>
-                <p className="font-mono-data text-[10.5px] tracking-[0.25em] uppercase text-white/40 mb-1.5">
-                  {isMe ? "Your collection" : "Collector"}
-                </p>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="iri-divider w-8" />
+                  <span className="font-mono-data text-[10.5px] tracking-[0.25em] uppercase iri-text">
+                    {isMe ? "Your collection" : "Collector"}
+                  </span>
+                </div>
                 <h1 className="font-sf-pro-rounded text-white text-[24px] md:text-[28px] font-bold tracking-[-0.02em] break-all">
                   {profile.address.slice(0, 10)}…{profile.address.slice(-8)}
                 </h1>
@@ -95,7 +98,7 @@ export default function UserProfilePage({ userId }) {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`px-4 py-2 rounded-xl text-[13.5px] font-semibold transition-colors ${
+              className={`btn-anim px-4 py-2 rounded-xl text-[13.5px] font-semibold transition-colors ${
                 tab === key
                   ? "nav-active text-white border border-[#FFFFFF47]"
                   : "glass-soft text-white/50 hover:text-white/85 border border-transparent"
@@ -111,9 +114,9 @@ export default function UserProfilePage({ userId }) {
             {profile.cards.length === 0 && (
               <p className="text-white/40 text-[14px] col-span-full">No cards held.</p>
             )}
-            {profile.cards.map((card) => (
+            {profile.cards.map((card, i) => (
+              <Reveal key={`${card.chainId}-${card.tokenId}`} y={24} delay={Math.min(i * 60, 320)}>
               <Card
-                key={`${card.chainId}-${card.tokenId}`}
                 href={`/card/${card.tokenId}?chainId=${card.chainId}`}
                 name={card.name}
                 subtitle={`#${card.tokenId} · ${card.setName ?? "—"}`}
@@ -121,12 +124,13 @@ export default function UserProfilePage({ userId }) {
                 grade={card.grade}
                 imageUrl={card.imageUrl}
               />
+              </Reveal>
             ))}
           </div>
         )}
 
         {tab === "draws" && (
-          <div className="glass rounded-2xl overflow-hidden">
+          <Reveal y={22} className="glass rounded-2xl overflow-hidden block">
             {profile.draws.length === 0 ? (
               <p className="text-white/40 text-[14px] p-6">No packs opened.</p>
             ) : (
@@ -166,11 +170,11 @@ export default function UserProfilePage({ userId }) {
                 </tbody>
               </table>
             )}
-          </div>
+          </Reveal>
         )}
 
         {tab === "trades" && (
-          <div className="glass rounded-2xl overflow-hidden">
+          <Reveal y={22} className="glass rounded-2xl overflow-hidden block">
             {profile.trades.length === 0 ? (
               <p className="text-white/40 text-[14px] p-6">No trades yet.</p>
             ) : (
@@ -206,7 +210,7 @@ export default function UserProfilePage({ userId }) {
                 </tbody>
               </table>
             )}
-          </div>
+          </Reveal>
         )}
       </div>
     </div>

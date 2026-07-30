@@ -127,7 +127,7 @@ export default function MarketplacePage() {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`px-4 py-2 rounded-xl text-[13.5px] font-semibold transition-colors ${
+              className={`btn-anim px-4 py-2 rounded-xl text-[13.5px] font-semibold transition-colors ${
                 tab === key
                   ? "nav-active text-white border border-[#FFFFFF47]"
                   : "glass-soft text-white/50 hover:text-white/85 border border-transparent"
@@ -160,34 +160,40 @@ export default function MarketplacePage() {
               </div>
             )}
 
+            {/*
+              Staggered reveal, as on the original design. The delay is capped so a full page of
+              results still finishes animating quickly — an uncapped `index * 60` would leave the last
+              tile of a 9-card grid arriving half a second after the first, which reads as lag.
+            */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {browse.visible.map((listing) => (
-                <Card
-                  key={listing.id}
-                  href={`/card/${listing.order.tokenId}?chainId=${listing.chainId}`}
-                  name={listing.card.name}
-                  subtitle={listing.card.setName ?? "—"}
-                  year={listing.card.year}
-                  grade={listing.card.grade}
-                  imageUrl={listing.card.imageUrl}
-                  valueLabel="Asking price"
-                  value={formatUnits(listing.order.price, 6)}
-                  action={
-                    <button
-                      onClick={() => onBuy(listing)}
-                      disabled={!isConnected || busy === `buy:${listing.id}`}
-                      className="buy-now-button w-full rounded-[16px] border px-3 py-3.5 border-[#FFFFFF1A] font-[600] text-[15px] disabled:opacity-50"
-                    >
-                      <span className="buy-now-button-text">
-                        {busy === `buy:${listing.id}`
-                          ? "Confirm in wallet…"
-                          : !isConnected
-                            ? "Connect wallet"
-                            : "Buy now"}
-                      </span>
-                    </button>
-                  }
-                />
+              {browse.visible.map((listing, i) => (
+                <Reveal key={listing.id} y={24} delay={Math.min(i * 60, 320)}>
+                  <Card
+                    href={`/card/${listing.order.tokenId}?chainId=${listing.chainId}`}
+                    name={listing.card.name}
+                    subtitle={listing.card.setName ?? "—"}
+                    year={listing.card.year}
+                    grade={listing.card.grade}
+                    imageUrl={listing.card.imageUrl}
+                    valueLabel="Asking price"
+                    value={formatUnits(listing.order.price, 6)}
+                    action={
+                      <button
+                        onClick={() => onBuy(listing)}
+                        disabled={!isConnected || busy === `buy:${listing.id}`}
+                        className="buy-now-button btn-anim w-full rounded-[16px] border px-3 py-3.5 border-[#FFFFFF1A] font-[600] text-[15px] disabled:opacity-50"
+                      >
+                        <span className="buy-now-button-text">
+                          {busy === `buy:${listing.id}`
+                            ? "Confirm in wallet…"
+                            : !isConnected
+                              ? "Connect wallet"
+                              : "Buy now"}
+                        </span>
+                      </button>
+                    }
+                  />
+                </Reveal>
               ))}
             </div>
 
@@ -223,44 +229,45 @@ export default function MarketplacePage() {
             )}
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {mine.visible.map((card) => (
-                <Card
-                  key={card.tokenId}
-                  href={`/card/${card.tokenId}?chainId=${card.chainId}`}
-                  name={card.name}
-                  subtitle={`#${card.tokenId} · ${card.setName ?? "—"}`}
-                  year={card.year}
-                  grade={card.grade}
-                  imageUrl={card.imageUrl}
-                  action={
-                    card.listing ? (
-                      <p className="text-[#2BD383] text-[13.5px] font-semibold py-3">
-                        Listed for ${formatUnits(card.listing.price, 6)}
-                      </p>
-                    ) : (
-                      <div className="flex gap-2">
-                        <input
-                          value={priceInput[card.tokenId] ?? ""}
-                          onChange={(e) =>
-                            setPriceInput((p) => ({ ...p, [card.tokenId]: e.target.value }))
-                          }
-                          placeholder="Price in USDC"
-                          inputMode="decimal"
-                          className="flex-1 min-w-0 bg-[#0a0a0a] border border-[#FFFFFF1A] rounded-xl px-3 py-2.5 text-white text-[13.5px]"
-                        />
-                        <button
-                          onClick={() => onList(card)}
-                          disabled={busy === `list:${card.tokenId}`}
-                          className="buy-now-button rounded-xl border px-4 py-2.5 border-[#FFFFFF1A] font-[600] text-[13.5px] disabled:opacity-50 shrink-0"
-                        >
-                          <span className="buy-now-button-text">
-                            {busy === `list:${card.tokenId}` ? "Signing…" : "List"}
-                          </span>
-                        </button>
-                      </div>
-                    )
-                  }
-                />
+              {mine.visible.map((card, i) => (
+                <Reveal key={card.tokenId} y={24} delay={Math.min(i * 60, 320)}>
+                  <Card
+                    href={`/card/${card.tokenId}?chainId=${card.chainId}`}
+                    name={card.name}
+                    subtitle={`#${card.tokenId} · ${card.setName ?? "—"}`}
+                    year={card.year}
+                    grade={card.grade}
+                    imageUrl={card.imageUrl}
+                    action={
+                      card.listing ? (
+                        <p className="text-[#2BD383] text-[13.5px] font-semibold py-3">
+                          Listed for ${formatUnits(card.listing.price, 6)}
+                        </p>
+                      ) : (
+                        <div className="flex gap-2">
+                          <input
+                            value={priceInput[card.tokenId] ?? ""}
+                            onChange={(e) =>
+                              setPriceInput((p) => ({ ...p, [card.tokenId]: e.target.value }))
+                            }
+                            placeholder="Price in USDC"
+                            inputMode="decimal"
+                            className="flex-1 min-w-0 bg-[#0a0a0a] border border-[#FFFFFF1A] rounded-xl px-3 py-2.5 text-white text-[13.5px] transition-colors focus:outline-none focus:border-[#2BD383]/50"
+                          />
+                          <button
+                            onClick={() => onList(card)}
+                            disabled={busy === `list:${card.tokenId}`}
+                            className="buy-now-button btn-anim rounded-xl border px-4 py-2.5 border-[#FFFFFF1A] font-[600] text-[13.5px] disabled:opacity-50 shrink-0"
+                          >
+                            <span className="buy-now-button-text">
+                              {busy === `list:${card.tokenId}` ? "Signing…" : "List"}
+                            </span>
+                          </button>
+                        </div>
+                      )
+                    }
+                  />
+                </Reveal>
               ))}
             </div>
 
