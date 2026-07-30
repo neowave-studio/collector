@@ -24,10 +24,10 @@ const PER_PAGE = 9;
 
 export default function MarketplacePage() {
   const chainId = useChainId();
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const { isAuthenticated } = useSession();
   const queryClient = useQueryClient();
-  const { buy, list, busy, error } = useMarketplace();
+  const { buy, list, cancel, busy, error } = useMarketplace();
 
   const [tab, setTab] = useState("browse");
   const [priceInput, setPriceInput] = useState({});
@@ -74,6 +74,17 @@ export default function MarketplacePage() {
     try {
       const hash = await buy(listing);
       setNotice({ kind: "ok", text: `Bought ${listing.card.name}. ${hash.slice(0, 12)}…` });
+      refresh();
+    } catch {
+      /* surfaced via `error` */
+    }
+  };
+
+  const onCancel = async (listing) => {
+    setNotice(null);
+    try {
+      await cancel(listing);
+      setNotice({ kind: "ok", text: `${listing.card.name} delisted. The order can no longer be filled.` });
       refresh();
     } catch {
       /* surfaced via `error` */
@@ -165,8 +176,17 @@ export default function MarketplacePage() {
               results still finishes animating quickly — an uncapped `index * 60` would leave the last
               tile of a 9-card grid arriving half a second after the first, which reads as lag.
             */}
+            {/*
+              A seller cannot fill their own order — the Marketplace reverts with SelfTrade. Offering
+              a Buy button on your own listing promises something the contract refuses, and the
+              refusal arrives as a wallet gas error rather than an explanation, so the listing owner
+              gets the action that does exist instead.
+            */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {browse.visible.map((listing, i) => (
+              {browse.visible.map((listing, i) => {
+                const isMine =
+                  address && listing.order.maker.toLowerCase() === address.toLowerCase();
+                return (
                 <Reveal key={listing.id} y={24} delay={Math.min(i * 60, 320)}>
                   <Card
                     href={`/card/${listing.order.tokenId}?chainId=${listing.chainId}`}
@@ -178,23 +198,39 @@ export default function MarketplacePage() {
                     valueLabel="Asking price"
                     value={formatUnits(listing.order.price, 6)}
                     action={
-                      <button
-                        onClick={() => onBuy(listing)}
-                        disabled={!isConnected || busy === `buy:${listing.id}`}
-                        className="buy-now-button btn-anim w-full rounded-[16px] border px-3 py-3.5 border-[#FFFFFF1A] font-[600] text-[15px] disabled:opacity-50"
-                      >
-                        <span className="buy-now-button-text">
-                          {busy === `buy:${listing.id}`
-                            ? "Confirm in wallet…"
-                            : !isConnected
-                              ? "Connect wallet"
-                              : "Buy now"}
-                        </span>
-                      </button>
+                      isMine ? (
+                        <div className="flex items-center gap-2">
+                          <span className="flex-1 text-[#FFD36B] text-[13px] font-semibold">
+                            Your listing
+                          </span>
+                          <button
+                            onClick={() => onCancel(listing)}
+                            disabled={busy === `cancel:${listing.id}`}
+                            className="btn-anim rounded-xl border border-[#FFFFFF1A] px-4 py-2.5 text-white/70 hover:text-white text-[13.5px] font-semibold transition-colors disabled:opacity-50 shrink-0"
+                          >
+                            {busy === `cancel:${listing.id}` ? "Cancelling…" : "Cancel"}
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => onBuy(listing)}
+                          disabled={!isConnected || busy === `buy:${listing.id}`}
+                          className="buy-now-button btn-anim w-full rounded-[16px] border px-3 py-3.5 border-[#FFFFFF1A] font-[600] text-[15px] disabled:opacity-50"
+                        >
+                          <span className="buy-now-button-text">
+                            {busy === `buy:${listing.id}`
+                              ? "Confirm in wallet…"
+                              : !isConnected
+                                ? "Connect wallet"
+                                : "Buy now"}
+                          </span>
+                        </button>
+                      )
                     }
                   />
                 </Reveal>
-              ))}
+                );
+              })}
             </div>
 
             {browse.totalPages > 1 && (
