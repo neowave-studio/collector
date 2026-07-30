@@ -8,6 +8,7 @@ import { api, formatUnits } from "../lib/api";
 import Reveal from "../components/Reveal";
 import LeaderboardPodium from "../components/LeaderboardPodium";
 import Pagination from "../components/Pagination";
+import { Skeleton } from "../components/Skeleton";
 
 /**
  * Leaderboard.
@@ -57,7 +58,27 @@ export default function LeaderboardPage() {
           </p>
         </Reveal>
 
-        {isLoading && <p className="text-white/40 text-[14px]">Reading holdings…</p>}
+        {isLoading && (
+          <div className="glass rounded-2xl overflow-hidden">
+            <div className="border-b border-white/10 px-5 py-3.5 flex gap-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className={`h-[11px] ${i === 1 ? "flex-1" : "w-16"}`} />
+              ))}
+            </div>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="border-b border-white/[0.06] px-5 py-4 flex items-center gap-4"
+              >
+                <Skeleton className="h-[14px] w-6 shrink-0" />
+                <Skeleton className="h-[14px] flex-1 max-w-[220px]" />
+                <Skeleton className="h-[14px] w-12 ml-auto shrink-0" />
+                <Skeleton className="h-[14px] w-12 shrink-0" />
+                <Skeleton className="h-[14px] w-20 shrink-0" />
+              </div>
+            ))}
+          </div>
+        )}
 
         {!isLoading && entries.length === 0 && (
           <Reveal y={20} className="glass-soft rounded-2xl p-8 text-center block">

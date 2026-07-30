@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { api, formatUnits } from "@/app/lib/api";
 import Reveal from "@/app/components/Reveal";
 import Card from "@/app/components/Card";
+import { Skeleton, CardGridSkeleton } from "@/app/components/Skeleton";
 
 /**
  * A public profile.
@@ -15,7 +17,10 @@ import Card from "@/app/components/Card";
  * trades it has settled. "Reference value" is the sum of committed reference prices and is labelled as
  * such — presenting it as a portfolio valuation would imply a market quote we do not have.
  */
-export default function UserProfilePage({ userId }) {
+export default function UserProfilePage() {
+  // App Router passes the route param via useParams(), not as a prop — reading a `userId` prop left it
+  // undefined, so the query stayed disabled and every profile fell through to "unavailable".
+  const userId = useParams()?.id;
   const { address } = useAccount();
   const [tab, setTab] = useState("cards");
 
@@ -30,8 +35,20 @@ export default function UserProfilePage({ userId }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-[130px] px-6">
-        <p className="text-white/40 text-[14px]">Loading profile…</p>
+      <div className="min-h-screen pt-[120px] pb-24">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="glass rounded-2xl p-6 mb-8">
+            <Skeleton className="h-[11px] w-24 mb-3" />
+            <Skeleton className="h-[28px] w-72 max-w-full mb-2.5" />
+            <Skeleton className="h-[12px] w-56 max-w-full" />
+          </div>
+          <div className="flex gap-2 mb-6">
+            <Skeleton className="h-[36px] w-24 rounded-xl" />
+            <Skeleton className="h-[36px] w-24 rounded-xl" />
+            <Skeleton className="h-[36px] w-24 rounded-xl" />
+          </div>
+          <CardGridSkeleton count={3} />
+        </div>
       </div>
     );
   }

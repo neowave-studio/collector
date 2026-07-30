@@ -108,7 +108,7 @@ export default function NetworkSwitcher({ className = "" }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[268px] glass rounded-xl border border-[#FFFFFF1A] overflow-hidden z-50">
+        <div className="absolute right-0 mt-2 w-[268px] glass-menu rounded-xl overflow-hidden z-50">
           {options.map((c) => {
             const isActive = c.chainId === chainId;
             return (
@@ -134,7 +134,7 @@ export default function NetworkSwitcher({ className = "" }) {
       )}
 
       {error && (
-        <p className="absolute right-0 mt-2 w-[268px] text-[#ff6b6b] text-[11.5px] leading-[1.5] glass rounded-lg px-3 py-2 z-50">
+        <p className="absolute right-0 mt-2 w-[268px] text-[#ff6b6b] text-[11.5px] leading-[1.5] glass-menu rounded-lg px-3 py-2 z-50">
           {error}
         </p>
       )}

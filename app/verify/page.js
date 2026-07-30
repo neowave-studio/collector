@@ -1,7 +1,67 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, formatUnits } from "../lib/api";
+import { RowSkeleton } from "../components/Skeleton";
+
+/**
+ * A per-pack disclosure that fetches the published pool file's real locations on demand, so anyone can
+ * download the exact committed file and rebuild the Merkle root themselves (spec §8.2).
+ */
+function PoolFileDisclosure({ pack }) {
+  const [open, setOpen] = useState(false);
+  const { data, isLoading } = useQuery({
+    queryKey: ["poolFile", pack.chainId, pack.packId, pack.poolVersion],
+    queryFn: () => api.poolFile(pack.chainId, pack.packId, pack.poolVersion),
+    enabled: open,
+    retry: false,
+  });
+
+  return (
+    <div className="mt-3">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="link-underline text-white/55 hover:text-white text-[12.5px]"
+      >
+        {open ? "Hide the published pool file" : "Get the published pool file →"}
+      </button>
+      {open && (
+        <div className="mt-2 glass rounded-lg p-3">
+          {isLoading && <p className="text-white/40 text-[12px]">Reading…</p>}
+          {data && (
+            <>
+              <p className="font-mono-data text-[10px] tracking-[0.2em] uppercase text-white/35 mb-2">
+                Download the exact file
+              </p>
+              <div className="flex flex-wrap gap-2 mb-2.5">
+                {data.gateways.map((g) => (
+                  <a
+                    key={g}
+                    href={g}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="glass-soft rounded-lg px-3 py-1.5 text-[12px] text-white/75 hover:text-white border border-[#FFFFFF1A]"
+                  >
+                    {(() => {
+                      try {
+                        return new URL(g).hostname;
+                      } catch {
+                        return g;
+                      }
+                    })()}{" "}
+                    →
+                  </a>
+                ))}
+              </div>
+              <p className="text-white/40 text-[11.5px] leading-[1.55]">{data.note}</p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /**
  * The trust page: live proof of reserves, the committed odds, and the escape hatches spelled out.
@@ -44,7 +104,7 @@ export default function VerifyPage() {
             48-hour delay.
           </p>
 
-          {isLoading && <p className="text-white/40 text-[13px]">Reading from chain…</p>}
+          {isLoading && <RowSkeleton count={2} />}
 
           <div className="space-y-3">
             {reserves?.map((r) => (
@@ -100,6 +160,7 @@ export default function VerifyPage() {
           </p>
 
           <div className="space-y-3">
+            {!packs && <RowSkeleton count={1} />}
             {packs?.map((pack) => (
               <div key={`${pack.chainId}-${pack.packId}`} className="glass-soft rounded-xl p-4">
                 <p className="text-white font-semibold text-[14px] mb-1.5">
@@ -112,6 +173,7 @@ export default function VerifyPage() {
                     {pack.cardCount} cards · total weight {pack.totalWeight}
                   </div>
                 </div>
+                <PoolFileDisclosure pack={pack} />
               </div>
             ))}
           </div>

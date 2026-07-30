@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useSignMessage, useChainId } from "wagmi";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
 
 /**
@@ -21,33 +22,40 @@ const SIWE_STATEMENT =
  * The message we sign is built here but the nonce comes from the server and is single-use, so a
  * captured signature cannot be replayed. The server independently re-validates domain, chainId,
  * nonce and the time bounds — this component is a convenience, not the security boundary.
+ *
+ * Session state lives in ONE shared react-query cache entry (`["session"]`), not in each caller's
+ * local `useState`. Every component that calls this hook — the navbar, the gacha panel, the
+ * marketplace — reads the same entry, so signing in anywhere updates all of them at once. With
+ * per-component state the navbar could show "signed in" while the gacha panel still said "Sign in"
+ * until a manual page refresh remounted everything; sharing the cache and invalidating it on
+ * sign-in / sign-out is what keeps them in lockstep.
  */
 export function useSession() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { signMessageAsync } = useSignMessage();
+  const queryClient = useQueryClient();
 
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const refresh = useCallback(async () => {
-    try {
-      setSession(await api.session());
-    } catch {
-      setSession({ authenticated: false });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { data: session, isLoading: loading } = useQuery({
+    queryKey: ["session"],
+    queryFn: api.session,
+    // A failed/expired session is a normal answer ("not authenticated"), not an error to retry.
+    retry: false,
+    staleTime: 15_000,
+  });
+
+  // Invalidating the shared key refetches it for EVERY mounted consumer, so one sign-in updates the
+  // whole app. Returns the invalidation promise so callers can `await` the refreshed state.
+  const refresh = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ["session"] }),
+    [queryClient],
+  );
 
   /**
-   * Re-check whenever the connected wallet changes, not only on mount.
-   *
-   * `refresh` has no dependencies, so with `[refresh]` this ran exactly once — before the wallet was
-   * connected, when the answer is always "not authenticated". Connecting afterwards changed nothing,
-   * and the UI kept showing the signed-out state until the page was reloaded by hand. Keying on the
-   * address means connecting, disconnecting and switching accounts each re-ask the server.
+   * Re-check whenever the connected wallet changes, not only on mount. Connecting, disconnecting and
+   * switching accounts each re-ask the server, since the session cookie is bound to one wallet.
    */
   useEffect(() => {
     void refresh();
