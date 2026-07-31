@@ -51,14 +51,20 @@ envVarGroups:
         sync: false
 
       # --- chains ----------------------------------------------------------------------------
+      # Three chains, matching be.env. All three are deployed, and TRUSTED_RELAYER / TRUSTED_ORACLE /
+      # TRUSTED_BUYBACK are granted to the same three addresses on each — verified on-chain, so the
+      # one set of signer keys works everywhere. Dropping ethereum_sepolia is a safe one-line edit if
+      # the indexer proves too costly on free-tier RPC.
       - key: ENABLED_CHAINS
-        value: base_sepolia,bnb_testnet
+        value: base_sepolia,bnb_testnet,ethereum_sepolia
       # Public Sepolia endpoints are rate limited hard enough to stall the indexer. Use Alchemy or
       # Infura, and a DIFFERENT key from the frontend's — the frontend's ships in the browser
       # bundle, and a shared key lets a scraper exhaust the quota the indexer depends on.
       - key: BASE_SEPOLIA_RPC_URL
         sync: false
       - key: BNB_TESTNET_RPC_URL
+        sync: false
+      - key: ETHEREUM_SEPOLIA_RPC_URL
         sync: false
 
       # --- compliance --------------------------------------------------------------------------
@@ -216,6 +222,8 @@ services:
       - key: NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL
         sync: false
       - key: NEXT_PUBLIC_BNB_TESTNET_RPC_URL
+        sync: false
+      - key: NEXT_PUBLIC_ETHEREUM_SEPOLIA_RPC_URL
         sync: false
       # Deliberately NOT set: NEXT_PUBLIC_ANVIL_RPC_URL adds the local devnet to the wallet's
       # network list.

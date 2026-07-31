@@ -40,6 +40,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# `.env*` only matches names that START with `.env`, so it does not cover `be.env`, `fe.env`,
+# `prod.env` or anything else of that shape — which is exactly how signing keys get committed.
+*.env
 # ...but the templates carry no secrets and are useless to a new operator if they are not in the repo.
 !.env.example
 !**/.env.example
