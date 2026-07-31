@@ -49,15 +49,38 @@ or claim the name first by creating the blueprint, then filling this in.
 the browser bundle where anyone can read and reuse it, and a shared key lets a scraper exhaust the
 quota the indexer depends on. Add a domain allowlist to the frontend key.
 
-**Signer keys.** Generate four fresh ones. `cast wallet new` four times, or any secp256k1 keygen.
-Do not reuse the keys in `backend/.env.example` — they are published in this repo.
+**Signer keys — do NOT generate fresh ones.** The contracts are already deployed on both testnets and
+the roles are already granted on-chain, to these addresses (verified live on Base Sepolia *and* BNB
+testnet — they match on both):
 
 ```
-ORACLE_PRIVATE_KEY        signs rip terms
-RELAYER_PRIVATE_KEY       submits transactions, holds TRUSTED_RELAYER + PAUSE_ADMIN
-BUYBACK_PRIVATE_KEY       submits buyback transactions
-POOL_AUTHOR_PRIVATE_KEY   commits pools
+ORACLE_PRIVATE_KEY        0xCAced5C126B88c6c05bE7D753b3eAB96Ca4470d3   TRUSTED_ORACLE
+RELAYER_PRIVATE_KEY       0x5248B552E2D9e4533cAe68Cd4377be24430BE6AA   TRUSTED_RELAYER
+BUYBACK_PRIVATE_KEY       0x1FCf31eF9d4dc8CC2E0c38c836fDc2235651a491   TRUSTED_BUYBACK
+POOL_AUTHOR_PRIVATE_KEY   0xC1725953BE260ECd5c5CA21eb5524D4986aFD06F   POOL_AUTHOR + OPERATIONS
 ```
+
+You must supply the private keys **for exactly these addresses**. A freshly generated key holds no
+role, and `RoleGated` live-reads the AccessController with nothing cached — so every `rip`, `settle`
+and `commitPool` reverts. The failure is not a config error at boot; it is a revert on the first
+purchase, which is a far worse place to discover it.
+
+If you genuinely need to rotate to new keys, grant the roles first. `TRUSTED_*` grants are ops
+authority rather than governance, so they are instant and need no Timelock — but they must be sent
+from the `OPERATIONS_ROLE` holder above, on *each* chain:
+
+```bash
+MODE=execute RELAYER_ADDRESS=0x… ORACLE_ADDRESS=0x… BUYBACK_ADDRESS=0x… \
+  forge script script/SetupTestnet.s.sol --rpc-url <rpc> --broadcast
+```
+
+`POOL_AUTHOR_ROLE` is *not* instant — it goes through the Timelock with the rest of the ops batch.
+
+The keys in `backend/.env.example` are published in this repo and hold none of these roles. One
+exception worth knowing: its relayer address `0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc` **does**
+hold `PAUSE_ADMIN_ROLE` on Base Sepolia, left over from setup. Anyone reading this repo can therefore
+pause the Base Sepolia deployment. Harmless on a testnet, unacceptable on anything else — revoke it
+before this shape of deployment goes anywhere real.
 
 Whoever holds the relayer key can rip and pause. On Render these are environment variables, which is
 exactly why this is not a mainnet posture.
@@ -139,6 +162,27 @@ than on `NODE_ENV` — which is precisely why `NODE_ENV=development` here does n
 cookie. Redeploy both services.
 
 ## 5. Fund the hot keys
+
+Balances as measured against the live role holders:
+
+```
+                    base_sepolia            bnb_testnet
+relayer             0.00397 ETH   low       0.01670 BNB   ok
+oracle              0             fine      0             fine
+buyback             0             see below 0             see below
+pool author         0.01981 ETH   ok        0.26932 BNB   ok
+```
+
+**The oracle never needs gas.** It is an EIP-712 signer — it signs rip and buyback terms off-chain
+and the relayer pays to submit them. A zero balance there is correct, not a gap.
+
+**The buyback key needs no gas under this config either.** `COMPLIANCE_MODE=age_only` refuses the
+sell-back path outright (`backend/src/services/compliance.ts:191`), so `settleBuyback` is never
+called. Fund it only if you move to `full`.
+
+**The relayer is the one to watch,** and Base Sepolia is on the low side of the 0.05 ETH below. At
+0.006 gwei it still covers a great many rips, so it is not a blocker for a first deploy — but it is
+the account that empties, and when it does every rip hangs with no user-facing error.
 
 The relayer and buyback keys submit transactions and need native gas **on every enabled chain**.
 Without it nothing works, and the failure mode is a hang, not an error:
