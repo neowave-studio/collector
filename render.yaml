@@ -1,0 +1,221 @@
+# =================================================================================================
+# Render blueprint — public testnet deployment (Option A: NODE_ENV=development + local signer keys).
+#
+# See docs/RENDER-DEPLOY.md for the walkthrough, and docs/TESTNET-PUBLIC-DEPLOY.md for why the
+# configuration below looks the way it does.
+#
+# Three processes, because the workers CANNOT share a process with a scaled API — two indexers
+# racing double-index and double-settle. Against real Postgres they are a separate deployment.
+#
+#   collector-web      Next.js frontend, and the same-origin proxy for /api/*
+#   collector-api      Fastify API
+#   collector-workers  indexer + reconciler, exactly one instance, forever
+#
+# Values marked `sync: false` are NOT in this file by design — set them in the Render dashboard
+# after the first apply. Four of them are hot-wallet private keys.
+# =================================================================================================
+
+envVarGroups:
+  # Shared by the API and the workers. Both processes must agree on every one of these — a worker
+  # signing with a different oracle key than the API quotes with produces signatures the contracts
+  # reject, and a mismatched SESSION_SECRET invalidates sessions at random.
+  - name: collector-backend
+    envVars:
+      # See docs/TESTNET-PUBLIC-DEPLOY.md §4: NODE_ENV=production refuses to boot without AWS KMS,
+      # all four KMS key ids, Redis and a MoonPay webhook secret. The session cookie's Secure flag
+      # keys off PUBLIC_ORIGIN being https, NOT off NODE_ENV, so this does not ship a plaintext
+      # cookie. Moving to KMS later means flipping this and SIGNER_MODE together.
+      - key: NODE_ENV
+        value: development
+      - key: LOG_LEVEL
+        value: info
+
+      - key: SESSION_SECRET
+        generateValue: true # 32+ bytes, generated once, shared by both services via this group
+      - key: SESSION_TTL_SECONDS
+        value: 3600
+
+      # --- signing ---------------------------------------------------------------------------
+      # These four keys hold TRUSTED_RELAYER / ORACLE / BUYBACK and PAUSE_ADMIN. Whoever holds the
+      # relayer key can rip and pause. Generate fresh ones for this deployment; never reuse a devnet
+      # key — the ones in backend/.env.example are published in the repo.
+      - key: SIGNER_MODE
+        value: local
+      - key: ORACLE_PRIVATE_KEY
+        sync: false
+      - key: RELAYER_PRIVATE_KEY
+        sync: false
+      - key: BUYBACK_PRIVATE_KEY
+        sync: false
+      - key: POOL_AUTHOR_PRIVATE_KEY
+        sync: false
+
+      # --- chains ----------------------------------------------------------------------------
+      - key: ENABLED_CHAINS
+        value: base_sepolia,bnb_testnet
+      # Public Sepolia endpoints are rate limited hard enough to stall the indexer. Use Alchemy or
+      # Infura, and a DIFFERENT key from the frontend's — the frontend's ships in the browser
+      # bundle, and a shared key lets a scraper exhaust the quota the indexer depends on.
+      - key: BASE_SEPOLIA_RPC_URL
+        sync: false
+      - key: BNB_TESTNET_RPC_URL
+        sync: false
+
+      # --- compliance --------------------------------------------------------------------------
+      # age_only, not off: `off` is refused on any mainnet chain regardless of NODE_ENV, needs no
+      # KYC vendor, and disables sell-back — removing the cash-out leg, which is the right posture
+      # for a publicly reachable random-outcome purchase. The jurisdiction list is a placeholder
+      # that counsel must set per market before any real launch.
+      - key: COMPLIANCE_MODE
+        value: age_only
+      - key: GACHA_BLOCKED_JURISDICTIONS
+        value: US-WA,US-HI,BE,NL,AU
+      - key: MIN_AGE_YEARS
+        value: 18
+
+      # --- ops ---------------------------------------------------------------------------------
+      - key: INDEXER_INTERVAL_MS
+        value: 12000
+      - key: RECONCILER_INTERVAL_MS
+        value: 30000
+      # When the chain and the DB disagree about reserve state, buyback auto-pauses.
+      - key: RECONCILER_AUTOPAUSE
+        value: true
+      # Slack/Discord webhook. Relayer gas hitting zero makes every rip hang with no user-facing
+      # error, so this is the difference between noticing in minutes and noticing from a bug report.
+      - key: ALERT_WEBHOOK_URL
+        sync: false
+
+databases:
+  - name: collector-db
+    databaseName: collector
+    user: collector
+    plan: free # free Postgres expires 30 days after creation — upgrade before it does
+    region: oregon
+
+services:
+  # -----------------------------------------------------------------------------------------------
+  # Redis. Without it the rate limiter falls back to in-memory: per-instance, and reset on every
+  # deploy. Tolerable on a testnet, not something to leave unset by accident.
+  # -----------------------------------------------------------------------------------------------
+  - type: keyvalue # older blueprints call this `redis`
+    name: collector-redis
+    plan: free
+    region: oregon
+    ipAllowList: [] # private network only — nothing outside Render can reach it
+
+  # -----------------------------------------------------------------------------------------------
+  # API
+  # -----------------------------------------------------------------------------------------------
+  - type: web
+    name: collector-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: backend
+    # `--include=dev` is not optional. Render defaults NODE_ENV=production on the node runtime, and
+    # npm's `omit` defaults to `dev` under it — which would drop typescript and fail `tsc`. The env
+    # group happens to set NODE_ENV=development, so this is belt-and-braces today, but the day
+    # someone flips it to production for KMS mode the build must not break with it.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: collector-backend
+      - key: NODE_VERSION
+        value: 22
+      # Pinned so the private-network address is a stable host:port. Render would otherwise assign it.
+      - key: PORT
+        value: 8080
+      # CORS allowlist AND the switch that makes the session cookie Secure. Must be the browser-facing
+      # frontend origin, which under the proxy is the web service — not this service's own URL.
+      # Fill in after the first apply, once Render has assigned the hostname.
+      - key: PUBLIC_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: collector-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: collector-redis
+          type: keyvalue
+          property: connectionString
+
+  # -----------------------------------------------------------------------------------------------
+  # Workers — indexer + reconciler. EXACTLY ONE INSTANCE. Never scale this; two indexers racing
+  # double-index and double-settle. Render background workers have no free instance type.
+  #
+  # To defer that cost: delete this service, and set RUN_WORKERS_IN_PROCESS=true on collector-api
+  # with numInstances pinned to 1 (src/index.ts honours that opt-in). The catch is that a free web
+  # service spins down after ~15 minutes idle, and a spun-down indexer is not indexing.
+  # -----------------------------------------------------------------------------------------------
+  - type: worker
+    name: collector-workers
+    runtime: node
+    plan: starter
+    region: oregon
+    rootDir: backend
+    buildCommand: npm ci --include=dev && npm run build # see collector-api's build command
+    startCommand: node dist/workers/index.js
+    envVars:
+      - fromGroup: collector-backend
+      - key: NODE_VERSION
+        value: 22
+      # The workers serve no HTTP, but config.ts parses this and the Secure-cookie logic reads it.
+      - key: PUBLIC_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: collector-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: collector-redis
+          type: keyvalue
+          property: connectionString
+
+  # -----------------------------------------------------------------------------------------------
+  # Frontend. Also the API's public face: next.config.mjs rewrites /api/* to the API over the
+  # private network, so the browser only ever sees one origin and the SameSite=Lax session cookie
+  # stays first-party. See the comment in next.config.mjs for why that matters on onrender.com.
+  # -----------------------------------------------------------------------------------------------
+  - type: web
+    name: collector-web
+    runtime: node
+    plan: free
+    region: oregon
+    # `--include=dev` is load-bearing here, not defensive: tailwindcss and @tailwindcss/postcss are
+    # devDependencies, postcss.config.mjs needs them, and Render's default NODE_ENV=production makes
+    # plain `npm ci` omit them. `next build` then dies on "Cannot find module '@tailwindcss/postcss'".
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      # Relative, so every call goes to this app's own origin and hits the rewrite above.
+      - key: NEXT_PUBLIC_API_URL
+        value: /api
+      # Read at server boot, not inlined into the bundle. `host:port` with no scheme is fine —
+      # next.config.mjs normalises it. If private networking is unavailable on your plan, set this
+      # to the API's public https URL instead; the cookie fix works either way.
+      - key: BACKEND_INTERNAL_URL
+        fromService:
+          name: collector-api
+          type: web
+          property: hostport
+      - key: NEXT_PUBLIC_DEFAULT_CHAIN_ID
+        value: 84532 # Base Sepolia
+      # Reown authorises on project id PLUS origin. Add this service's URL to the project's allowed
+      # domains at dashboard.reown.com BEFORE deploying, or the RPC proxy answers 403 and it surfaces
+      # as a failed contract read mid-checkout.
+      - key: NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+        sync: false
+      # Separate Alchemy key from the backend's — these ship in the browser bundle. Add a domain
+      # allowlist to this key in the Alchemy dashboard.
+      - key: NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL
+        sync: false
+      - key: NEXT_PUBLIC_BNB_TESTNET_RPC_URL
+        sync: false
+      # Deliberately NOT set: NEXT_PUBLIC_ANVIL_RPC_URL adds the local devnet to the wallet's
+      # network list.
