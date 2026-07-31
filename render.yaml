@@ -202,9 +202,14 @@ services:
       # Relative, so every call goes to this app's own origin and hits the rewrite above.
       - key: NEXT_PUBLIC_API_URL
         value: /api
-      # Read at server boot, not inlined into the bundle. `host:port` with no scheme is fine —
-      # next.config.mjs normalises it. If private networking is unavailable on your plan, set this
-      # to the API's public https URL instead; the cookie fix works either way.
+      # Needed at BUILD time, not just at boot: next.config.mjs resolves rewrites() during
+      # `next build` and bakes the destination into .next/routes-manifest.json. If this is empty
+      # when the build runs, the deployed frontend has no /api route at all and every call 404s —
+      # so next.config.mjs now fails the build loudly rather than shipping that. If it ever fires,
+      # the fix is a redeploy of collector-web once collector-api exists.
+      # `host:port` with no scheme is fine — next.config.mjs normalises it. If private networking is
+      # unavailable on your plan, set this to the API's public https URL instead; the cookie fix
+      # works either way.
       - key: BACKEND_INTERNAL_URL
         fromService:
           name: collector-api

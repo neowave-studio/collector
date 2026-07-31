@@ -9,6 +9,24 @@ const BACKEND_ORIGIN = rawBackend
     : `http://${rawBackend}`
   : undefined;
 
+/**
+ * `rewrites()` is evaluated during `next build` and the resolved destination is baked into
+ * `.next/routes-manifest.json` — it is NOT re-read at boot. So an absent BACKEND_INTERNAL_URL at
+ * build time bakes in *no proxy at all*, and no amount of setting it afterwards helps: the running
+ * server 404s every /api/* call until someone redeploys.
+ *
+ * That failure is silent and looks like a backend outage, so make it loud instead. `RENDER` is set
+ * on every Render build and deploy, and never locally — where no rewrite is exactly right, because
+ * the browser talks to http://localhost:8080 directly.
+ */
+if (process.env.RENDER && !BACKEND_ORIGIN) {
+  throw new Error(
+    "BACKEND_INTERNAL_URL is empty during a Render build. next.config.mjs bakes the /api/* rewrite " +
+      "into the build, so this would deploy a frontend with no route to the API and every request " +
+      "would 404. Check the `fromService` link to collector-api in render.yaml, then redeploy.",
+  );
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   /**
