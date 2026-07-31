@@ -163,18 +163,27 @@ It detects the finalized pool, verifies the root against the chain, and seeds on
 on the first apply — it used to be blank, which made the first deploy fail by construction, because
 `config.ts` requires a valid URL.
 
-If Render assigned a suffixed hostname, point `PUBLIC_ORIGIN` on `collector-api` at the real
-**frontend** URL and redeploy. Worth doing, but nothing is broken until you do, and it is worth
-knowing why:
+It must be the **real** `collector-web` origin, exactly. Render suffixes names that are already
+taken globally, which is why the live deployment is `collector-web-i3nj.onrender.com` and not
+`collector-web.onrender.com`. Three things read this value:
 
-- It drives the session cookie's `Secure` flag, keyed on `PUBLIC_ORIGIN` starting with `https://`
-  rather than on `NODE_ENV` — which is precisely why `NODE_ENV=development` here does not ship a
-  plaintext cookie. **Any** https value satisfies that.
-- It is the CORS allowlist, which the browser never exercises under the proxy. The browser calls
-  `collector-web`'s own origin and Next forwards server-side; same-origin requests are not
-  CORS-checked at all.
+- The session cookie's `Secure` flag, keyed on `PUBLIC_ORIGIN` starting with `https://` rather than
+  on `NODE_ENV` — which is precisely why `NODE_ENV=development` here does not ship a plaintext
+  cookie. Any https value satisfies this one.
+- The CORS allowlist, which the browser never exercises under the proxy — it calls `collector-web`'s
+  own origin and Next forwards server-side, and same-origin requests are not CORS-checked.
+- **SIWE verification.** `/auth/nonce` hands the wallet `new URL(PUBLIC_ORIGIN).host` to sign over,
+  and `/auth/verify` passes `PUBLIC_ORIGIN` as the expected origin (`routes/auth.ts:18,26`).
 
-What is *not* survivable is an `http://` value — that silently disables `Secure`.
+That third one is why a wrong hostname is not a cosmetic problem. It does not degrade anything —
+sign-in fails outright while every unauthenticated endpoint keeps working, which reads like a wallet
+bug rather than a config one. Check it with:
+
+```bash
+curl -s https://<web-host>/api/auth/nonce   # "domain" must equal <web-host>
+```
+
+An `http://` value is separately fatal: it silently disables `Secure`.
 
 ## 5. Fund the hot keys
 

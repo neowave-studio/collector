@@ -149,15 +149,20 @@ services:
       # requires this to be a valid URL, so leaving it blank meant the first deploy always failed
       # and needed a manual round trip once Render had assigned hostnames.
       #
-      # A wrong hostname here is harmless under the same-origin proxy, which is why a literal is
-      # safe. It feeds exactly two things:
-      #   - the session cookie's Secure flag, which is `PUBLIC_ORIGIN.startsWith('https://')`
-      #     (services/auth.ts:108) — satisfied by any https value;
-      #   - the CORS allowlist, which the browser never exercises, because it calls collector-web's
-      #     own origin and Next proxies onward server-side. Same-origin requests are not CORS-checked.
-      # Correct it to the real hostname anyway once you know it — relying on that is not a plan.
+      # THIS MUST BE THE REAL collector-web ORIGIN, EXACTLY. Three things read it, and the third is
+      # the one that bites:
+      #   - the session cookie's Secure flag, `PUBLIC_ORIGIN.startsWith('https://')`
+      #     (services/auth.ts:108) — any https value satisfies this;
+      #   - the CORS allowlist, which the browser never exercises under the proxy, because it calls
+      #     collector-web's own origin and Next forwards server-side;
+      #   - SIWE verification. `/auth/nonce` returns `new URL(PUBLIC_ORIGIN).host` as the domain the
+      #     wallet signs over, and `/auth/verify` passes PUBLIC_ORIGIN as the expected origin
+      #     (routes/auth.ts:18,26). A hostname mismatch here does not degrade anything — it makes
+      #     sign-in fail outright, while every unauthenticated endpoint keeps working, which reads
+      #     like a wallet bug rather than a config one.
+      # Render suffixes names that are taken globally; `-i3nj` is that suffix, not a typo.
       - key: PUBLIC_ORIGIN
-        value: https://collector-web.onrender.com
+        value: https://collector-web-i3nj.onrender.com
       # Runs the indexer and reconciler inside this process (honoured at src/index.ts:150), instead
       # of the separate `worker` service Render has no free instance type for.
       #
@@ -207,19 +212,23 @@ services:
       # Relative, so every call goes to this app's own origin and hits the rewrite above.
       - key: NEXT_PUBLIC_API_URL
         value: /api
-      # Needed at BUILD time, not just at boot: next.config.mjs resolves rewrites() during
-      # `next build` and bakes the destination into .next/routes-manifest.json. If this is empty
-      # when the build runs, the deployed frontend has no /api route at all and every call 404s —
-      # so next.config.mjs now fails the build loudly rather than shipping that. If it ever fires,
-      # the fix is a redeploy of collector-web once collector-api exists.
-      # `host:port` with no scheme is fine — next.config.mjs normalises it. If private networking is
-      # unavailable on your plan, set this to the API's public https URL instead; the cookie fix
-      # works either way.
+      # A LITERAL, not a `fromService` link, and that is deliberate.
+      #
+      # This was `fromService: {name: collector-api, property: hostport}`, which resolved EMPTY on
+      # the real deploy: hostport is the private-network address, and free instance types do not get
+      # private networking. Empty here is not a soft failure — next.config.mjs resolves rewrites()
+      # during `next build` and bakes the destination into .next/routes-manifest.json, so an empty
+      # value ships a frontend with no /api route at all and every request 404s. The guard in
+      # next.config.mjs turns that into a failed build instead, which is how this was caught.
+      #
+      # The public https URL costs a hop out to the edge and back versus the private network, and is
+      # worth it for a link that cannot silently evaluate to nothing. The cookie fix does not depend
+      # on the private network — only on the browser seeing a single origin, which it still does.
+      #
+      # Update this if collector-api is ever recreated: Render suffixes names that are already taken
+      # globally, which is where `-2vqb` came from.
       - key: BACKEND_INTERNAL_URL
-        fromService:
-          name: collector-api
-          type: web
-          property: hostport
+        value: https://collector-api-2vqb.onrender.com
       - key: NEXT_PUBLIC_DEFAULT_CHAIN_ID
         value: 84532 # Base Sepolia
       # Reown authorises on project id PLUS origin. Add this service's URL to the project's allowed
