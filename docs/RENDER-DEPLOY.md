@@ -138,9 +138,26 @@ export DATABASE_URL='postgres://…?sslmode=require'   # external URL, TLS requi
 npm run migrate
 
 npm run seed:testnet   # per chain — the deploy block keeps the indexer from scanning from block 1
-# CHAIN_KEY=base_sepolia INDEXER_START_BLOCK=44777209 RPC_URL='https://base-sepolia.g.alchemy.com/v2/KEY'
-# CHAIN_KEY=bnb_testnet  INDEXER_START_BLOCK=121963054 RPC_URL='https://bnb-testnet.g.alchemy.com/v2/KEY'
+# CHAIN_KEY=base_sepolia     INDEXER_START_BLOCK=44777231  RPC_URL='https://base-sepolia.g.alchemy.com/v2/KEY'
+# CHAIN_KEY=bnb_testnet      INDEXER_START_BLOCK=121963176 RPC_URL='https://bnb-testnet.g.alchemy.com/v2/KEY'
+# CHAIN_KEY=ethereum_sepolia INDEXER_START_BLOCK=11375582  RPC_URL='https://eth-sepolia.g.alchemy.com/v2/KEY'
 ```
+
+**Do not skip this, and do not guess the numbers.** `chains.last_indexed_block` defaults to 0, and
+`indexChain` starts at `last_indexed_block + 1` and loops to the chain head *within a single call*
+(`services/indexer.ts:49`). A fresh database therefore scans every chain from block 1 — on the first
+real deploy that meant BNB testnet grinding through 74 million blocks of `eth_getLogs`, burning the
+Alchemy quota the indexer itself depends on, and it does it while holding the advisory lock.
+
+The blocks above are the ones where `gachaMachine` first has code, found by binary search on
+`eth_getCode` rather than copied from a deploy log — the two values previously written here were
+both wrong, by 22 and 122 blocks. To re-derive them for a new deployment, binary search
+`getCode(gachaMachine)` between 0 and head.
+
+If you need to correct a running deployment, note that the indexer holds `from` in memory and writes
+it back after every batch, so a plain `UPDATE` is immediately clobbered. Restart the service first,
+then write the cursor while it is down. Only ever move a cursor **forward**, and never past a
+contract's deploy block — rewinding re-indexes settled events.
 
 `backend/src/db/index.ts` builds the pool with no explicit `ssl` option, so the `sslmode=require` in
 the URL is what turns TLS on. If the driver still rejects Render's certificate, `sslmode=no-verify`
