@@ -91,7 +91,7 @@ envVarGroups:
         value: 30000
       # When the chain and the DB disagree about reserve state, buyback auto-pauses.
       - key: RECONCILER_AUTOPAUSE
-        value: true
+        value: "true"
       # Slack/Discord webhook. Relayer gas hitting zero makes every rip hang with no user-facing
       # error, so this is the difference between noticing in minutes and noticing from a bug report.
       - key: ALERT_WEBHOOK_URL
@@ -136,7 +136,15 @@ services:
     # group happens to set NODE_ENV=development, so this is belt-and-braces today, but the day
     # someone flips it to production for KMS mode the build must not break with it.
     buildCommand: npm ci --include=dev && npm run build
-    startCommand: node dist/index.js
+    # Migrate, then serve. Nothing else runs migrations: the build step cannot reach the database,
+    # the free plan has no shell and no preDeployCommand, and `node dist/index.js` alone would come
+    # up against an empty schema. Chaining them here is safe only because this service is pinned to
+    # one instance — see RUN_WORKERS_IN_PROCESS below for that same constraint.
+    #
+    # The migrate step also seeds the committed pool and sets the indexer's start block (src/db/
+    # bootstrap.ts). Both are idempotent and verified against the chain before anything is written,
+    # so a redeploy re-checks rather than re-writes.
+    startCommand: node dist/db/migrate.js && node dist/index.js
     healthCheckPath: /health
     envVars:
       - fromGroup: collector-backend
@@ -173,7 +181,7 @@ services:
       # The real cost is that a free web service sleeps after ~15 minutes idle, and a sleeping
       # indexer is not indexing. It catches up on the next request rather than losing anything.
       - key: RUN_WORKERS_IN_PROCESS
-        value: true
+        value: "true"
       - key: DATABASE_URL
         fromDatabase:
           name: collector-db

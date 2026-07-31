@@ -60,6 +60,16 @@ export interface Deployment {
   paymentRouter: Address;
   marketplace: Address;
   gachaMachine: Address;
+  /**
+   * Block the contracts were deployed in.
+   *
+   * The indexer walks forward from `chains.last_indexed_block`, which starts at 0 — and a real chain
+   * is millions of blocks old, so an unset cursor means scanning from genesis in small batches and
+   * never reaching the present. Recorded here rather than rediscovered because it is a fact about
+   * the deployment, and binary-searching eth_getCode on every boot would be a strange way to learn
+   * something we already know.
+   */
+  deployBlock?: number;
 }
 
 export interface ChainContext extends ChainEntry {

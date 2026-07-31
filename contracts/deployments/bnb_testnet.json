@@ -3,6 +3,7 @@
   "chainId": 97,
   "chainKey": "bnb_testnet",
   "collectibleNFT": "0x44b7564A02fF7404E54D003e7807581816C79651",
+  "deployBlock": 121963176,
   "factory": "0xfb6992CB85910A980ff534EC5403B8bfBEd2F9fd",
   "gachaEnabled": true,
   "gachaMachine": "0x7262Dc57cf7e312876180C8F6075c6701669d656",

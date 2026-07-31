@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {pool} from './index.js';
 import {logger} from '../lib/logger.js';
 import {initChains} from '../chains.js';
+import {bootstrap} from './bootstrap.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -47,6 +48,10 @@ async function migrate(): Promise<void> {
   }
 
   await seedChains();
+  // Schema alone leaves a database that connects but cannot serve a pack: the committed pool's
+  // leaves are not schema, and the indexer cursor still points at genesis. See bootstrap.ts for why
+  // this is code rather than another .sql file.
+  await bootstrap();
   logger.info('migrations complete');
 }
 

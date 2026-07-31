@@ -3,6 +3,7 @@
   "chainId": 84532,
   "chainKey": "base_sepolia",
   "collectibleNFT": "0x154bEBF320EEF8d6C4E8B255FedC69B0b37C707f",
+  "deployBlock": 44777231,
   "factory": "0xfb6992CB85910A980ff534EC5403B8bfBEd2F9fd",
   "gachaEnabled": true,
   "gachaMachine": "0x029426FfA517ebB9895922A278490c3E3D192825",

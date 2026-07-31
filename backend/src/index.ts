@@ -16,6 +16,7 @@ import {marketplaceRoutes} from './routes/marketplace.js';
 import {AuthError, readSession} from './services/auth.js';
 import {ChainRevertError} from './lib/chain-errors.js';
 import {pool, isEmbedded} from './db/index.js';
+import {bootstrap} from './db/bootstrap.js';
 import {initSigners} from './services/signer.js';
 import {startWorkers} from './workers/index.js';
 
@@ -143,6 +144,17 @@ async function main() {
 
   const app = await build();
   await app.listen({port: config.PORT, host: '0.0.0.0'});
+
+  // Deliberately AFTER listen and BEFORE the workers.
+  //
+  // After listen, because seeding a fresh database is slow enough to fail a platform health check,
+  // and a backend that is merely unseeded still serves every endpoint that does not need a pack —
+  // it repairs itself a moment later rather than never starting.
+  //
+  // Before the workers, because this is what moves the indexer cursor to the deployment block. Start
+  // the indexer first and it begins walking a multi-million-block chain from genesis, which it will
+  // not finish. Idempotent and near-free once seeded, so it runs on every boot.
+  await bootstrap();
 
   // The embedded development database is single-writer, so the workers physically cannot run in
   // their own process against it — run them here instead. Against a real Postgres they are a separate
