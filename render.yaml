@@ -4,15 +4,20 @@
 # See docs/RENDER-DEPLOY.md for the walkthrough, and docs/TESTNET-PUBLIC-DEPLOY.md for why the
 # configuration below looks the way it does.
 #
-# Three processes, because the workers CANNOT share a process with a scaled API — two indexers
-# racing double-index and double-settle. Against real Postgres they are a separate deployment.
+# Two services and a database, all on free plans — the whole stack costs nothing:
 #
 #   collector-web      Next.js frontend, and the same-origin proxy for /api/*
-#   collector-api      Fastify API
-#   collector-workers  indexer + reconciler, exactly one instance, forever
+#   collector-api      Fastify API, plus the indexer and reconciler in-process
+#   collector-db       Postgres
+#
+# Deliberately absent: a Key Value instance and a separate worker service. The workspace's one free
+# Key Value slot is already taken, and Render has no free worker tier — either would have failed the
+# apply or cost money. Both omissions are annotated where they used to live, with how to restore
+# them. The single-instance constraint that makes in-process workers safe is documented on
+# RUN_WORKERS_IN_PROCESS; read it before moving collector-api to a paid plan.
 #
 # Values marked `sync: false` are NOT in this file by design — set them in the Render dashboard
-# after the first apply. Four of them are hot-wallet private keys.
+# during the apply. Four of them are hot-wallet private keys.
 # =================================================================================================
 
 envVarGroups:
@@ -101,17 +106,24 @@ databases:
 
 services:
   # -----------------------------------------------------------------------------------------------
-  # Redis. Without it the rate limiter falls back to in-memory: per-instance, and reset on every
-  # deploy. Tolerable on a testnet, not something to leave unset by accident.
+  # NO REDIS, deliberately.
+  #
+  # Render allows one free Key Value instance per workspace and `soleai-redis` already holds that
+  # slot (suspended still counts), so a `plan: free` keyvalue here cannot be created and the whole
+  # apply halts on it — which is what stopped the first attempt after collector-db.
+  #
+  # Leaving REDIS_URL unset is a supported path, not a hack: config.ts defaults it to '' and
+  # index.ts falls back to an in-process rate limiter, logging a warning. The guard that refuses
+  # this only fires when NODE_ENV=production, and this deployment runs development. The limiter is
+  # then per-instance and resets on deploy — which costs nothing here, because the free plan runs
+  # exactly one instance anyway.
+  #
+  # To add it back later: recreate the keyvalue service on `plan: starter` and restore the REDIS_URL
+  # fromService block on collector-api.
   # -----------------------------------------------------------------------------------------------
-  - type: keyvalue # older blueprints call this `redis`
-    name: collector-redis
-    plan: free
-    region: oregon
-    ipAllowList: [] # private network only — nothing outside Render can reach it
 
   # -----------------------------------------------------------------------------------------------
-  # API
+  # API — and, on this plan, the workers too. See RUN_WORKERS_IN_PROCESS below.
   # -----------------------------------------------------------------------------------------------
   - type: web
     name: collector-api
@@ -133,53 +145,46 @@ services:
       # Pinned so the private-network address is a stable host:port. Render would otherwise assign it.
       - key: PORT
         value: 8080
-      # CORS allowlist AND the switch that makes the session cookie Secure. Must be the browser-facing
-      # frontend origin, which under the proxy is the web service — not this service's own URL.
-      # Fill in after the first apply, once Render has assigned the hostname.
+      # Given a value rather than `sync: false` so the API boots on the FIRST apply. config.ts
+      # requires this to be a valid URL, so leaving it blank meant the first deploy always failed
+      # and needed a manual round trip once Render had assigned hostnames.
+      #
+      # A wrong hostname here is harmless under the same-origin proxy, which is why a literal is
+      # safe. It feeds exactly two things:
+      #   - the session cookie's Secure flag, which is `PUBLIC_ORIGIN.startsWith('https://')`
+      #     (services/auth.ts:108) — satisfied by any https value;
+      #   - the CORS allowlist, which the browser never exercises, because it calls collector-web's
+      #     own origin and Next proxies onward server-side. Same-origin requests are not CORS-checked.
+      # Correct it to the real hostname anyway once you know it — relying on that is not a plan.
       - key: PUBLIC_ORIGIN
-        sync: false
+        value: https://collector-web.onrender.com
+      # Runs the indexer and reconciler inside this process (honoured at src/index.ts:150), instead
+      # of the separate `worker` service Render has no free instance type for.
+      #
+      # Safe ONLY while this stays at one instance — two indexers race, double-index and
+      # double-settle. The free plan cannot scale past one, so the constraint holds by construction;
+      # if you ever move this service to a paid plan, split the workers back out FIRST.
+      #
+      # The real cost is that a free web service sleeps after ~15 minutes idle, and a sleeping
+      # indexer is not indexing. It catches up on the next request rather than losing anything.
+      - key: RUN_WORKERS_IN_PROCESS
+        value: true
       - key: DATABASE_URL
         fromDatabase:
           name: collector-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: collector-redis
-          type: keyvalue
           property: connectionString
 
   # -----------------------------------------------------------------------------------------------
-  # Workers — indexer + reconciler. EXACTLY ONE INSTANCE. Never scale this; two indexers racing
-  # double-index and double-settle. Render background workers have no free instance type.
+  # NO SEPARATE WORKER SERVICE, deliberately.
   #
-  # To defer that cost: delete this service, and set RUN_WORKERS_IN_PROCESS=true on collector-api
-  # with numInstances pinned to 1 (src/index.ts honours that opt-in). The catch is that a free web
-  # service spins down after ~15 minutes idle, and a spun-down indexer is not indexing.
+  # Render has no free instance type for background workers, so this was the one paid resource in
+  # the stack and one more thing that could fail to create. The indexer and reconciler now run
+  # inside collector-api via RUN_WORKERS_IN_PROCESS — see the note on that variable above for the
+  # single-instance constraint that makes it safe.
+  #
+  # To split them back out: recreate a `type: worker` service on `plan: starter` with
+  # `startCommand: node dist/workers/index.js`, and drop RUN_WORKERS_IN_PROCESS from the API.
   # -----------------------------------------------------------------------------------------------
-  - type: worker
-    name: collector-workers
-    runtime: node
-    plan: starter
-    region: oregon
-    rootDir: backend
-    buildCommand: npm ci --include=dev && npm run build # see collector-api's build command
-    startCommand: node dist/workers/index.js
-    envVars:
-      - fromGroup: collector-backend
-      - key: NODE_VERSION
-        value: 22
-      # The workers serve no HTTP, but config.ts parses this and the Secure-cookie logic reads it.
-      - key: PUBLIC_ORIGIN
-        sync: false
-      - key: DATABASE_URL
-        fromDatabase:
-          name: collector-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: collector-redis
-          type: keyvalue
-          property: connectionString
 
   # -----------------------------------------------------------------------------------------------
   # Frontend. Also the API's public face: next.config.mjs rewrites /api/* to the API over the

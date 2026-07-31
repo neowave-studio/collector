@@ -4,15 +4,25 @@ Everything on Render, no custom domain, `NODE_ENV=development` with local signer
 Option A of [TESTNET-PUBLIC-DEPLOY.md](TESTNET-PUBLIC-DEPLOY.md) — read that first if you want the
 reasoning; this is just the Render-specific execution of it.
 
-`render.yaml` in the repo root is the blueprint. It creates five things:
+`render.yaml` in the repo root is the blueprint. It creates three things, all on free plans:
 
 ```
-collector-web        web      Next.js frontend + same-origin /api proxy
-collector-api        web      Fastify API
-collector-workers    worker   indexer + reconciler, exactly one instance
-collector-db         pg       Postgres
-collector-redis      keyvalue Redis
+collector-web        web  Next.js frontend + same-origin /api proxy
+collector-api        web  Fastify API + indexer + reconciler, in one process
+collector-db         pg   Postgres
 ```
+
+There is no Key Value instance and no separate worker service. Render allows one free Key Value per
+workspace and `soleai-redis` already holds that slot, so a free one here cannot be created at all —
+the apply halts on it, which is exactly what happened on the first attempt. And Render has no free
+worker tier. Both are annotated in `render.yaml` where they used to be, with how to restore them.
+
+Neither omission is a bodge. Without `REDIS_URL` the backend falls back to an in-process rate
+limiter (`config.ts` defaults it to `''`); the guard that refuses that only fires under
+`NODE_ENV=production`. Per-instance limiting costs nothing when the plan runs one instance anyway.
+The workers move in-process via `RUN_WORKERS_IN_PROCESS`, which `src/index.ts:150` honours — safe
+only at one instance, and the free plan cannot exceed one. **If you move `collector-api` to a paid
+plan, split the workers back out first**: two indexers race, double-index and double-settle.
 
 ---
 
@@ -147,19 +157,24 @@ DATABASE_URL='postgres://…' RPC_URL='…' DEPLOYER_PRIVATE_KEY=0x… \
 
 It detects the finalized pool, verifies the root against the chain, and seeds only the leaves.
 
-## 4. Close the loop on PUBLIC_ORIGIN
+## 4. Tidy up PUBLIC_ORIGIN
 
-Render has now assigned hostnames. Set `PUBLIC_ORIGIN` on **both** `collector-api` and
-`collector-workers` to the **frontend's** URL — not the API's:
+`render.yaml` ships `PUBLIC_ORIGIN=https://collector-web.onrender.com` as a literal so the API boots
+on the first apply — it used to be blank, which made the first deploy fail by construction, because
+`config.ts` requires a valid URL.
 
-```
-PUBLIC_ORIGIN=https://collector-web.onrender.com
-```
+If Render assigned a suffixed hostname, point `PUBLIC_ORIGIN` on `collector-api` at the real
+**frontend** URL and redeploy. Worth doing, but nothing is broken until you do, and it is worth
+knowing why:
 
-That is the origin the browser actually presents, so it is what CORS must allow. It also drives the
-session cookie's `Secure` flag, which is keyed on `PUBLIC_ORIGIN` starting with `https://` rather
-than on `NODE_ENV` — which is precisely why `NODE_ENV=development` here does not ship a plaintext
-cookie. Redeploy both services.
+- It drives the session cookie's `Secure` flag, keyed on `PUBLIC_ORIGIN` starting with `https://`
+  rather than on `NODE_ENV` — which is precisely why `NODE_ENV=development` here does not ship a
+  plaintext cookie. **Any** https value satisfies that.
+- It is the CORS allowlist, which the browser never exercises under the proxy. The browser calls
+  `collector-web`'s own origin and Next forwards server-side; same-origin requests are not
+  CORS-checked at all.
+
+What is *not* survivable is an `http://` value — that silently disables `Secure`.
 
 ## 5. Fund the hot keys
 
@@ -223,14 +238,18 @@ that `BACKEND_INTERNAL_URL` resolved, and that `PUBLIC_ORIGIN` is the **web** UR
 ## Render-specific caveats
 
 **Free web services spin down after ~15 minutes idle** and cold-start on the next request. For the
-frontend that is a slow first load. It is why the workers are a paid background worker rather than
-`RUN_WORKERS_IN_PROCESS=true` on a free API — a spun-down indexer is not indexing, and the
-reconciler is what catches stuck VRF draws and reserve divergence.
+frontend that is a slow first load. For `collector-api` it also means the in-process indexer stops
+while the service sleeps — it resumes and catches up on the next request rather than losing
+anything, but the reconciler is what catches stuck VRF draws and reserve divergence, so it is not
+watching during that window. Splitting the workers back onto a paid `type: worker` service is the
+fix when that matters.
 
 **Free Postgres expires 30 days after creation.** Render deletes it. Upgrade before then or plan to
 re-run step 3.
 
-**Never scale `collector-workers` past one instance.** Two indexers race, double-index and
+**Never run more than one instance of whatever hosts the workers.** Today that is `collector-api`,
+via `RUN_WORKERS_IN_PROCESS` — the free plan pins it to one, so moving that service to a paid plan
+is the moment this stops being enforced for you. Two indexers race, double-index and
 double-settle. The Postgres advisory locks that make them singleton are the reason PGlite is refused
 in production at all.
 
